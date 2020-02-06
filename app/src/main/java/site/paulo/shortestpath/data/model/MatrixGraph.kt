@@ -1,8 +1,8 @@
 package site.paulo.shortestpath.data.model
 
-class MatrixGraph(private val rows: Int, private val columns: Int) {
+class MatrixGraph(val rows: Int, val columns: Int) {
 
-    private val table = Array(rows) { arrayOfNulls<Node>(columns) }
+    val table = Array(rows) { arrayOfNulls<Node>(columns) }
 
     init {
         populate()
@@ -11,6 +11,10 @@ class MatrixGraph(private val rows: Int, private val columns: Int) {
 
     fun getNode(row: Int, column: Int): Node? {
         return table[row][column]
+    }
+
+    fun getNode(point: Point): Node? {
+        return table[point.row][point.col]
     }
 
     /**
@@ -31,12 +35,12 @@ class MatrixGraph(private val rows: Int, private val columns: Int) {
                 if(node != null) {
                     if (i <= rows - 2) {
                         val rightNode = getNode(i + 1, j)
-                        rightNode?.connect(node, i)
+                        rightNode?.connect(node)
                     }
 
                     if (j <= columns - 2) {
                         val bottomNode = getNode(i, j + 1)
-                        bottomNode?.connect(node, i)
+                        bottomNode?.connect(node)
                     }
                 }
             }
