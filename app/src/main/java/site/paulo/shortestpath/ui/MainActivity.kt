@@ -13,8 +13,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val matrix = MatrixGraph(10, 10)
-        Djikstra(matrix, Point(0,0), Point(8,7)).run()
+        val matrix = MatrixGraph(5, 5)
+        Djikstra(matrix, Point(0,0), Point(3,3)).run()
         matrix.print()
     }
 }
