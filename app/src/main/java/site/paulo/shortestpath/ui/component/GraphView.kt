@@ -21,8 +21,12 @@ class GraphView : View {
 
     private val rows: Int = 10
     private val cols: Int = 10
-    var startPoint: Pair<Int,Int> = Pair(-1,-1)
-    var endPoint: Pair<Int,Int> = Pair(-1,-1)
+    private var squareSide: Float = 100f
+    private val uninitialized: Pair<Int,Int> = Pair(-1,-1)
+    private var lastVisitedNode: Pair<Int,Int> = uninitialized
+    var startPoint: Pair<Int,Int> = uninitialized
+    var endPoint: Pair<Int,Int> = uninitialized
+    var readyToRemoveNodes: Boolean = false
 
     private val visitedPosition: HashMap<Pair<Int,Int>, RectF> = HashMap()
     private val removedNodes: HashMap<Pair<Int,Int>, RectF> = HashMap()
@@ -30,13 +34,12 @@ class GraphView : View {
     private lateinit var algorithm: Algorithm
 
     private val paint = Paint()
-    private var squareSide: Float = 100f
     private val colorHorizontalLine: Int = ContextCompat.getColor(context, R.color.colorTableHorizontalLines)
     private val colorVerticalLine: Int = ContextCompat.getColor(context, R.color.colorTableVerticalLines)
     private val colorPath: Int = ContextCompat.getColor(context, R.color.colorPath)
     private val colorStartPoint: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
     private val colorEndPoint: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
-    private val colorRemovedCell: Int = ContextCompat.getColor(context, R.color.colorRemovedCell)
+    private val colorRemovedNode: Int = ContextCompat.getColor(context, R.color.colorRemovedCell)
 
     enum class SupportedAlgorithms {
         DJIKSTRA
@@ -51,8 +54,8 @@ class GraphView : View {
         drawHorizontalLines(canvas, rows)
         drawVerticalLines(canvas, cols)
         drawNodes(canvas)
+        drawRemovedCellsNodes(canvas)
         drawPoints(canvas)
-        drawRemovedCells(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -66,10 +69,15 @@ class GraphView : View {
                 markPoint(getSquareOnPosition(x,y))
             }
             MotionEvent.ACTION_MOVE -> {
-
+                if (readyToRemoveNodes) {
+                    if (lastVisitedNode != getSquareOnPosition(x, y)) {
+                        lastVisitedNode = getSquareOnPosition(x, y)
+                        removeNode(lastVisitedNode)
+                    }
+                }
             }
             MotionEvent.ACTION_UP -> {
-
+                readyToRemoveNodes = (startPoint != uninitialized && endPoint != uninitialized)
             }
             MotionEvent.ACTION_CANCEL -> {
 
@@ -79,7 +87,7 @@ class GraphView : View {
     }
 
     fun runAlgorithm(alg: SupportedAlgorithms) {
-        if ((startPoint.first == -1) || (endPoint.first == -1)) return
+        if (startPoint == uninitialized || endPoint == uninitialized) return
 
         when (alg) {
             SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, startPoint, endPoint)
@@ -94,10 +102,11 @@ class GraphView : View {
 
     fun reset() {
         graph = MatrixGraph(rows,cols)
-        startPoint = Pair(-1,-1)
-        endPoint = Pair(-1,-1)
+        startPoint = uninitialized
+        endPoint = uninitialized
         visitedPosition.clear()
         removedNodes.clear()
+        readyToRemoveNodes = false
         invalidate()
     }
 
@@ -119,12 +128,12 @@ class GraphView : View {
             this.startPoint == position -> startPoint = Pair(-1,-1)
             this.endPoint.first == -1 -> this.endPoint = position
             this.endPoint == position -> endPoint = Pair(-1,-1)
-            else -> this.removeCell(position)
+            else -> this.removeNode(position)
         }
         invalidate()
     }
 
-    private fun removeCell(position: Pair<Int, Int>) {
+    private fun removeNode(position: Pair<Int, Int>) {
         removedNodes[position] = getRectInPosition(position)
         graph.removeNode(position)
         invalidate()
@@ -160,26 +169,29 @@ class GraphView : View {
      */
     private fun drawPoints(canvas: Canvas) {
         paint.style = Paint.Style.FILL
-        if (startPoint.first != -1) {
+        if (startPoint != uninitialized) {
             paint.color = colorStartPoint
             canvas.drawRect(getRectInPosition(startPoint), paint)
         }
-        if (endPoint.first != -1) {
+        if (endPoint != uninitialized) {
             paint.color = colorEndPoint
             canvas.drawRect(getRectInPosition(endPoint), paint)
         }
     }
 
-    private fun drawRemovedCells(canvas: Canvas) {
+    private fun drawRemovedCellsNodes(canvas: Canvas) {
         paint.style = Paint.Style.FILL
-        paint.color = colorRemovedCell
+        paint.color = colorRemovedNode
         removedNodes.values.forEach {
             canvas.drawRect(it, paint)
         }
     }
 
+    var cachedPosition: Pair<Int,Int> = uninitialized
     private fun getSquareOnPosition(x: Float, y: Float): Pair<Int, Int> {
-        return Pair((x/squareSide).toInt(), (y/squareSide).toInt())
+        return if ((cachedPosition.first == (x / squareSide).toInt()) &&
+            (cachedPosition.second == (y / squareSide).toInt())) cachedPosition
+        else Pair((x / squareSide).toInt(), (y / squareSide).toInt())
     }
 
     private fun configurePaint() {

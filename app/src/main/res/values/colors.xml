@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#03A9F4</color>
+    <color name="colorPrimaryDark">#1A77C2</color>
     <color name="colorAccent">#D81B60</color>
 
-    <color name="colorPath">#222222</color>
-    <color name="colorStartPoint">#0000FF</color>
-    <color name="colorEndPoint">#FF0000</color>
-    <color name="colorRemovedCell">#CCCCCC</color>
+    <color name="colorPath">#FFC400</color>
+    <color name="colorStartPoint">#03A9F4</color>
+    <color name="colorEndPoint">#651FFF</color>
+    <color name="colorRemovedCell">#EEEEEE</color>
     <color name="colorTableHorizontalLines">#222222</color>
     <color name="colorTableVerticalLines">#222222</color>
 </resources>
