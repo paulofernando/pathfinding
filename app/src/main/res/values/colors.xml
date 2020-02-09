@@ -7,6 +7,7 @@
     <color name="colorPath">#222222</color>
     <color name="colorStartPoint">#0000FF</color>
     <color name="colorEndPoint">#FF0000</color>
+    <color name="colorRemovedCell">#CCCCCC</color>
     <color name="colorTableHorizontalLines">#222222</color>
     <color name="colorTableVerticalLines">#222222</color>
 </resources>

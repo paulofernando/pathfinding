@@ -3,6 +3,7 @@ package site.paulo.shortestpath.data.model
 class MatrixGraph(val rows: Int, val columns: Int) {
 
     val table = Array(rows) { arrayOfNulls<Node>(columns) }
+    private val removedNodes = ArrayList<Node>()
 
     init {
         populate()
@@ -15,6 +16,20 @@ class MatrixGraph(val rows: Int, val columns: Int) {
 
     fun getNode(point: Pair<Int,Int>): Node? {
         return table[point.first][point.second]
+    }
+
+    fun disconnect(nodeA: Pair<Int,Int>, nodeB: Pair<Int,Int>) {
+        val nA = getNode(nodeA)
+        val nB = getNode(nodeB)
+        if ((nA != null) && (nB != null)) nA.disconnect(nB)
+    }
+
+    fun removeNode(nodePosition: Pair<Int,Int>) {
+        val node = getNode(nodePosition) ?: return
+        node.edges.values.forEach {
+            node.disconnect(it.getOpposite(node))
+        }
+        removedNodes.add(node)
     }
 
     /**

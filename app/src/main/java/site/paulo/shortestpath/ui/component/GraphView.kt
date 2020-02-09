@@ -8,6 +8,8 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import site.paulo.shortestpath.R
 import site.paulo.shortestpath.algorithm.Algorithm
+import site.paulo.shortestpath.algorithm.Djikstra
+import site.paulo.shortestpath.data.model.MatrixGraph
 import site.paulo.shortestpath.data.model.Node
 import java.util.*
 import kotlin.collections.HashMap
@@ -19,18 +21,26 @@ class GraphView : View {
 
     private val rows: Int = 10
     private val cols: Int = 10
-    private var squareSide: Float = 100f
+    var startPoint: Pair<Int,Int> = Pair(-1,-1)
+    var endPoint: Pair<Int,Int> = Pair(-1,-1)
 
-    private var startPoint: Pair<Int,Int> = Pair(-1,-1)
-    private var endPoint: Pair<Int,Int> = Pair(-1,-1)
     private val squares: HashMap<Pair<Int,Int>, RectF> = HashMap()
-    private val paint = Paint()
+    private val removedNodes: HashMap<Pair<Int,Int>, RectF> = HashMap()
+    private var graph: MatrixGraph = MatrixGraph(10,10)
+    private lateinit var algorithm: Algorithm
 
+    private val paint = Paint()
+    private var squareSide: Float = 100f
     private val colorHorizontalLine: Int = ContextCompat.getColor(context, R.color.colorTableHorizontalLines)
     private val colorVerticalLine: Int = ContextCompat.getColor(context, R.color.colorTableVerticalLines)
     private val colorPath: Int = ContextCompat.getColor(context, R.color.colorPath)
     private val colorStartPoint: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
     private val colorEndPoint: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
+    private val colorRemovedCell: Int = ContextCompat.getColor(context, R.color.colorRemovedCell)
+
+    enum class SupportedAlgorithms {
+        DJIKSTRA
+    }
 
     init {
         configurePaint()
@@ -42,6 +52,7 @@ class GraphView : View {
         drawVerticalLines(canvas, cols)
         drawNodes(canvas)
         drawPoints(canvas)
+        drawRemovedCells(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -67,25 +78,23 @@ class GraphView : View {
         return true
     }
 
-    fun visitPosition(position: Pair<Int, Int>) {
-        squares[position] = getRectInPosition(position)
-        invalidate()
-    }
+    fun runAlgorithm(alg: SupportedAlgorithms) {
+        if ((startPoint.first == -1) || (endPoint.first == -1)) return
 
-    fun getStartPoint(): Pair<Int,Int> {
-        return this.startPoint
-    }
+        when (alg) {
+            SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, startPoint, endPoint)
+        }
 
-    fun getEndPoint(): Pair<Int,Int> {
-        return this.endPoint
-    }
-
-    fun runAlgorithm(alg: Algorithm) {
-        alg.run()
-        val path: Stack<Node> = alg.getShortestPath()
+        algorithm.run()
+        val path: Stack<Node> = algorithm.getShortestPath()
         while (path.isNotEmpty()) {
             visitPosition(path.pop().position)
         }
+    }
+
+    private fun visitPosition(position: Pair<Int, Int>) {
+        squares[position] = getRectInPosition(position)
+        invalidate()
     }
 
     private fun getRectInPosition(position: Pair<Int, Int>): RectF {
@@ -95,15 +104,19 @@ class GraphView : View {
     }
 
     private fun markPoint(position: Pair<Int, Int>) {
-        if (this.startPoint.first == -1) {
-            this.startPoint = position
-        } else {
-            if (this.startPoint == position) {
-                startPoint = Pair(-1,-1)
-            } else {
-                this.endPoint = position
-            }
+        when {
+            this.startPoint.first == -1 -> this.startPoint = position
+            this.startPoint == position -> startPoint = Pair(-1,-1)
+            this.endPoint.first == -1 -> this.endPoint = position
+            this.endPoint == position -> endPoint = Pair(-1,-1)
+            else -> this.removeCell(position)
         }
+        invalidate()
+    }
+
+    private fun removeCell(position: Pair<Int, Int>) {
+        removedNodes[position] = getRectInPosition(position)
+        graph.removeNode(position)
         invalidate()
     }
 
@@ -132,6 +145,9 @@ class GraphView : View {
         paint.style = Paint.Style.STROKE
     }
 
+    /**
+     * Draw start and end points
+     */
     private fun drawPoints(canvas: Canvas) {
         paint.style = Paint.Style.FILL
         if (startPoint.first != -1) {
@@ -141,6 +157,14 @@ class GraphView : View {
         if (endPoint.first != -1) {
             paint.color = colorEndPoint
             canvas.drawRect(getRectInPosition(endPoint), paint)
+        }
+    }
+
+    private fun drawRemovedCells(canvas: Canvas) {
+        paint.style = Paint.Style.FILL
+        paint.color = colorRemovedCell
+        removedNodes.values.forEach {
+            canvas.drawRect(it, paint)
         }
     }
 

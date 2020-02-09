@@ -17,6 +17,10 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
         nodeToConnect.edges[this.name] = edge
     }
 
+    fun disconnect(nodeToDisconnect: Node) {
+        this.edges[nodeToDisconnect.name]?.connected = false
+    }
+
     fun getAdjacentNodes(): ArrayList<Node> {
         val nodes = ArrayList<Node>()
         for (edge in edges.values) {

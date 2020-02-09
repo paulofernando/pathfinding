@@ -43,7 +43,7 @@ class Djikstra (
         if (currentNode == null) return
         for (adjacentNode in currentNode.getAdjacentNodes()) {
             val edge = currentNode.edges[adjacentNode.name]
-            if (edge != null && !edge.visited) {
+            if (edge != null && !edge.visited && edge.connected) {
                 val shortestPathFromAdjacent = adjacentNode.shortestPath + edge.weight
                 if (shortestPathFromAdjacent == Double.POSITIVE_INFINITY) {
                     setShortestPath(adjacentNode, currentNode.shortestPath + edge.weight)
