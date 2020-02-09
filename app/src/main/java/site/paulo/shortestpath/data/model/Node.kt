@@ -1,6 +1,6 @@
 package site.paulo.shortestpath.data.model
 
-class Node(val name: String) : Comparable<Node> {
+class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
     var edges: HashMap<String, Edge> = HashMap()
     /**
      * Shortest distance from S to V

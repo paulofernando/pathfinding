@@ -3,4 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="colorPath">#222222</color>
+    <color name="colorStartPoint">#0000FF</color>
+    <color name="colorEndPoint">#FF0000</color>
+    <color name="colorTableHorizontalLines">#222222</color>
+    <color name="colorTableVerticalLines">#222222</color>
 </resources>

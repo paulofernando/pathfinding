@@ -13,8 +13,8 @@ class MatrixGraph(val rows: Int, val columns: Int) {
         return table[row][column]
     }
 
-    fun getNode(point: Point): Node? {
-        return table[point.row][point.col]
+    fun getNode(point: Pair<Int,Int>): Node? {
+        return table[point.first][point.second]
     }
 
     /**
@@ -22,7 +22,7 @@ class MatrixGraph(val rows: Int, val columns: Int) {
      */
     private fun populate() {
         table.forEachIndexed { i, row ->
-            row.forEachIndexed { j, _ -> table[i][j] = Node("${i},${j}") }
+            row.forEachIndexed { j, _ -> table[i][j] = Node("${i},${j}", Pair(i,j)) }
         }
     }
 

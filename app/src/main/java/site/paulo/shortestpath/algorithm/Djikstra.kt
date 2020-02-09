@@ -2,15 +2,14 @@ package site.paulo.shortestpath.algorithm
 
 import site.paulo.shortestpath.data.model.MatrixGraph
 import site.paulo.shortestpath.data.model.Node
-import site.paulo.shortestpath.data.model.Point
 import java.util.*
 import kotlin.collections.HashMap
 
-class Djikstra(
+class Djikstra (
     private val matrixGraph: MatrixGraph,
-    private val startPoint: Point,
-    private val endPoint: Point
-) {
+    private val startPoint: Pair<Int,Int>,
+    private val endPoint: Pair<Int,Int>
+) : Algorithm {
 
     private val endNode = matrixGraph.getNode(endPoint)
     /**
@@ -24,12 +23,14 @@ class Djikstra(
 
     init {
         with(startPoint) {
+            val row = first
+            val col = second
             if ((row >= 0 && row < matrixGraph.columns) && (col >= 0 && col < matrixGraph.rows))
                 initShortestPaths()
         }
     }
 
-    fun run() {
+    override fun run() {
         while (remaining.isNotEmpty()) {
             val lowest = remaining.poll()
             searchPath(lowest)
@@ -87,7 +88,7 @@ class Djikstra(
     /**
      * Retrieves the shortest from start to end
      */
-    fun getShortestPath(): Stack<Node> {
+    override fun getShortestPath(): Stack<Node> {
         var currentNode: Node? = endNode
         val stackOfNodes: Stack<Node> = Stack() //used to reverse order to print
 

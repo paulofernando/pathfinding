@@ -2,24 +2,23 @@ package site.paulo.shortestpath.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import site.paulo.shortestpath.R
 import site.paulo.shortestpath.algorithm.Djikstra
 import site.paulo.shortestpath.data.model.MatrixGraph
-import site.paulo.shortestpath.data.model.Point
-import site.paulo.shortestpath.ui.component.GraphView
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var graphView: GraphView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
 
-        graphView = GraphView(this)
-
-        /*val matrix = MatrixGraph(5, 5)
+    fun runAlgorithm(view: View) {
+        val matrix = MatrixGraph(10, 10)
         matrix.print()
-        Djikstra(matrix, Point(0,0), Point(3,3)).run()*/
+        if ((graphView.getStartPoint().first != -1) && (graphView.getEndPoint().first != -1))
+            graphView.runAlgorithm(Djikstra(matrix, graphView.getStartPoint(), graphView.getEndPoint()))
     }
 }
