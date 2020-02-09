@@ -113,6 +113,7 @@ class GraphView : View {
     }
 
     private fun markPoint(position: Pair<Int, Int>) {
+        if ((position.first > cols) || (position.second > rows)) return
         when {
             this.startPoint.first == -1 -> this.startPoint = position
             this.startPoint == position -> startPoint = Pair(-1,-1)
