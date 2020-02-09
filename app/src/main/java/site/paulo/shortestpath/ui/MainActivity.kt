@@ -17,9 +17,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun runAlgorithm(view: View) {
-        /*val matrix = MatrixGraph(10, 10)
-        matrix.removeNode(Pair(2,0))
-        matrix.print()*/
         graphView.runAlgorithm(GraphView.SupportedAlgorithms.DJIKSTRA)
+    }
+
+    fun reset(view: View) {
+        graphView.reset()
     }
 }

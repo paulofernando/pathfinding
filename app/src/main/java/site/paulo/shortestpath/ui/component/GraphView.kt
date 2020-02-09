@@ -24,9 +24,9 @@ class GraphView : View {
     var startPoint: Pair<Int,Int> = Pair(-1,-1)
     var endPoint: Pair<Int,Int> = Pair(-1,-1)
 
-    private val squares: HashMap<Pair<Int,Int>, RectF> = HashMap()
+    private val visitedPosition: HashMap<Pair<Int,Int>, RectF> = HashMap()
     private val removedNodes: HashMap<Pair<Int,Int>, RectF> = HashMap()
-    private var graph: MatrixGraph = MatrixGraph(10,10)
+    private var graph: MatrixGraph = MatrixGraph(rows,cols)
     private lateinit var algorithm: Algorithm
 
     private val paint = Paint()
@@ -92,8 +92,17 @@ class GraphView : View {
         }
     }
 
+    fun reset() {
+        graph = MatrixGraph(rows,cols)
+        startPoint = Pair(-1,-1)
+        endPoint = Pair(-1,-1)
+        visitedPosition.clear()
+        removedNodes.clear()
+        invalidate()
+    }
+
     private fun visitPosition(position: Pair<Int, Int>) {
-        squares[position] = getRectInPosition(position)
+        visitedPosition[position] = getRectInPosition(position)
         invalidate()
     }
 
@@ -139,7 +148,7 @@ class GraphView : View {
     private fun drawNodes(canvas: Canvas) {
         paint.color = colorPath
         paint.style = Paint.Style.FILL
-        for (node in squares.values) {
+        for (node in visitedPosition.values) {
             canvas.drawRect(node, paint)
         }
         paint.style = Paint.Style.STROKE

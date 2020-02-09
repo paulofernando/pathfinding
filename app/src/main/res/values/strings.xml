@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Shortest Path</string>
     <string name="button_run">Run</string>
+    <string name="button_reset">Reset</string>
 </resources>
