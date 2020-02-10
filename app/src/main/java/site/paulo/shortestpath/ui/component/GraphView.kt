@@ -140,6 +140,8 @@ class GraphView : View {
                     readyToRemoveNodes = false
                     this.readdNode(position)
                 } else {
+                    readyToReaddNodes = false
+                    readyToRemoveNodes = true
                     this.removeNode(position)
                 }
             }
