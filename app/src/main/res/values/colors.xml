@@ -2,8 +2,10 @@
 <resources>
     <color name="colorPrimary">#03A9F4</color>
     <color name="colorPrimaryDark">#1A77C2</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#FFC400</color>
+    <color name="colorDisabledAccent">#D6D6D6</color>
 
+    <color name="colorTextButton">#333333</color>
     <color name="colorPath">#FFC400</color>
     <color name="colorStartPoint">#03A9F4</color>
     <color name="colorEndPoint">#651FFF</color>

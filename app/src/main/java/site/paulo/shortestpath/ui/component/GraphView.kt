@@ -14,6 +14,7 @@ import site.paulo.shortestpath.data.model.MatrixGraph
 import site.paulo.shortestpath.data.model.Node
 import site.paulo.shortestpath.R
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
@@ -45,6 +46,8 @@ class GraphView : View {
     private val colorEndPoint: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
     private val colorRemovedNode: Int = ContextCompat.getColor(context, R.color.colorRemovedCell)
     private val colorRemovedNodeX: Int = ContextCompat.getColor(context, R.color.colorRemovedCellX)
+
+    private var listeners: ArrayList<GraphListener> = ArrayList()
 
     enum class SupportedAlgorithms {
         DJIKSTRA
@@ -117,10 +120,22 @@ class GraphView : View {
         if ((position.first >= cols) || (position.second >= rows)) return
         if (pathPositions[position] != null) return
         when {
-            this.startPoint.first == -1 -> this.startPoint = position
-            this.startPoint == position -> startPoint = Pair(-1,-1)
-            this.endPoint.first == -1 -> this.endPoint = position
-            this.endPoint == position -> endPoint = Pair(-1,-1)
+            this.startPoint == uninitialized -> {
+                this.startPoint = position
+                if (endPoint != uninitialized) listeners.forEach { it.onGraphReady() }
+            }
+            this.startPoint == position -> {
+                startPoint = uninitialized
+                listeners.forEach { it.onGraphNotReady() }
+            }
+            this.endPoint == uninitialized -> {
+                this.endPoint = position
+                if (startPoint != uninitialized) listeners.forEach { it.onGraphReady() }
+            }
+            this.endPoint == position -> {
+                endPoint = uninitialized
+                listeners.forEach { it.onGraphNotReady() }
+            }
             else -> {
                 if (removedNodes[position] != null) {
                     readyToReaddNodes = true
@@ -131,6 +146,10 @@ class GraphView : View {
                 }
             }
         }
+
+        if (startPoint != uninitialized || endPoint != uninitialized || pathPositions.isNotEmpty())
+            listeners.forEach { it.onGraphCleanable() }
+
         invalidate()
     }
 
@@ -142,6 +161,9 @@ class GraphView : View {
         removedNodes.clear()
         readyToRemoveNodes = false
         invalidate()
+
+        listeners.forEach{ it.onGraphNotReady() }
+        listeners.forEach{ it.onGraphNotCleanable() }
     }
 
     private fun addPositionToPath(position: Pair<Int, Int>) {
@@ -240,10 +262,14 @@ class GraphView : View {
     private fun getRowAndColAtPosition(x: Float, y: Float): Pair<Int, Int> {
         return Pair((x / squareSide).toInt(), (y / squareSide).toInt())
     }
+
     private fun configurePaint() {
         paint.isAntiAlias = true
         paint.strokeWidth = resources.displayMetrics.density
     }
 
+    fun registerListener(listener: GraphListener) {
+        listeners.add(listener)
+    }
 
 }

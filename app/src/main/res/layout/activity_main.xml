@@ -20,22 +20,33 @@
         android:layout_centerInParent="true"
         android:layout_alignBottom="@id/graphView">
 
-        <Button
+        <ImageView
+            android:id="@+id/clearImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="@dimen/default_button_padding_tb"
+            android:paddingBottom="@dimen/default_button_padding_tb"
+            android:paddingLeft="@dimen/default_button_padding_lr"
+            android:paddingRight="@dimen/default_button_padding_lr"
+            android:layout_margin="@dimen/button_space"
+            android:background="@drawable/button"
             android:onClick="reset"
-            android:text="@string/button_reset"
-            android:layout_margin="@dimen/button_space">
-        </Button>
+            app:srcCompat="@drawable/ic_trash_can">
+        </ImageView>
 
-        <Button
-            android:id="@+id/runButton"
+        <ImageView
+            android:id="@+id/runImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_run"
+            android:paddingTop="@dimen/default_button_padding_tb"
+            android:paddingBottom="@dimen/default_button_padding_tb"
+            android:paddingLeft="@dimen/default_button_padding_lr"
+            android:paddingRight="@dimen/default_button_padding_lr"
+            android:layout_margin="@dimen/button_space"
+            android:background="@drawable/button"
             android:onClick="runAlgorithm"
-            android:layout_margin="@dimen/button_space">
-        </Button>
+            app:srcCompat="@drawable/ic_path">
+        </ImageView>
 
     </LinearLayout>
 
