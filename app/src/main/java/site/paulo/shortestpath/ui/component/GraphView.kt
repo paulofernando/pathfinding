@@ -23,15 +23,15 @@ class GraphView : View {
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
 
-    private var rows: Int = 5
-    private var cols: Int = 5
+    private var rows: Int = 10
+    private var cols: Int = 10
     private var squareSide: Float = 0f
     private val uninitialized: Pair<Int,Int> = Pair(-1,-1)
     private var lastVisitedNode: Pair<Int,Int> = uninitialized
-    var startPoint: Pair<Int,Int> = uninitialized
-    var endPoint: Pair<Int,Int> = uninitialized
     private var readyToRemoveNodes: Boolean = false
     private var readyToReaddNodes: Boolean = false
+    var startPoint: Pair<Int,Int> = uninitialized
+    var endPoint: Pair<Int,Int> = uninitialized
 
     private val pathPositions: HashMap<Pair<Int,Int>, RectF> = HashMap()
     private val removedNodes: HashMap<Pair<Int,Int>, RectF> = HashMap()
@@ -77,11 +77,9 @@ class GraphView : View {
                 markPoint(getRectOnPosition(x,y))
             }
             MotionEvent.ACTION_MOVE -> {
-                if (readyToRemoveNodes) {
-                    if (lastVisitedNode != getRectOnPosition(x, y)) {
-                        lastVisitedNode = getRectOnPosition(x, y)
-                        removeNode(lastVisitedNode)
-                    }
+                if ((readyToRemoveNodes) && lastVisitedNode != getRectOnPosition(x, y)) {
+                    lastVisitedNode = getRectOnPosition(x, y)
+                    removeNode(lastVisitedNode)
                 } else if (readyToReaddNodes) {
                     readdNode(getRowAndColAtPosition(x,y))
                 }
@@ -104,6 +102,7 @@ class GraphView : View {
 
     fun runAlgorithm(alg: SupportedAlgorithms) {
         if (startPoint == uninitialized || endPoint == uninitialized) return
+        pathPositions.clear()
 
         when (alg) {
             SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, startPoint, endPoint)
@@ -118,7 +117,6 @@ class GraphView : View {
 
     private fun markPoint(position: Pair<Int, Int>) {
         if ((position.first >= cols) || (position.second >= rows)) return
-        if (pathPositions[position] != null) return
         when {
             this.startPoint == uninitialized -> {
                 this.startPoint = position

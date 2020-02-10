@@ -23,8 +23,7 @@ class Djikstra (
 
     init {
         with(startPoint) {
-            val row = first
-            val col = second
+            val row = first; val col = second
             if ((row >= 0 && row < matrixGraph.columns) && (col >= 0 && col < matrixGraph.rows))
                 initShortestPaths()
         }
@@ -36,6 +35,7 @@ class Djikstra (
             searchPath(lowest)
         }
         printPath(getShortestPath())
+        clearVisitedEdges() //cleaning edges to next execution
     }
 
     private fun searchPath(currentNode: Node?) {
@@ -69,9 +69,10 @@ class Djikstra (
         if (startNode != null) {
             setShortestPath(startNode, 0.0)
             for (edge in startNode.edges.values) {
-                setShortestPath(edge.getOpposite(startNode), edge.weight)
-                edge.getOpposite(startNode).previous = edge
-                edge.visited = true
+                if (edge.connected) {
+                    setShortestPath(edge.getOpposite(startNode), edge.weight)
+                    edge.getOpposite(startNode).previous = edge
+                }
             }
         }
     }
@@ -96,7 +97,16 @@ class Djikstra (
             currentNode = currentNode.previous?.getOpposite(currentNode)
         }
 
-        return stackOfNodes
+        if (stackOfNodes.peek().position == startPoint) return stackOfNodes
+        return Stack()
+    }
+
+    fun clearVisitedEdges() {
+        matrixGraph.table.forEachIndexed { index, row ->
+            row.forEach {
+                it?.edges?.values?.forEach{ it.visited = false}
+            }
+        }
     }
 
     /**
@@ -104,6 +114,11 @@ class Djikstra (
      */
     fun printPath(path: Stack<Node>) {
         println("Printing shortest path from ${matrixGraph.getNode(startPoint)?.name} to ${endNode?.name}:")
+        if (path.empty()) {
+            println("No path found from ${matrixGraph.getNode(startPoint)?.name} to ${endNode?.name}")
+            return
+        }
+
         println("Visiting: ${path.size} nodes...")
         print(path.pop().name)
         while(path.isNotEmpty()) {
