@@ -40,6 +40,7 @@ class GraphView : View {
     private val colorStartPoint: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
     private val colorEndPoint: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
     private val colorRemovedNode: Int = ContextCompat.getColor(context, R.color.colorRemovedCell)
+    private val colorRemovedNodeX: Int = ContextCompat.getColor(context, R.color.colorRemovedCellX)
 
     enum class SupportedAlgorithms {
         DJIKSTRA
@@ -111,18 +112,26 @@ class GraphView : View {
     }
 
     private fun visitPosition(position: Pair<Int, Int>) {
-        visitedPosition[position] = getRectInPosition(position)
+        visitedPosition[position] = getRectInsidePosition(position)
         invalidate()
     }
 
     private fun getRectInPosition(position: Pair<Int, Int>): RectF {
         val topX = squareSide * position.first
         val topY = squareSide * position.second
-        return RectF(topX, topY, topX + squareSide, topY + squareSide)
+        return RectF(topX, topY,topX + squareSide,topY + squareSide)
+    }
+
+    private fun getRectInsidePosition(position: Pair<Int, Int>): RectF {
+        val topX = squareSide * position.first
+        val topY = squareSide * position.second
+        val offset = paint.strokeWidth/2
+        return RectF(topX + offset, topY + offset,
+            topX + squareSide - offset, topY + squareSide - offset)
     }
 
     private fun markPoint(position: Pair<Int, Int>) {
-        if ((position.first > cols) || (position.second > rows)) return
+        if ((position.first >= cols) || (position.second >= rows)) return
         when {
             this.startPoint.first == -1 -> this.startPoint = position
             this.startPoint == position -> startPoint = Pair(-1,-1)
@@ -134,6 +143,7 @@ class GraphView : View {
     }
 
     private fun removeNode(position: Pair<Int, Int>) {
+        if ((position.first >= cols) || (position.second >= rows)) return
         removedNodes[position] = getRectInPosition(position)
         graph.removeNode(position)
         invalidate()
@@ -180,10 +190,15 @@ class GraphView : View {
     }
 
     private fun drawRemovedCellsNodes(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-        paint.color = colorRemovedNode
         removedNodes.values.forEach {
+            paint.style = Paint.Style.FILL
+            paint.color = colorRemovedNode
             canvas.drawRect(it, paint)
+
+            paint.style = Paint.Style.STROKE
+            paint.color = colorRemovedNodeX
+            canvas.drawLine(it.left, it.top, it.right, it.bottom, paint)
+            canvas.drawLine(it.left, it.bottom, it.right, it.top, paint)
         }
     }
 
