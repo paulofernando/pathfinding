@@ -35,7 +35,6 @@ class Djikstra (
             val lowest = remaining.poll()
             searchPath(lowest)
         }
-
         printPath(getShortestPath())
     }
 

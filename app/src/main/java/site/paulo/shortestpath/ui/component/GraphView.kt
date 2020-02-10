@@ -23,8 +23,8 @@ class GraphView : View {
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
 
-    private var rows: Int = 10
-    private var cols: Int = 10
+    private var rows: Int = 5
+    private var cols: Int = 5
     private var squareSide: Float = 0f
     private val uninitialized: Pair<Int,Int> = Pair(-1,-1)
     private var lastVisitedNode: Pair<Int,Int> = uninitialized

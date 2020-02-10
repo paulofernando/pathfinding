@@ -3,7 +3,7 @@ package site.paulo.shortestpath.data.model
 class MatrixGraph(val rows: Int, val columns: Int) {
 
     val table = Array(rows) { arrayOfNulls<Node>(columns) }
-    private val removedNodes = ArrayList<Node>()
+    private val removedNodes = HashMap<String,Node>()
 
     init {
         populate()
@@ -20,15 +20,20 @@ class MatrixGraph(val rows: Int, val columns: Int) {
 
     fun removeNode(nodePosition: Pair<Int,Int>) {
         val node = getNode(nodePosition) ?: return
-        node.edges.values.forEach {
-            node.disconnect(it.getOpposite(node))
-        }
-        removedNodes.add(node)
+        node.disconnectAll()
+        removedNodes[node.name] = node
     }
 
     fun readdNode(nodePosition: Pair<Int,Int>) {
-        addNode(nodePosition.first, nodePosition.second)
-        connectToNeighboorNodes(nodePosition.first, nodePosition.second)
+        val nodeName = "${nodePosition.first},${nodePosition.second}"
+        val node = removedNodes[nodeName] ?: return
+        removedNodes.remove(nodeName)
+        node.reconnectAll()
+    }
+
+    private fun addNode(row: Int, col: Int) {
+        if ((row >= rows) || (col >= columns)) return
+        table[row][col] = Node("${row},${col}", Pair(row,col))
     }
 
     /**
@@ -38,11 +43,6 @@ class MatrixGraph(val rows: Int, val columns: Int) {
         table.forEachIndexed { i, row ->
             row.forEachIndexed { j, _ -> addNode(i,j)}
         }
-    }
-
-    private fun addNode(row: Int, col: Int) {
-        if ((row >= rows) || (col >= columns)) return
-        table[row][col] = Node("${row},${col}", Pair(row,col))
     }
 
     /**
@@ -63,31 +63,6 @@ class MatrixGraph(val rows: Int, val columns: Int) {
                     }
                 }
             }
-        }
-    }
-
-    private fun connectToNeighboorNodes(row: Int, col: Int) {
-        if ((row >= rows) || (col >= columns)) return
-        val node = getNode(row, col) ?: return
-
-        if (col > 0) {
-            val leftNode = getNode(row, col - 1)
-            leftNode?.connect(node)
-        }
-
-        if (row > 0) {
-            val topNode = getNode(row - 1, col)
-            topNode?.connect(node)
-        }
-
-        if (col <= columns - 2) {
-            val rightNode = getNode(row, col + 1)
-            rightNode?.connect(node)
-        }
-
-        if (row <= rows - 2) {
-            val bottomNode = getNode(row + 1, col)
-            bottomNode?.connect(node)
         }
     }
 
