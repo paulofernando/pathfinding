@@ -1,4 +1,4 @@
-package site.paulo.shortestpath.ui.component
+package site.paulo.pathfinding.ui.component
 
 interface GraphListener {
     fun onGraphReady()

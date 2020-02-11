@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-    <site.paulo.shortestpath.ui.component.GraphView
+    <site.paulo.pathfinding.ui.component.GraphView
         android:id="@+id/graphView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

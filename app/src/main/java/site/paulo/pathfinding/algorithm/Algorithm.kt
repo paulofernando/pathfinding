@@ -1,6 +1,6 @@
-package site.paulo.shortestpath.algorithm
+package site.paulo.pathfinding.algorithm
 
-import site.paulo.shortestpath.data.model.Node
+import site.paulo.pathfinding.data.model.Node
 import java.util.*
 
 interface Algorithm {

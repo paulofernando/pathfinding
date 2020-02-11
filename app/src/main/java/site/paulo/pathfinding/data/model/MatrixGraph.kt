@@ -1,4 +1,4 @@
-package site.paulo.shortestpath.data.model
+package site.paulo.pathfinding.data.model
 
 class MatrixGraph(val rows: Int, val columns: Int) {
 

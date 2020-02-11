@@ -1,4 +1,4 @@
-package site.paulo.shortestpath.data.model
+package site.paulo.pathfinding.data.model
 
 class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
     var edges: HashMap<String, Edge> = HashMap()

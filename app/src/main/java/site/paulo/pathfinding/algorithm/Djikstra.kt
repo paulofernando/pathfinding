@@ -1,7 +1,7 @@
-package site.paulo.shortestpath.algorithm
+package site.paulo.pathfinding.algorithm
 
-import site.paulo.shortestpath.data.model.MatrixGraph
-import site.paulo.shortestpath.data.model.Node
+import site.paulo.pathfinding.data.model.MatrixGraph
+import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.HashMap
 

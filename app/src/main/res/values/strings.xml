@@ -5,6 +5,6 @@
     <string name="description_trash_can">Trash can</string>
     <string name="description_path">Path</string>
     <string name="min_matrix_rows">5</string>
-    <string name="max_matrix_rows">25</string>
+    <string name="max_matrix_rows">25 rows</string>
     <string name="matrix_rows_amount_to_increase">20</string>
 </resources>
