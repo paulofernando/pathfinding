@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Handler
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -16,7 +17,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import site.paulo.shortestpath.R
-
+import java.util.concurrent.atomic.AtomicBoolean
 
 class GraphView : View {
 
@@ -26,16 +27,18 @@ class GraphView : View {
     private var rows: Int = 10
     private var cols: Int = 10
     private var squareSide: Float = 0f
-    private val uninitialized: Pair<Int,Int> = Pair(-1,-1)
-    private var lastVisitedNode: Pair<Int,Int> = uninitialized
+    private val uninitialized: Pair<Int, Int> = Pair(-1, -1)
+    private var lastVisitedNode: Pair<Int, Int> = uninitialized
+    var startPoint: Pair<Int, Int> = uninitialized
+    var endPoint: Pair<Int, Int> = uninitialized
+
     private var readyToRemoveNodes: Boolean = false
     private var readyToReaddNodes: Boolean = false
-    var startPoint: Pair<Int,Int> = uninitialized
-    var endPoint: Pair<Int,Int> = uninitialized
+    private var animating: AtomicBoolean = AtomicBoolean(false)
 
-    private val pathPositions: HashMap<Pair<Int,Int>, RectF> = HashMap()
-    private val removedNodes: HashMap<Pair<Int,Int>, RectF> = HashMap()
-    private var graph: MatrixGraph = MatrixGraph(rows,cols)
+    private val pathPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
+    private val removedNodes: HashMap<Pair<Int, Int>, RectF> = HashMap()
+    private var graph: MatrixGraph = MatrixGraph(rows, cols)
     private lateinit var algorithm: Algorithm
 
     private val paint = Paint()
@@ -73,22 +76,18 @@ class GraphView : View {
         val x = event.x
         val y = event.y
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                markPoint(getRectOnPosition(x,y))
-            }
+            MotionEvent.ACTION_DOWN -> markPoint(getRectOnPosition(x, y))
             MotionEvent.ACTION_MOVE -> {
                 if ((readyToRemoveNodes) && lastVisitedNode != getRectOnPosition(x, y)) {
                     lastVisitedNode = getRectOnPosition(x, y)
                     removeNode(lastVisitedNode)
-                } else if (readyToReaddNodes) {
-                    readdNode(getRowAndColAtPosition(x,y))
-                }
+                } else if (readyToReaddNodes)
+                    readdNode(getRowAndColAtPosition(x, y))
             }
             MotionEvent.ACTION_UP -> {
                 readyToRemoveNodes = (startPoint != uninitialized && endPoint != uninitialized)
             }
             MotionEvent.ACTION_CANCEL -> {
-
             }
         }
         return true
@@ -96,7 +95,7 @@ class GraphView : View {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        squareSide = (width/cols).toFloat()
+        squareSide = (width / cols).toFloat()
         invalidate()
     }
 
@@ -108,6 +107,7 @@ class GraphView : View {
 
     fun runAlgorithm(alg: SupportedAlgorithms) {
         if (startPoint == uninitialized || endPoint == uninitialized) return
+        if (animating.get()) return
         pathPositions.clear()
 
         when (alg) {
@@ -116,9 +116,20 @@ class GraphView : View {
 
         algorithm.run()
         val path: Stack<Node> = algorithm.getShortestPath()
-        while (path.isNotEmpty()) {
-            addPositionToPath(path.pop().position)
-        }
+        scheduleDraw(path, 10)
+    }
+
+    fun reset() {
+        graph = MatrixGraph(rows, cols)
+        startPoint = uninitialized
+        endPoint = uninitialized
+        pathPositions.clear()
+        removedNodes.clear()
+        readyToRemoveNodes = false
+        invalidate()
+
+        listeners.forEach { it.onGraphNotReady() }
+        listeners.forEach { it.onGraphNotCleanable() }
     }
 
     private fun markPoint(position: Pair<Int, Int>) {
@@ -153,28 +164,16 @@ class GraphView : View {
             }
         }
 
-        if (startPoint != uninitialized || endPoint != uninitialized || pathPositions.isNotEmpty())
+        if (startPoint != uninitialized || endPoint != uninitialized || pathPositions.isNotEmpty()) {
             listeners.forEach { it.onGraphCleanable() }
+        }
 
         invalidate()
-    }
-
-    fun reset() {
-        graph = MatrixGraph(rows,cols)
-        startPoint = uninitialized
-        endPoint = uninitialized
-        pathPositions.clear()
-        removedNodes.clear()
-        readyToRemoveNodes = false
-        invalidate()
-
-        listeners.forEach{ it.onGraphNotReady() }
-        listeners.forEach{ it.onGraphNotCleanable() }
     }
 
     private fun addPositionToPath(position: Pair<Int, Int>) {
         pathPositions[position] = getRectInsideTablePositionCell(position)
-        invalidate()
+        postInvalidate()
     }
 
     private fun removeNode(position: Pair<Int, Int>) {
@@ -213,7 +212,6 @@ class GraphView : View {
         for (node in pathPositions.values) {
             canvas.drawRect(node, paint)
         }
-        paint.style = Paint.Style.STROKE
     }
 
     /**
@@ -232,37 +230,60 @@ class GraphView : View {
     }
 
     private fun drawRemovedCellsNodes(canvas: Canvas) {
+        paint.style = Paint.Style.FILL
+        paint.color = colorRemovedNode
         removedNodes.values.forEach {
-            paint.style = Paint.Style.FILL
-            paint.color = colorRemovedNode
             canvas.drawRect(it, paint)
+        }
 
-            paint.style = Paint.Style.STROKE
-            paint.color = colorRemovedNodeX
+        paint.style = Paint.Style.STROKE
+        paint.color = colorRemovedNodeX
+        removedNodes.values.forEach {
             canvas.drawLine(it.left, it.top, it.right, it.bottom, paint)
             canvas.drawLine(it.left, it.bottom, it.right, it.top, paint)
         }
     }
 
+    private fun scheduleDraw(stackToDraw: Stack<Node>, fps: Int) {
+        animating.set(true)
+        listeners.forEach { it.onGraphNotReady() }
+        listeners.forEach { it.onGraphNotCleanable() }
+        Handler().post(object : Runnable {
+            override fun run() {
+                addPositionToPath(stackToDraw.pop().position)
+
+                if (stackToDraw.empty()) {
+                    handler.removeCallbacks(this)
+                    animating.set(false)
+                    listeners.forEach { it.onGraphReady() }
+                    listeners.forEach { it.onGraphCleanable() }
+                } else handler.postDelayed(this, (1000 / fps).toLong())
+            }
+        })
+    }
+
     private fun getRectInsideTablePositionCell(position: Pair<Int, Int>): RectF {
         val topX = squareSide * position.first
         val topY = squareSide * position.second
-        val offset = paint.strokeWidth/2
-        return RectF(topX + offset, topY + offset,
-            topX + squareSide - offset, topY + squareSide - offset)
+        val offset = paint.strokeWidth / 2
+        return RectF(
+            topX + offset, topY + offset,
+            topX + squareSide - offset, topY + squareSide - offset
+        )
     }
 
     private fun getRectOnTableCell(position: Pair<Int, Int>): RectF {
         val topX = squareSide * position.first
         val topY = squareSide * position.second
-        return RectF(topX, topY,topX + squareSide,topY + squareSide)
+        return RectF(topX, topY, topX + squareSide, topY + squareSide)
     }
 
-    private var cachedPosition: Pair<Int,Int> = uninitialized
+    private var cachedPosition: Pair<Int, Int> = uninitialized
     private fun getRectOnPosition(x: Float, y: Float): Pair<Int, Int> {
         return if ((cachedPosition.first == (x / squareSide).toInt()) &&
-            (cachedPosition.second == (y / squareSide).toInt())) cachedPosition
-        else getRowAndColAtPosition(x,y)
+            (cachedPosition.second == (y / squareSide).toInt())
+        ) cachedPosition
+        else getRowAndColAtPosition(x, y)
     }
 
     private fun getRowAndColAtPosition(x: Float, y: Float): Pair<Int, Int> {
@@ -281,7 +302,7 @@ class GraphView : View {
     fun configureSides(amount: Int) {
         rows = amount
         cols = amount
-        squareSide = (width/cols).toFloat()
+        squareSide = (width / cols).toFloat()
         reset()
     }
 
