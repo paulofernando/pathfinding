@@ -6,4 +6,5 @@ import java.util.*
 interface Algorithm {
     fun run()
     fun getShortestPath(): Stack<Node>
+    fun getVisitedOrder(): LinkedList<Node>
 }

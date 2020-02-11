@@ -20,6 +20,10 @@ class Djikstra (
      * Priority queue based on shortest path with all nodes in the graph
      */
     private val remaining = PriorityQueue<Node>()
+    /**
+     * Node visited order
+     */
+    private val nodeVisitedOrder = LinkedList<Node>()
 
     init {
         with(startPoint) {
@@ -30,12 +34,12 @@ class Djikstra (
     }
 
     override fun run() {
-        val startNode = matrixGraph.getNode(startPoint) ?: return
-        startNode.previous = null //make sure the start node has no 'previous' from older processing
+        if (remaining.isEmpty()) return
 
-        while (remaining.isNotEmpty()) {
-            val lowest = remaining.poll()
+        var lowest = remaining.poll()
+        while (lowest != endNode) {
             searchPath(lowest)
+            lowest = remaining.poll()
         }
         printPath(getShortestPath())
         clearVisitedEdges() //cleaning edges to next execution
@@ -43,6 +47,7 @@ class Djikstra (
 
     private fun searchPath(currentNode: Node?) {
         if (currentNode == null) return
+        nodeVisitedOrder.add(currentNode)
         for (adjacentNode in currentNode.getAdjacentNodes()) {
             val edge = currentNode.edges[adjacentNode.name]
             if (edge != null && !edge.visited && edge.connected) {
@@ -67,6 +72,8 @@ class Djikstra (
         matrixGraph.table.forEach { row ->
             row.forEach { if (it != null) setShortestPath(it, Double.POSITIVE_INFINITY) }
         }
+
+        matrixGraph.resetNodes() //make sure that the nodes has no 'previous' from older processing
 
         val startNode = matrixGraph.getNode(startPoint)
         if (startNode != null) {
@@ -102,6 +109,10 @@ class Djikstra (
 
         if (stackOfNodes.peek().position == startPoint) return stackOfNodes
         return Stack()
+    }
+
+    override fun getVisitedOrder(): LinkedList<Node> {
+        return nodeVisitedOrder
     }
 
     fun clearVisitedEdges() {

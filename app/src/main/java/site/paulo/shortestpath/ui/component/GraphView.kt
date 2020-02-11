@@ -37,6 +37,7 @@ class GraphView : View {
     private var animating: AtomicBoolean = AtomicBoolean(false)
 
     private val pathPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
+    private val visitedNodesPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private val removedNodes: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private var graph: MatrixGraph = MatrixGraph(rows, cols)
     private lateinit var algorithm: Algorithm
@@ -45,6 +46,7 @@ class GraphView : View {
     private val colorHorizontalLine: Int = ContextCompat.getColor(context, R.color.colorTableHorizontalLines)
     private val colorVerticalLine: Int = ContextCompat.getColor(context, R.color.colorTableVerticalLines)
     private val colorPath: Int = ContextCompat.getColor(context, R.color.colorPath)
+    private val colorVisited: Int = ContextCompat.getColor(context, R.color.colorVisited)
     private val colorStartPoint: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
     private val colorEndPoint: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
     private val colorRemovedNode: Int = ContextCompat.getColor(context, R.color.colorRemovedCell)
@@ -64,6 +66,7 @@ class GraphView : View {
         super.onDraw(canvas)
         drawHorizontalLines(canvas, rows)
         drawVerticalLines(canvas, cols)
+        drawVisitedNodes(canvas)
         drawPathNodes(canvas)
         drawRemovedCellsNodes(canvas)
         drawPoints(canvas)
@@ -109,14 +112,14 @@ class GraphView : View {
         if (startPoint == uninitialized || endPoint == uninitialized) return
         if (animating.get()) return
         pathPositions.clear()
+        visitedNodesPositions.clear()
 
         when (alg) {
             SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, startPoint, endPoint)
         }
 
         algorithm.run()
-        val path: Stack<Node> = algorithm.getShortestPath()
-        scheduleDraw(path, 10)
+        scheduleDraw(algorithm.getVisitedOrder(), algorithm.getShortestPath(), 30)
     }
 
     fun reset() {
@@ -124,6 +127,7 @@ class GraphView : View {
         startPoint = uninitialized
         endPoint = uninitialized
         pathPositions.clear()
+        visitedNodesPositions.clear()
         removedNodes.clear()
         readyToRemoveNodes = false
         invalidate()
@@ -173,7 +177,12 @@ class GraphView : View {
 
     private fun addPositionToPath(position: Pair<Int, Int>) {
         pathPositions[position] = getRectInsideTablePositionCell(position)
-        postInvalidate()
+        invalidate()
+    }
+
+    private fun addPositionToVisitedNodes(position: Pair<Int, Int>) {
+        visitedNodesPositions[position] = getRectInsideTablePositionCell(position)
+        invalidate()
     }
 
     private fun removeNode(position: Pair<Int, Int>) {
@@ -214,6 +223,14 @@ class GraphView : View {
         }
     }
 
+    private fun drawVisitedNodes(canvas: Canvas) {
+        paint.color = colorVisited
+        paint.style = Paint.Style.FILL
+        for (node in visitedNodesPositions.values) {
+            canvas.drawRect(node, paint)
+        }
+    }
+
     /**
      * Draw start and end points
      */
@@ -244,20 +261,25 @@ class GraphView : View {
         }
     }
 
-    private fun scheduleDraw(stackToDraw: Stack<Node>, fps: Int) {
+    private fun scheduleDraw(visitedNodes: LinkedList<Node>, path: Stack<Node>, nodesPerSec: Int) {
         animating.set(true)
         listeners.forEach { it.onGraphNotReady() }
         listeners.forEach { it.onGraphNotCleanable() }
+
         Handler().post(object : Runnable {
             override fun run() {
-                addPositionToPath(stackToDraw.pop().position)
-
-                if (stackToDraw.empty()) {
+                if (visitedNodes.isNotEmpty()) {
+                    addPositionToVisitedNodes(visitedNodes.removeFirst().position)
+                    handler.postDelayed(this, (1000 / (nodesPerSec * 5)).toLong())
+                } else if (path.isNotEmpty()) {
+                    addPositionToPath(path.pop().position)
+                    handler.postDelayed(this, (1000 / nodesPerSec).toLong())
+                } else {
                     handler.removeCallbacks(this)
                     animating.set(false)
                     listeners.forEach { it.onGraphReady() }
                     listeners.forEach { it.onGraphCleanable() }
-                } else handler.postDelayed(this, (1000 / fps).toLong())
+                }
             }
         })
     }

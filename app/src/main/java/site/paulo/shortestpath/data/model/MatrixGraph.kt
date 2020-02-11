@@ -40,6 +40,16 @@ class MatrixGraph(val rows: Int, val columns: Int) {
         table[row][col] = Node("${row},${col}", Pair(row,col))
     }
 
+    fun resetNodes() {
+        table.forEachIndexed { i, row ->
+            row.forEachIndexed { j, node ->
+                if (node != null) {
+                   node.previous = null
+                }
+            }
+        }
+    }
+
     /**
      * Creates all the nodes of the matrix
      */
