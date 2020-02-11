@@ -12,10 +12,10 @@ import site.paulo.shortestpath.algorithm.Algorithm
 import site.paulo.shortestpath.algorithm.Djikstra
 import site.paulo.shortestpath.data.model.MatrixGraph
 import site.paulo.shortestpath.data.model.Node
-import site.paulo.shortestpath.R
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import site.paulo.shortestpath.R
 
 
 class GraphView : View {
@@ -98,6 +98,12 @@ class GraphView : View {
         super.onWindowFocusChanged(hasFocus)
         squareSide = (width/cols).toFloat()
         invalidate()
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val size = if (measuredWidth > measuredHeight) measuredHeight else measuredWidth
+        setMeasuredDimension(size, size)
     }
 
     fun runAlgorithm(alg: SupportedAlgorithms) {

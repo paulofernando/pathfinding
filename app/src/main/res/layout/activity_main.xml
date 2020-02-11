@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_margin"
-        android:layout_above="@id/buttonsContainer"
+        android:layout_below="@id/graphView"
         android:orientation="horizontal">
 
         <TextView
@@ -83,7 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="@string/matrix_rows_amount_to_increase"/>
+            android:text="@string/max_matrix_rows"/>
 
     </RelativeLayout>
 
