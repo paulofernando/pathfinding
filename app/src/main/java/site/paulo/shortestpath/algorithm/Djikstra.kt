@@ -37,7 +37,7 @@ class Djikstra (
         if (remaining.isEmpty()) return
 
         var lowest = remaining.poll()
-        while (lowest != endNode) {
+        while ((lowest != endNode) && (lowest.shortestPath != Double.POSITIVE_INFINITY)) {
             searchPath(lowest)
             lowest = remaining.poll()
         }

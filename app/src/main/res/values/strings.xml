@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Shortest Path</string>
+    <string name="app_name">Pathfinding</string>
     <string name="button_run">Run</string>
     <string name="button_reset">Reset</string>
     <string name="description_trash_can">Trash can</string>
