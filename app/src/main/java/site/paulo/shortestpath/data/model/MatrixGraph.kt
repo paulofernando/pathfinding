@@ -28,7 +28,11 @@ class MatrixGraph(val rows: Int, val columns: Int) {
         val nodeName = "${nodePosition.first},${nodePosition.second}"
         val node = removedNodes[nodeName] ?: return
         removedNodes.remove(nodeName)
-        node.reconnectAll()
+        node.edges.values.forEach {
+            if (!removedNodes.containsKey(it.getOpposite(node).name)) {
+                node.reconnect(it.getOpposite(node))
+            }
+        }
     }
 
     private fun addNode(row: Int, col: Int) {
