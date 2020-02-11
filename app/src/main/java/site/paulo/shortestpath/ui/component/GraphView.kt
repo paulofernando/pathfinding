@@ -272,4 +272,11 @@ class GraphView : View {
         listeners.add(listener)
     }
 
+    fun configureSides(amount: Int) {
+        rows = amount
+        cols = amount
+        squareSide = (width/cols).toFloat()
+        reset()
+    }
+
 }

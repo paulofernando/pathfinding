@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="button_space">10dp</dimen>
+    <dimen name="default_margin">10dp</dimen>
+    <dimen name="button_space">@dimen/default_margin</dimen>
     <dimen name="default_button_padding_tb">10dp</dimen>
     <dimen name="default_button_padding_lr">20dp</dimen>
 </resources>

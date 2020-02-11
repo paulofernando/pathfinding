@@ -2,4 +2,8 @@
     <string name="app_name">Shortest Path</string>
     <string name="button_run">Run</string>
     <string name="button_reset">Reset</string>
+    <string name="description_trash_can">Trash can</string>
+    <string name="description_path">Path</string>
+    <string name="min_matrix_rows">5</string>
+    <string name="matrix_rows_amount_to_increase">20</string>
 </resources>
