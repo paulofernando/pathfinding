@@ -30,6 +30,9 @@ class Djikstra (
     }
 
     override fun run() {
+        val startNode = matrixGraph.getNode(startPoint) ?: return
+        startNode.previous = null //make sure the start node has no 'previous' from older processing
+
         while (remaining.isNotEmpty()) {
             val lowest = remaining.poll()
             searchPath(lowest)
@@ -97,8 +100,7 @@ class Djikstra (
             currentNode = currentNode.previous?.getOpposite(currentNode)
         }
 
-        if (stackOfNodes.peek().position == startPoint) return stackOfNodes
-        return Stack()
+        return stackOfNodes
     }
 
     fun clearVisitedEdges() {
