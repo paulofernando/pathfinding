@@ -100,7 +100,8 @@ class Djikstra (
             currentNode = currentNode.previous?.getOpposite(currentNode)
         }
 
-        return stackOfNodes
+        if (stackOfNodes.peek().position == startPoint) return stackOfNodes
+        return Stack()
     }
 
     fun clearVisitedEdges() {
