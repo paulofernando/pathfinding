@@ -12,6 +12,7 @@ class HRadioGroup(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     private var currentOption: SupportedAlgorithms = DJIKSTRA
     private var currentRadio: Button
+    private var listener: HRadioListener? = null
 
     init {
         inflate(context, R.layout.h_radio_group, this)
@@ -27,11 +28,12 @@ class HRadioGroup(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         currentRadio.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
         currentRadio.setBackgroundResource(R.drawable.radio)
 
+        currentOption = option
         currentRadio = getRadio(option)
         currentRadio.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check_mark, 0)
         currentRadio.setBackgroundResource(R.drawable.radio_checked)
 
-        currentOption = option
+        listener?.onChangeOption(option)
     }
 
     private fun getRadio(option: SupportedAlgorithms): Button {
@@ -41,6 +43,15 @@ class HRadioGroup(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             BREADTH_FIRST -> breadthFirstRadio
             DEPTH_FIRST -> depthFirstRadio
         }
+    }
+
+    fun registerListener(hRadioListener: HRadioListener) {
+        listener = hRadioListener
+    }
+
+
+    interface HRadioListener {
+        fun onChangeOption(newOption: SupportedAlgorithms)
     }
 
 }

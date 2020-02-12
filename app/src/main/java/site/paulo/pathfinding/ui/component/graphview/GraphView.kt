@@ -112,6 +112,10 @@ class GraphView : View {
 
         when (alg) {
             SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, startPoint, endPoint)
+            else -> {
+                println("Unsupported algorithm")
+                return
+            }
         }
 
         algorithm.run()

@@ -7,18 +7,21 @@ import android.widget.SeekBar
 import site.paulo.pathfinding.R
 import kotlinx.android.synthetic.main.activity_main.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
+import site.paulo.pathfinding.ui.component.graphview.HRadioGroup
 import site.paulo.pathfinding.ui.component.graphview.SupportedAlgorithms
 
 class MainActivity : AppCompatActivity(),
-    GraphListener {
+    GraphListener, HRadioGroup.HRadioListener {
 
     private val minMatrixGraphRows: Int = 5
     private val defaultMatrixRows = 10
+    private var selectedAlgorithm = SupportedAlgorithms.DJIKSTRA
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        horizontalRadioGroup.registerListener(this)
         graphView.registerListener(this)
         runImageView.isEnabled = false
         clearImageView.isEnabled = false
@@ -28,7 +31,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun runAlgorithm(view: View) {
-        graphView.runAlgorithm(SupportedAlgorithms.DJIKSTRA)
+        graphView.runAlgorithm(selectedAlgorithm)
     }
 
     fun reset(view: View) {
@@ -61,5 +64,9 @@ class MainActivity : AppCompatActivity(),
 
     override fun onGraphNotCleanable() {
         clearImageView.isEnabled = false
+    }
+
+    override fun onChangeOption(newOption: SupportedAlgorithms) {
+        selectedAlgorithm = newOption
     }
 }
