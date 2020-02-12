@@ -1,4 +1,4 @@
-package site.paulo.pathfinding.ui.component
+package site.paulo.pathfinding.ui.component.graphview
 
 import android.content.Context
 import android.graphics.Canvas
@@ -53,10 +53,6 @@ class GraphView : View {
     private val colorRemovedNodeX: Int = ContextCompat.getColor(context, R.color.colorRemovedCellX)
 
     private var listeners: ArrayList<GraphListener> = ArrayList()
-
-    enum class SupportedAlgorithms {
-        DJIKSTRA
-    }
 
     init {
         configurePaint()

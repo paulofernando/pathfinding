@@ -6,10 +6,11 @@ import android.view.View
 import android.widget.SeekBar
 import site.paulo.pathfinding.R
 import kotlinx.android.synthetic.main.activity_main.*
-import site.paulo.pathfinding.ui.component.GraphListener
-import site.paulo.pathfinding.ui.component.GraphView
+import site.paulo.pathfinding.ui.component.graphview.GraphListener
+import site.paulo.pathfinding.ui.component.graphview.SupportedAlgorithms
 
-class MainActivity : AppCompatActivity(), GraphListener {
+class MainActivity : AppCompatActivity(),
+    GraphListener {
 
     private val minMatrixGraphRows: Int = 5
     private val defaultMatrixRows = 10
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity(), GraphListener {
     }
 
     fun runAlgorithm(view: View) {
-        graphView.runAlgorithm(GraphView.SupportedAlgorithms.DJIKSTRA)
+        graphView.runAlgorithm(SupportedAlgorithms.DJIKSTRA)
     }
 
     fun reset(view: View) {

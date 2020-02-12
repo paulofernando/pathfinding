@@ -1,4 +1,4 @@
-package site.paulo.pathfinding.ui.component
+package site.paulo.pathfinding.ui.component.graphview
 
 interface GraphListener {
     fun onGraphReady()

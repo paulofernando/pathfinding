@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/default_margin"
+            android:background="@drawable/group_container_weighted"
+            android:gravity="center"
+            android:padding="@dimen/default_padding">
+
+            <LinearLayout
+                android:id="@+id/weightedContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/djikstraRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/button_space"
+                    android:background="@drawable/radio_checked"
+                    android:drawableRight="@drawable/ic_check_mark"
+                    android:padding="@dimen/button_space"
+                    android:text="@string/alg_djikstra" />
+
+                <Button
+                    android:id="@+id/aStarRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/button_space"
+                    android:background="@drawable/radio"
+                    android:padding="@dimen/button_space"
+                    android:text="@string/alg_a_star" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/weightedContainer"
+                android:hint="@string/group_description"
+                android:text="@string/weighted_shortest"
+                android:textColor="@color/colorTextGroup"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/default_margin"
+            android:background="@drawable/group_container_unweighted"
+            android:gravity="center"
+            android:padding="@dimen/default_padding">
+
+            <LinearLayout
+                android:id="@+id/unweightedContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/breadthFirstRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/button_space"
+                    android:background="@drawable/radio"
+                    android:padding="@dimen/button_space"
+                    android:text="@string/alg_breadth_first" />
+
+                <Button
+                    android:id="@+id/depthFirstRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/button_space"
+                    android:background="@drawable/radio"
+                    android:padding="@dimen/button_space"
+                    android:text="@string/alg_depth_first" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/unweightedContainer"
+                android:hint="@string/group_description"
+                android:text="@string/unweighted"
+                android:textColor="@color/colorTextGroup"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</merge>
