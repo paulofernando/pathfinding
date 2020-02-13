@@ -96,5 +96,4 @@ class MatrixGraph(val rows: Int, val columns: Int) {
             println()
         }
     }
-
 }
