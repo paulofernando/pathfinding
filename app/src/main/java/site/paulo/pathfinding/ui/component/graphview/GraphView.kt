@@ -1,4 +1,4 @@
-package site.paulo.shortestpath.ui.component
+package site.paulo.pathfinding.ui.component.graphview
 
 import android.content.Context
 import android.graphics.Canvas
@@ -9,14 +9,15 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
-import site.paulo.shortestpath.algorithm.Algorithm
-import site.paulo.shortestpath.algorithm.Djikstra
-import site.paulo.shortestpath.data.model.MatrixGraph
-import site.paulo.shortestpath.data.model.Node
+import site.paulo.pathfinding.algorithm.PathFindingAlgorithm
+import site.paulo.pathfinding.algorithm.Djikstra
+import site.paulo.pathfinding.data.model.MatrixGraph
+import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import site.paulo.shortestpath.R
+import site.paulo.pathfinding.R
+import site.paulo.pathfinding.algorithm.AStar
 import java.util.concurrent.atomic.AtomicBoolean
 
 class GraphView : View {
@@ -40,7 +41,7 @@ class GraphView : View {
     private val visitedNodesPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private val removedNodes: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private var graph: MatrixGraph = MatrixGraph(rows, cols)
-    private lateinit var algorithm: Algorithm
+    private lateinit var algorithm: PathFindingAlgorithm
 
     private val paint = Paint()
     private val colorHorizontalLine: Int = ContextCompat.getColor(context, R.color.colorTableHorizontalLines)
@@ -53,10 +54,6 @@ class GraphView : View {
     private val colorRemovedNodeX: Int = ContextCompat.getColor(context, R.color.colorRemovedCellX)
 
     private var listeners: ArrayList<GraphListener> = ArrayList()
-
-    enum class SupportedAlgorithms {
-        DJIKSTRA
-    }
 
     init {
         configurePaint()
@@ -116,10 +113,15 @@ class GraphView : View {
 
         when (alg) {
             SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, startPoint, endPoint)
+            SupportedAlgorithms.ASTAR -> algorithm = AStar(graph, startPoint, endPoint)
+            else -> {
+                println("Unsupported algorithm")
+                return
+            }
         }
 
         algorithm.run()
-        scheduleDraw(algorithm.getVisitedOrder(), algorithm.getShortestPath(), 30)
+        scheduleDraw(algorithm.getVisitedOrder(), algorithm.getPath(), 30)
     }
 
     fun reset() {

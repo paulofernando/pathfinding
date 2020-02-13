@@ -1,15 +1,15 @@
-package site.paulo.shortestpath.algorithm
+package site.paulo.pathfinding.algorithm
 
-import site.paulo.shortestpath.data.model.MatrixGraph
-import site.paulo.shortestpath.data.model.Node
+import site.paulo.pathfinding.data.model.MatrixGraph
+import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.HashMap
 
-class Djikstra (
-    private val matrixGraph: MatrixGraph,
-    private val startPoint: Pair<Int,Int>,
-    private val endPoint: Pair<Int,Int>
-) : Algorithm {
+open class Djikstra (
+    var matrixGraph: MatrixGraph,
+    var startPoint: Pair<Int,Int>,
+    var endPoint: Pair<Int,Int>
+) : PathFindingAlgorithm {
 
     private val endNode = matrixGraph.getNode(endPoint)
     /**
@@ -19,7 +19,7 @@ class Djikstra (
     /**
      * Priority queue based on shortest path with all nodes in the graph
      */
-    private val remaining = PriorityQueue<Node>()
+    protected val remaining = PriorityQueue<Node>()
     /**
      * Node visited order
      */
@@ -37,11 +37,11 @@ class Djikstra (
         if (remaining.isEmpty()) return
 
         var lowest = remaining.poll()
-        while (lowest != endNode) {
+        while ((lowest != endNode) && (lowest.shortestPath != Double.POSITIVE_INFINITY)) {
             searchPath(lowest)
             lowest = remaining.poll()
         }
-        printPath(getShortestPath())
+        printPath(getPath())
         clearVisitedEdges() //cleaning edges to next execution
     }
 
@@ -68,7 +68,7 @@ class Djikstra (
     /**
      * Initializes shortest paths with infinity
      */
-    private fun initShortestPaths() {
+    open fun initShortestPaths() {
         matrixGraph.table.forEach { row ->
             row.forEach { if (it != null) setShortestPath(it, Double.POSITIVE_INFINITY) }
         }
@@ -92,13 +92,14 @@ class Djikstra (
         shortestPath[node.name] = weight
 
         //updating priority queue
-        remaining.remove(node); remaining.add(node)
+        remaining.remove(node)
+        remaining.add(node)
     }
 
     /**
      * Retrieves the shortest from start to end
      */
-    override fun getShortestPath(): Stack<Node> {
+    override fun getPath(): Stack<Node> {
         var currentNode: Node? = endNode
         val stackOfNodes: Stack<Node> = Stack() //used to reverse order to print
 

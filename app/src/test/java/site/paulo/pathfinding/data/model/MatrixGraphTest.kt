@@ -1,4 +1,4 @@
-package site.paulo.shortestpath.data.model
+package site.paulo.pathfinding.data.model
 
 import io.mockk.clearAllMocks
 import org.junit.jupiter.api.BeforeEach

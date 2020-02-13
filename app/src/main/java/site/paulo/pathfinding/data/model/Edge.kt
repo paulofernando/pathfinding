@@ -1,4 +1,4 @@
-package site.paulo.shortestpath.data.model
+package site.paulo.pathfinding.data.model
 
 class Edge(val nodeA: Node, val nodeB: Node, val weight: Double) {
 

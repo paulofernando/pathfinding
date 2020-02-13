@@ -1,10 +1,17 @@
 <resources>
-    <string name="app_name">Shortest Path</string>
+    <string name="app_name">Pathfinding</string>
     <string name="button_run">Run</string>
     <string name="button_reset">Reset</string>
     <string name="description_trash_can">Trash can</string>
     <string name="description_path">Path</string>
     <string name="min_matrix_rows">5</string>
-    <string name="max_matrix_rows">25</string>
+    <string name="max_matrix_rows">25 rows</string>
     <string name="matrix_rows_amount_to_increase">20</string>
+    <string name="group_description">Group description</string>
+    <string name="alg_djikstra">Djikstra</string>
+    <string name="alg_a_star">A*</string>
+    <string name="alg_breadth_first">Breadth-first</string>
+    <string name="alg_depth_first">Depth-first</string>
+    <string name="weighted_shortest">Weighted - Shortest</string>
+    <string name="unweighted">Unweighted</string>
 </resources>

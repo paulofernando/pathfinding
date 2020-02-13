@@ -1,24 +1,27 @@
-package site.paulo.shortestpath.ui
+package site.paulo.pathfinding.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.SeekBar
-import site.paulo.shortestpath.R
+import site.paulo.pathfinding.R
 import kotlinx.android.synthetic.main.activity_main.*
-import site.paulo.shortestpath.ui.component.GraphListener
-import site.paulo.shortestpath.ui.component.GraphView
+import site.paulo.pathfinding.ui.component.graphview.GraphListener
+import site.paulo.pathfinding.ui.component.graphview.HRadioGroup
+import site.paulo.pathfinding.ui.component.graphview.SupportedAlgorithms
 
-class MainActivity : AppCompatActivity(), GraphListener {
+class MainActivity : AppCompatActivity(),
+    GraphListener, HRadioGroup.HRadioListener {
 
-    private var minMatrixGraphRows: Int = 0
+    private val minMatrixGraphRows: Int = 5
     private val defaultMatrixRows = 10
+    private var selectedAlgorithm = SupportedAlgorithms.DJIKSTRA
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        minMatrixGraphRows = getString(R.string.min_matrix_rows).toInt()
+        horizontalRadioGroup.registerListener(this)
         graphView.registerListener(this)
         runImageView.isEnabled = false
         clearImageView.isEnabled = false
@@ -28,7 +31,7 @@ class MainActivity : AppCompatActivity(), GraphListener {
     }
 
     fun runAlgorithm(view: View) {
-        graphView.runAlgorithm(GraphView.SupportedAlgorithms.DJIKSTRA)
+        graphView.runAlgorithm(selectedAlgorithm)
     }
 
     fun reset(view: View) {
@@ -61,5 +64,9 @@ class MainActivity : AppCompatActivity(), GraphListener {
 
     override fun onGraphNotCleanable() {
         clearImageView.isEnabled = false
+    }
+
+    override fun onChangeOption(newOption: SupportedAlgorithms) {
+        selectedAlgorithm = newOption
     }
 }
