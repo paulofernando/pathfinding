@@ -111,9 +111,11 @@ class GraphView : View {
         pathPositions.clear()
         visitedNodesPositions.clear()
 
+        val nodeA = graph.getNode(startPoint) ?: return
+        val nodeB = graph.getNode(endPoint) ?: return
         when (alg) {
-            SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, startPoint, endPoint)
-            SupportedAlgorithms.ASTAR -> algorithm = AStar(graph, startPoint, endPoint)
+            SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, nodeA, nodeB)
+            SupportedAlgorithms.ASTAR -> algorithm = AStar(graph, nodeA, nodeB)
             else -> {
                 println("Unsupported algorithm")
                 return

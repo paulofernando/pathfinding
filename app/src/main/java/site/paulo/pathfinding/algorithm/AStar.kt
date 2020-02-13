@@ -1,20 +1,19 @@
 package site.paulo.pathfinding.algorithm
 
 import site.paulo.pathfinding.data.model.MatrixGraph
+import site.paulo.pathfinding.data.model.Node
 import kotlin.math.abs
 
-class AStar(matrixGraph: MatrixGraph, startPoint: Pair<Int, Int>, endPoint: Pair<Int, Int>) :
-    Djikstra(matrixGraph, startPoint, endPoint) {
-
-    init {
-        println(matrixGraph)
-    }
+class AStar(matrixGraph: MatrixGraph, startNode: Node, endNode: Node) :
+    Djikstra(matrixGraph, startNode, endNode) {
 
     fun updateHeuristicDistance() {
+        val endNodePositionInMatrix = getEndNodePositionInMatrix()
+        if (endNodePositionInMatrix == Pair(-1,-1)) return
         matrixGraph.table.forEachIndexed { i, row ->
             row.forEachIndexed { j, node ->
                 if (node != null) {
-                    node.heuristicDistance = getManhattanDistance(Pair(i,j), endPoint)
+                    node.heuristicDistance = getManhattanDistance(Pair(i,j), endNodePositionInMatrix)
                     remaining.add(node)
                 }
             }
@@ -29,6 +28,15 @@ class AStar(matrixGraph: MatrixGraph, startPoint: Pair<Int, Int>, endPoint: Pair
         super.initShortestPaths()
         remaining.clear()
         updateHeuristicDistance()
+    }
+
+    private fun getEndNodePositionInMatrix(): Pair<Int,Int> {
+        matrixGraph.table.forEachIndexed { i, row ->
+            row.forEachIndexed { j, node ->
+                if (node == endNode) return Pair(i,j)
+            }
+        }
+        return Pair(-1,-1)
     }
 
 }

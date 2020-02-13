@@ -7,11 +7,10 @@ import kotlin.collections.HashMap
 
 open class Djikstra (
     var matrixGraph: MatrixGraph,
-    var startPoint: Pair<Int,Int>,
-    var endPoint: Pair<Int,Int>
+    var startNode: Node,
+    var endNode: Node
 ) : PathFindingAlgorithm {
 
-    private val endNode = matrixGraph.getNode(endPoint)
     /**
      * Shortest distance from S to V
      */
@@ -26,11 +25,7 @@ open class Djikstra (
     private val nodeVisitedOrder = LinkedList<Node>()
 
     init {
-        with(startPoint) {
-            val row = first; val col = second
-            if ((row >= 0 && row < matrixGraph.columns) && (col >= 0 && col < matrixGraph.rows))
-                initShortestPaths()
-        }
+        initShortestPaths()
     }
 
     override fun run() {
@@ -74,15 +69,11 @@ open class Djikstra (
         }
 
         matrixGraph.resetNodes() //make sure that the nodes has no 'previous' from older processing
-
-        val startNode = matrixGraph.getNode(startPoint)
-        if (startNode != null) {
-            setShortestPath(startNode, 0.0)
-            for (edge in startNode.edges.values) {
-                if (edge.connected) {
-                    setShortestPath(edge.getOpposite(startNode), edge.weight)
-                    edge.getOpposite(startNode).previous = edge
-                }
+        setShortestPath(startNode, 0.0)
+        for (edge in startNode.edges.values) {
+            if (edge.connected) {
+                setShortestPath(edge.getOpposite(startNode), edge.weight)
+                edge.getOpposite(startNode).previous = edge
             }
         }
     }
@@ -108,7 +99,7 @@ open class Djikstra (
             currentNode = currentNode.previous?.getOpposite(currentNode)
         }
 
-        if (stackOfNodes.peek().position == startPoint) return stackOfNodes
+        if (stackOfNodes.peek() == startNode) return stackOfNodes
         return Stack()
     }
 
@@ -117,7 +108,7 @@ open class Djikstra (
     }
 
     fun clearVisitedEdges() {
-        matrixGraph.table.forEachIndexed { index, row ->
+        matrixGraph.table.forEach { row ->
             row.forEach {
                 it?.edges?.values?.forEach{ it.visited = false}
             }
@@ -128,9 +119,9 @@ open class Djikstra (
      * Prints shortest path in System.out
      */
     fun printPath(path: Stack<Node>) {
-        println("Printing shortest path from ${matrixGraph.getNode(startPoint)?.name} to ${endNode?.name}:")
+        println("Printing shortest path from ${startNode.name} to ${endNode?.name}:")
         if (path.empty()) {
-            println("No path found from ${matrixGraph.getNode(startPoint)?.name} to ${endNode?.name}")
+            println("No path found from ${startNode.name} to ${endNode?.name}")
             return
         }
 
