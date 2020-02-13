@@ -10,7 +10,7 @@ class AStar(matrixGraph: MatrixGraph, startNode: Node, endNode: Node) :
     fun updateHeuristicDistance() {
         val endNodePositionInMatrix = getEndNodePositionInMatrix()
         if (endNodePositionInMatrix == Pair(-1,-1)) return
-        matrixGraph.table.forEachIndexed { i, row ->
+        (graph as MatrixGraph).table.forEachIndexed { i, row ->
             row.forEachIndexed { j, node ->
                 if (node != null) {
                     node.heuristicDistance = getManhattanDistance(Pair(i,j), endNodePositionInMatrix)
@@ -24,14 +24,14 @@ class AStar(matrixGraph: MatrixGraph, startNode: Node, endNode: Node) :
         return (abs(pointA.first - pointB.first) + abs(pointA.second - pointB.second))
     }
 
-    override fun initShortestPaths() {
-        super.initShortestPaths()
+    override fun prepare() {
+        super.prepare()
         remaining.clear()
         updateHeuristicDistance()
     }
 
     private fun getEndNodePositionInMatrix(): Pair<Int,Int> {
-        matrixGraph.table.forEachIndexed { i, row ->
+        (graph as MatrixGraph).table.forEachIndexed { i, row ->
             row.forEachIndexed { j, node ->
                 if (node == endNode) return Pair(i,j)
             }

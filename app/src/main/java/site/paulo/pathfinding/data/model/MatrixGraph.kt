@@ -1,6 +1,9 @@
 package site.paulo.pathfinding.data.model
 
-class MatrixGraph(val rows: Int, val columns: Int) {
+import java.util.*
+import kotlin.collections.HashMap
+
+class MatrixGraph(val rows: Int, val columns: Int) : Graph {
 
     val table = Array(rows) { arrayOfNulls<Node>(columns) }
     private val removedNodes = HashMap<String,Node>()
@@ -8,6 +11,16 @@ class MatrixGraph(val rows: Int, val columns: Int) {
     init {
         populate()
         connectNodes()
+    }
+
+    override fun getNodes() : LinkedList<Node> {
+        val nodes = LinkedList<Node>()
+        table.forEach { row ->
+            row.forEach { node ->
+                node?.let { nodes.add(it) }
+            }
+        }
+        return nodes
     }
 
     fun getNode(row: Int, column: Int): Node? {
@@ -40,16 +53,6 @@ class MatrixGraph(val rows: Int, val columns: Int) {
         table[row][col] = Node("${row},${col}", Pair(row,col))
     }
 
-    fun resetNodes() {
-        table.forEachIndexed { i, row ->
-            row.forEachIndexed { j, node ->
-                if (node != null) {
-                   node.previous = null
-                }
-            }
-        }
-    }
-
     /**
      * Creates all the nodes of the matrix
      */
@@ -67,33 +70,15 @@ class MatrixGraph(val rows: Int, val columns: Int) {
             row.forEachIndexed { j, node ->
                 if(node != null) {
                     if (i <= columns - 2) {
-                        val rightNode = getNode(i + 1, j)
-                        rightNode?.connect(node)
+                        getNode(i + 1, j)?.connect(node) //connect to right node
                     }
 
                     if (j <= rows - 2) {
-                        val bottomNode = getNode(i, j + 1)
-                        bottomNode?.connect(node)
+                        getNode(i, j + 1)?.connect(node)  //connect to bottom node
                     }
                 }
             }
         }
     }
 
-    /**
-     * Prints the matrix in System.out
-     */
-    fun print() {
-        table.forEach {
-            it.forEachIndexed { j, node ->
-                if (node != null) {
-                    print(" ${node.name} ")
-                    if(j <= columns - 2) {
-                        print("-")
-                    }
-                } else print("   ")
-            }
-            println()
-        }
-    }
 }

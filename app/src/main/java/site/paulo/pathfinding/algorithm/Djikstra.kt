@@ -1,12 +1,12 @@
 package site.paulo.pathfinding.algorithm
 
-import site.paulo.pathfinding.data.model.MatrixGraph
+import site.paulo.pathfinding.data.model.Graph
 import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.HashMap
 
 open class Djikstra (
-    var matrixGraph: MatrixGraph,
+    var graph: Graph,
     var startNode: Node,
     var endNode: Node
 ) : PathFindingAlgorithm {
@@ -24,20 +24,15 @@ open class Djikstra (
      */
     private val nodeVisitedOrder = LinkedList<Node>()
 
-    init {
-        initShortestPaths()
-    }
-
     override fun run() {
+        prepare()
         if (remaining.isEmpty()) return
 
         var lowest = remaining.poll()
-        while ((lowest != endNode) && (lowest.shortestPath != Double.POSITIVE_INFINITY)) {
+        while (lowest != null && (lowest != endNode) && (lowest.shortestPath != Double.POSITIVE_INFINITY)) {
             searchPath(lowest)
             lowest = remaining.poll()
         }
-        printPath(getPath())
-        clearVisitedEdges() //cleaning edges to next execution
     }
 
     private fun searchPath(currentNode: Node?) {
@@ -60,15 +55,8 @@ open class Djikstra (
         }
     }
 
-    /**
-     * Initializes shortest paths with infinity
-     */
-    open fun initShortestPaths() {
-        matrixGraph.table.forEach { row ->
-            row.forEach { if (it != null) setShortestPath(it, Double.POSITIVE_INFINITY) }
-        }
-
-        matrixGraph.resetNodes() //make sure that the nodes has no 'previous' from older processing
+    open fun prepare() {
+        graph.getNodes().forEach { node -> node.reset()} //make sure that the nodes has no 'previous' from older processing
         setShortestPath(startNode, 0.0)
         for (edge in startNode.edges.values) {
             if (edge.connected) {
@@ -107,21 +95,15 @@ open class Djikstra (
         return nodeVisitedOrder
     }
 
-    fun clearVisitedEdges() {
-        matrixGraph.table.forEach { row ->
-            row.forEach {
-                it?.edges?.values?.forEach{ it.visited = false}
-            }
-        }
-    }
-
     /**
      * Prints shortest path in System.out
      */
-    fun printPath(path: Stack<Node>) {
-        println("Printing shortest path from ${startNode.name} to ${endNode?.name}:")
+    fun printPath() {
+        val path = getPath()
+
+        println("Printing shortest path from ${startNode.name} to ${endNode.name}:")
         if (path.empty()) {
-            println("No path found from ${startNode.name} to ${endNode?.name}")
+            println("No path found from ${startNode.name} to ${endNode.name}")
             return
         }
 

@@ -2,7 +2,6 @@ package site.paulo.pathfinding.algorithm
 
 import org.junit.jupiter.api.Test
 import site.paulo.pathfinding.data.model.MatrixGraph
-import site.paulo.pathfinding.data.model.Node
 
 internal class DjikstraTest {
 
@@ -11,7 +10,6 @@ internal class DjikstraTest {
         val matrix = MatrixGraph(3,3)
         val djikstra = Djikstra(matrix, matrix.getNode(Pair(0,0))!!, matrix.getNode(Pair(2,2))!!)
         djikstra.run()
-
         assert(djikstra.getPath().size == 5)
     }
 
