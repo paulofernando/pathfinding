@@ -9,16 +9,13 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
-import site.paulo.pathfinding.algorithm.PathFindingAlgorithm
-import site.paulo.pathfinding.algorithm.Djikstra
 import site.paulo.pathfinding.data.model.MatrixGraph
 import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.algorithm.AStar
-import site.paulo.pathfinding.algorithm.BreadthFirst
+import site.paulo.pathfinding.algorithm.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 class GraphView : View {
@@ -118,10 +115,7 @@ class GraphView : View {
             SupportedAlgorithms.DJIKSTRA -> Djikstra(graph, nodeA, nodeB)
             SupportedAlgorithms.ASTAR -> AStar(graph, nodeA, nodeB)
             SupportedAlgorithms.BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
-            else -> {
-                println("Unsupported algorithm")
-                return
-            }
+            SupportedAlgorithms.DEPTH_FIRST -> DepthFirst(nodeA, nodeB)
         }
 
         algorithm.run()

@@ -1,7 +1,7 @@
 package site.paulo.pathfinding.data.model
 
 class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
-    var edges: HashMap<String, Edge> = HashMap()
+    var edges: LinkedHashMap<String, Edge> = LinkedHashMap() //LinkedHashMap because the ordering matters when drawing
     /**
      * Shortest distance from S to V
      */
@@ -14,9 +14,12 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
 
 
     override fun compareTo(other: Node): Int {
-        if (this.shortestPath + this.heuristicDistance > other.shortestPath + other.heuristicDistance) {
+        val currentValue = this.shortestPath + this.heuristicDistance
+        val valueToCompare = other.shortestPath + other.heuristicDistance
+
+        if (currentValue > valueToCompare) {
             return 1
-        } else if (this.shortestPath + this.heuristicDistance < other.shortestPath + other.heuristicDistance) {
+        } else if (currentValue < valueToCompare) {
             return -1
         } else {
             if (this.heuristicDistance < other.heuristicDistance) return -1

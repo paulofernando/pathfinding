@@ -17,7 +17,7 @@ class BreadthFirst(private val startNode: Node, private val endNode: Node) : Pat
 
     override fun run() {
         while (frontier.isNotEmpty()) {
-            var currentNode = frontier.poll()
+            val currentNode = frontier.poll()
             if(currentNode == endNode) break
             currentNode?.edges?.values?.forEach {edge ->
                 if(edge.connected) {
@@ -28,8 +28,6 @@ class BreadthFirst(private val startNode: Node, private val endNode: Node) : Pat
                 }
             }
         }
-
-        println(getPath())
     }
 
     override fun getPath(): Stack<Node> {
