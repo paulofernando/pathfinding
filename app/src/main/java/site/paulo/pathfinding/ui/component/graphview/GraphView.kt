@@ -18,6 +18,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.AStar
+import site.paulo.pathfinding.algorithm.BreadthFirst
 import java.util.concurrent.atomic.AtomicBoolean
 
 class GraphView : View {
@@ -113,9 +114,10 @@ class GraphView : View {
 
         val nodeA = graph.getNode(startPoint) ?: return
         val nodeB = graph.getNode(endPoint) ?: return
-        when (alg) {
-            SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, nodeA, nodeB)
-            SupportedAlgorithms.ASTAR -> algorithm = AStar(graph, nodeA, nodeB)
+        algorithm = when (alg) {
+            SupportedAlgorithms.DJIKSTRA -> Djikstra(graph, nodeA, nodeB)
+            SupportedAlgorithms.ASTAR -> AStar(graph, nodeA, nodeB)
+            SupportedAlgorithms.BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
             else -> {
                 println("Unsupported algorithm")
                 return
