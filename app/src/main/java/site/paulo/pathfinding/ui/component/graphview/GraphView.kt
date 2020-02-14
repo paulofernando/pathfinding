@@ -17,6 +17,7 @@ import kotlin.collections.HashMap
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.abs
 
 class GraphView : View {
 
@@ -28,8 +29,10 @@ class GraphView : View {
     private var squareSide: Float = 0f
     private val uninitialized: Pair<Int, Int> = Pair(-1, -1)
     private var lastVisitedNode: Pair<Int, Int> = uninitialized
+    private var lastPressedNode = uninitialized
     var startPoint: Pair<Int, Int> = uninitialized
     var endPoint: Pair<Int, Int> = uninitialized
+    val maxWeight: Double = 3.0
 
     private var readyToRemoveNodes: Boolean = false
     private var readyToReaddNodes: Boolean = false
@@ -38,6 +41,7 @@ class GraphView : View {
     private val pathPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private val visitedNodesPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private val removedNodes: HashMap<Pair<Int, Int>, RectF> = HashMap()
+    private val increasedWeightNodes: HashMap<Pair<Int, Int>, Int> = HashMap()
     private var graph: MatrixGraph = MatrixGraph(rows, cols)
     private lateinit var algorithm: PathFindingAlgorithm
 
@@ -50,6 +54,7 @@ class GraphView : View {
     private val colorEndPoint: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
     private val colorRemovedNode: Int = ContextCompat.getColor(context, R.color.colorRemovedCell)
     private val colorRemovedNodeX: Int = ContextCompat.getColor(context, R.color.colorRemovedCellX)
+    private val colorIncreasedWeightNode: Int = ContextCompat.getColor(context, R.color.colorIncreasedWeightCell)
 
     private var listeners: ArrayList<GraphListener> = ArrayList()
 
@@ -64,6 +69,7 @@ class GraphView : View {
         drawVisitedNodes(canvas)
         drawPathNodes(canvas)
         drawRemovedCellsNodes(canvas)
+        drawWeightIncreasedPoints(canvas)
         drawPoints(canvas)
     }
 
@@ -74,11 +80,15 @@ class GraphView : View {
         val x = event.x
         val y = event.y
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> markPoint(getRectOnPosition(x, y))
+            MotionEvent.ACTION_DOWN -> {
+                lastPressedNode = getRectOnPosition(x, y)
+                markPoint(lastPressedNode)
+            }
             MotionEvent.ACTION_MOVE -> {
-                if ((readyToRemoveNodes) && lastVisitedNode != getRectOnPosition(x, y)) {
+                if ((readyToRemoveNodes) && lastVisitedNode != getRectOnPosition(x, y)
+                        && lastPressedNode != getRectOnPosition(x, y)) {
                     lastVisitedNode = getRectOnPosition(x, y)
-                    removeNode(lastVisitedNode)
+                    increaseWeight(lastVisitedNode)
                 } else if (readyToReaddNodes)
                     readdNode(getRowAndColAtPosition(x, y))
             }
@@ -128,6 +138,7 @@ class GraphView : View {
         endPoint = uninitialized
         pathPositions.clear()
         visitedNodesPositions.clear()
+        increasedWeightNodes.clear()
         removedNodes.clear()
         readyToRemoveNodes = false
         invalidate()
@@ -163,7 +174,7 @@ class GraphView : View {
                 } else {
                     readyToReaddNodes = false
                     readyToRemoveNodes = true
-                    this.removeNode(position)
+                    this.increaseWeight(position)
                 }
             }
         }
@@ -182,6 +193,17 @@ class GraphView : View {
 
     private fun addPositionToVisitedNodes(position: Pair<Int, Int>) {
         visitedNodesPositions[position] = getRectInsideTablePositionCell(position)
+        invalidate()
+    }
+
+    private fun increaseWeight(position: Pair<Int, Int>, amountToIncrease: Double = 1.0) {
+        if ((position.first >= cols) || (position.second >= rows)) return
+        val newWeight = graph.getNode(position)?.increaseWeight(abs(amountToIncrease)) ?: return
+        increasedWeightNodes[position] = newWeight.toInt()
+        if (newWeight > maxWeight) {
+            removeNode(position)
+            increasedWeightNodes.remove(position)
+        }
         invalidate()
     }
 
@@ -226,9 +248,11 @@ class GraphView : View {
     private fun drawVisitedNodes(canvas: Canvas) {
         paint.color = colorVisited
         paint.style = Paint.Style.FILL
+        paint.alpha = 200
         for (node in visitedNodesPositions.values) {
             canvas.drawRect(node, paint)
         }
+        paint.alpha = 255
     }
 
     /**
@@ -243,6 +267,16 @@ class GraphView : View {
         if (endPoint != uninitialized) {
             paint.color = colorEndPoint
             canvas.drawRect(getRectOnTableCell(endPoint), paint)
+        }
+    }
+
+    private fun drawWeightIncreasedPoints(canvas: Canvas) {
+        paint.style = Paint.Style.FILL
+        paint.color = colorIncreasedWeightNode
+        increasedWeightNodes.entries.forEach {
+            val center = getCenterOfCell(it.key)
+            canvas.drawText(it.value.toString(), center.first - paint.measureText(it.value.toString()) / 2,
+                center.second - ((paint.descent() + paint.ascent()) / 2), paint)
         }
     }
 
@@ -300,6 +334,12 @@ class GraphView : View {
         return RectF(topX, topY, topX + squareSide, topY + squareSide)
     }
 
+    private fun getCenterOfCell(position: Pair<Int, Int>): Pair<Float,Float> {
+        val topX = squareSide * position.first
+        val topY = squareSide * position.second
+        return Pair(topX + (squareSide/2), topY + (squareSide/2))
+    }
+
     private var cachedPosition: Pair<Int, Int> = uninitialized
     private fun getRectOnPosition(x: Float, y: Float): Pair<Int, Int> {
         return if ((cachedPosition.first == (x / squareSide).toInt()) &&
@@ -315,6 +355,7 @@ class GraphView : View {
     private fun configurePaint() {
         paint.isAntiAlias = true
         paint.strokeWidth = resources.displayMetrics.density
+        paint.setTextSize(48f)
     }
 
     fun registerListener(listener: GraphListener) {

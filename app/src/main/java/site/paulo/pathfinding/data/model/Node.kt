@@ -63,4 +63,16 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
         shortestPath = Double.POSITIVE_INFINITY
         heuristicDistance = 0
     }
+
+    /**
+     * Increases the weight of all edges and returns the lightest one
+     */
+    fun increaseWeight(amount: Double): Double {
+        var lightestWeight = Double.POSITIVE_INFINITY
+        edges.values.forEach {
+            it.weight += amount
+            if(it.weight < lightestWeight) lightestWeight = it.weight
+        }
+        return lightestWeight
+    }
 }

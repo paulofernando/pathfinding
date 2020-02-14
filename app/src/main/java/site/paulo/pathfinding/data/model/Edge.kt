@@ -1,6 +1,6 @@
 package site.paulo.pathfinding.data.model
 
-class Edge(val nodeA: Node, val nodeB: Node, val weight: Double) {
+class Edge(val nodeA: Node, val nodeB: Node, var weight: Double) {
 
     var visited: Boolean = false
     /**
