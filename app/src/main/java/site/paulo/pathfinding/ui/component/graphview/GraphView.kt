@@ -119,7 +119,7 @@ class GraphView : View {
         }
 
         algorithm.run()
-        scheduleDraw(algorithm.getVisitedOrder(), algorithm.getPath(), 30)
+        scheduleDraw(algorithm.getVisitedOrder(), algorithm.getPath(), 50)
     }
 
     fun reset() {
