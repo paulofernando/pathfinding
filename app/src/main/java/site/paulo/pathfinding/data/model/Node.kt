@@ -28,7 +28,7 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
         return 0
     }
 
-    fun connect(nodeToConnect: Node, weight: Double = 1.0) {
+    fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) {
         val edge = Edge(this, nodeToConnect, weight)
         this.edges[nodeToConnect.name] = edge
         nodeToConnect.edges[this.name] = edge
@@ -65,14 +65,12 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
     }
 
     /**
-     * Increases the weight of all edges and returns the lightest one
+     * Sets the weight of all edges
      */
-    fun increaseWeight(amount: Double): Double {
-        var lightestWeight = Double.POSITIVE_INFINITY
+    fun setAllWeights(amount: Double) {
         edges.values.forEach {
-            it.weight += amount
-            if(it.weight < lightestWeight) lightestWeight = it.weight
+            it.weight = amount
         }
-        return lightestWeight
     }
+
 }

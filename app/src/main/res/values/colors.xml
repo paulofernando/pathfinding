@@ -18,7 +18,7 @@
     <color name="colorEndPoint">#651FFF</color>
     <color name="colorRemovedCell">#DDDDDD</color>
     <color name="colorRemovedCellX">#CCCCCC</color>
-    <color name="colorIncreasedWeightCell">#555555</color>
+    <color name="colorIncreasedWeightText">#555555</color>
     <color name="colorTableHorizontalLines">#222222</color>
     <color name="colorTableVerticalLines">#222222</color>
 </resources>
