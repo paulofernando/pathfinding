@@ -14,4 +14,5 @@
     <string name="alg_depth_first">Depth-first</string>
     <string name="weighted_shortest">Weighted - Shortest</string>
     <string name="unweighted">Unweighted</string>
+    <string name="about">About</string>
 </resources>
