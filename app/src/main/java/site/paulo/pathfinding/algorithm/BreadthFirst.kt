@@ -2,6 +2,7 @@ package site.paulo.pathfinding.algorithm
 
 import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.data.model.Node
+import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -45,6 +46,10 @@ class BreadthFirst(private val startNode: Node, private val endNode: Node) : Pat
 
     override fun getVisitedOrder(): LinkedList<Node> {
         return nodeVisitedOrder
+    }
+
+    override fun getType(): PathFindingAlgorithms {
+        return PathFindingAlgorithms.BREADTH_FIRST
     }
 
     private fun addToFrontier(edge: Edge?, currentNode: Node) {

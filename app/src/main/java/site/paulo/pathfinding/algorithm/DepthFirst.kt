@@ -1,6 +1,7 @@
 package site.paulo.pathfinding.algorithm
 
 import site.paulo.pathfinding.data.model.Node
+import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -44,5 +45,9 @@ class DepthFirst(private val startNode: Node, private val endNode: Node) : PathF
 
     override fun getVisitedOrder(): LinkedList<Node> {
         return nodeVisitedOrder
+    }
+
+    override fun getType(): PathFindingAlgorithms {
+        return PathFindingAlgorithms.DEPTH_FIRST
     }
 }

@@ -8,14 +8,14 @@ import site.paulo.pathfinding.R
 import kotlinx.android.synthetic.main.activity_main.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.HRadioGroup
-import site.paulo.pathfinding.ui.component.graphview.SupportedAlgorithms
+import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 
 class MainActivity : AppCompatActivity(),
     GraphListener, HRadioGroup.HRadioListener {
 
     private val minMatrixGraphRows: Int = 5
     private val defaultMatrixRows = 10
-    private var selectedAlgorithm = SupportedAlgorithms.DJIKSTRA
+    private var selectedAlgorithm = PathFindingAlgorithms.DJIKSTRA
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +66,13 @@ class MainActivity : AppCompatActivity(),
         clearImageView.isEnabled = false
     }
 
-    override fun onChangeOption(newOption: SupportedAlgorithms) {
+    override fun onChangeOption(newOption: PathFindingAlgorithms) {
         selectedAlgorithm = newOption
+        when(newOption) {
+            PathFindingAlgorithms.DJIKSTRA -> graphView.enableWeightIncrease(true)
+            PathFindingAlgorithms.ASTAR -> graphView.enableWeightIncrease(true)
+            PathFindingAlgorithms.BREADTH_FIRST -> graphView.enableWeightIncrease(false)
+            PathFindingAlgorithms.DEPTH_FIRST -> graphView.enableWeightIncrease(false)
+        }
     }
 }

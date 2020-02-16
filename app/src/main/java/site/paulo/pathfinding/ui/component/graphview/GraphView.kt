@@ -32,6 +32,7 @@ class GraphView : View {
 
     private var readyToIncreaseWeightNodes: Boolean = false
     private var readyToReaddNodes: Boolean = false
+    private var hasWeight: Boolean = true
     private var animating: AtomicBoolean = AtomicBoolean(false)
     private val defaultPathNodePerSec = 50
     private val defaultVisitedNodePerSec = defaultPathNodePerSec * 5
@@ -83,7 +84,9 @@ class GraphView : View {
         drawVisitedNodes(canvas)
         drawPathNodes(canvas)
         drawRemovedCellsNodes(canvas)
-        drawWeightIncreasedPoints(canvas)
+        if (hasWeight) {
+            drawWeightIncreasedPoints(canvas)
+        }
         drawPoints(canvas)
     }
 
@@ -116,7 +119,7 @@ class GraphView : View {
         return true
     }
 
-    fun runAlgorithm(alg: SupportedAlgorithms) {
+    fun runAlgorithm(alg: PathFindingAlgorithms) {
         if (startPoint == uninitialized || endPoint == uninitialized) return
         if (animating.get()) return
         pathPositions.clear()
@@ -125,10 +128,10 @@ class GraphView : View {
         val nodeA = graph.getNode(startPoint) ?: return
         val nodeB = graph.getNode(endPoint) ?: return
         algorithm = when (alg) {
-            SupportedAlgorithms.DJIKSTRA -> Djikstra(graph, nodeA, nodeB)
-            SupportedAlgorithms.ASTAR -> AStar(graph, nodeA, nodeB)
-            SupportedAlgorithms.BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
-            SupportedAlgorithms.DEPTH_FIRST -> DepthFirst(nodeA, nodeB)
+            PathFindingAlgorithms.DJIKSTRA -> Djikstra(graph, nodeA, nodeB)
+            PathFindingAlgorithms.ASTAR -> AStar(graph, nodeA, nodeB)
+            PathFindingAlgorithms.BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
+            PathFindingAlgorithms.DEPTH_FIRST -> DepthFirst(nodeA, nodeB)
         }
 
         algorithm.run()
@@ -178,7 +181,11 @@ class GraphView : View {
                 } else {
                     readyToReaddNodes = false
                     readyToIncreaseWeightNodes = true
-                    this.increaseWeight(position)
+                    if (hasWeight) {
+                        this.increaseWeight(position)
+                    } else {
+                        this.removeNode(position)
+                    }
                 }
             }
         }
@@ -382,7 +389,7 @@ class GraphView : View {
     private fun configurePaint() {
         paint.isAntiAlias = true
         paint.strokeWidth = resources.displayMetrics.density
-        paint.setTextSize(48f)
+        paint.textSize = 48f
     }
 
     fun registerListener(listener: GraphListener) {
@@ -394,6 +401,11 @@ class GraphView : View {
         cols = amount
         squareSide = (width / cols).toFloat()
         reset()
+    }
+
+    fun enableWeightIncrease(enable: Boolean) {
+        hasWeight = enable
+        invalidate()
     }
 
 }

@@ -21,8 +21,6 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
             return 1
         } else if (currentValue < valueToCompare) {
             return -1
-        } else {
-            if (this.heuristicDistance < other.heuristicDistance) return -1
         }
 
         return 0

@@ -2,6 +2,7 @@ package site.paulo.pathfinding.algorithm
 
 import site.paulo.pathfinding.data.model.Graph
 import site.paulo.pathfinding.data.model.Node
+import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -93,6 +94,10 @@ open class Djikstra (
 
     override fun getVisitedOrder(): LinkedList<Node> {
         return nodeVisitedOrder
+    }
+
+    override fun getType(): PathFindingAlgorithms {
+        return PathFindingAlgorithms.DJIKSTRA
     }
 
     /**
