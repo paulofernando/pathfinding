@@ -6,11 +6,11 @@ import android.widget.Button
 import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.h_radio_group.view.*
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.component.graphview.SupportedAlgorithms.*
+import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms.*
 
 class HRadioGroup(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
 
-    private var currentOption: SupportedAlgorithms = DJIKSTRA
+    private var currentOption: PathFindingAlgorithms = DJIKSTRA
     private var currentRadio: Button
     private var listener: HRadioListener? = null
 
@@ -24,7 +24,7 @@ class HRadioGroup(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     }
 
 
-    private fun checkRadio(option: SupportedAlgorithms) {
+    private fun checkRadio(option: PathFindingAlgorithms) {
         currentRadio.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
         currentRadio.setBackgroundResource(R.drawable.radio)
 
@@ -36,7 +36,7 @@ class HRadioGroup(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         listener?.onChangeOption(option)
     }
 
-    private fun getRadio(option: SupportedAlgorithms): Button {
+    private fun getRadio(option: PathFindingAlgorithms): Button {
         return when (option) {
             DJIKSTRA -> djikstraRadio
             ASTAR -> aStarRadio
@@ -51,7 +51,7 @@ class HRadioGroup(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
 
     interface HRadioListener {
-        fun onChangeOption(newOption: SupportedAlgorithms)
+        fun onChangeOption(newOption: PathFindingAlgorithms)
     }
 
 }

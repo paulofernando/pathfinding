@@ -9,15 +9,14 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
-import site.paulo.pathfinding.algorithm.PathFindingAlgorithm
-import site.paulo.pathfinding.algorithm.Djikstra
 import site.paulo.pathfinding.data.model.MatrixGraph
 import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.algorithm.AStar
+import site.paulo.pathfinding.algorithm.*
+import site.paulo.pathfinding.data.model.Edge
 import java.util.concurrent.atomic.AtomicBoolean
 
 class GraphView : View {
@@ -28,22 +27,29 @@ class GraphView : View {
     private var rows: Int = 10
     private var cols: Int = 10
     private var squareSide: Float = 0f
-    private val uninitialized: Pair<Int, Int> = Pair(-1, -1)
-    private var lastVisitedNode: Pair<Int, Int> = uninitialized
-    var startPoint: Pair<Int, Int> = uninitialized
-    var endPoint: Pair<Int, Int> = uninitialized
+    private val uninitialized = Pair(-1, -1)
+    private val maxWeight: Double = 3.0
 
-    private var readyToRemoveNodes: Boolean = false
+    private var readyToIncreaseWeightNodes: Boolean = false
     private var readyToReaddNodes: Boolean = false
+    private var hasWeight: Boolean = true
     private var animating: AtomicBoolean = AtomicBoolean(false)
+    private val defaultPathNodePerSec = 50
+    private val defaultVisitedNodePerSec = defaultPathNodePerSec * 5
 
+    private var startPoint = uninitialized
+    private var endPoint = uninitialized
+    private var lastVisitedNode = uninitialized
+    private var graph: MatrixGraph = MatrixGraph(rows, cols)
+    private lateinit var algorithm: PathFindingAlgorithm
     private val pathPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private val visitedNodesPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private val removedNodes: HashMap<Pair<Int, Int>, RectF> = HashMap()
-    private var graph: MatrixGraph = MatrixGraph(rows, cols)
-    private lateinit var algorithm: PathFindingAlgorithm
+    private val increasedWeightNodes: HashMap<Pair<Int, Int>, Int> = HashMap()
+    private var listeners: ArrayList<GraphListener> = ArrayList()
 
     private val paint = Paint()
+    // --------- colors ---------
     private val colorHorizontalLine: Int = ContextCompat.getColor(context, R.color.colorTableHorizontalLines)
     private val colorVerticalLine: Int = ContextCompat.getColor(context, R.color.colorTableVerticalLines)
     private val colorPath: Int = ContextCompat.getColor(context, R.color.colorPath)
@@ -52,45 +58,11 @@ class GraphView : View {
     private val colorEndPoint: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
     private val colorRemovedNode: Int = ContextCompat.getColor(context, R.color.colorRemovedCell)
     private val colorRemovedNodeX: Int = ContextCompat.getColor(context, R.color.colorRemovedCellX)
-
-    private var listeners: ArrayList<GraphListener> = ArrayList()
+    private val colorIncreasedWeightNode: Int = ContextCompat.getColor(context, R.color.colorIncreasedWeightText)
+    // --------------------------
 
     init {
         configurePaint()
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        drawHorizontalLines(canvas, rows)
-        drawVerticalLines(canvas, cols)
-        drawVisitedNodes(canvas)
-        drawPathNodes(canvas)
-        drawRemovedCellsNodes(canvas)
-        drawPoints(canvas)
-    }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (!isEnabled) {
-            return false
-        }
-        val x = event.x
-        val y = event.y
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> markPoint(getRectOnPosition(x, y))
-            MotionEvent.ACTION_MOVE -> {
-                if ((readyToRemoveNodes) && lastVisitedNode != getRectOnPosition(x, y)) {
-                    lastVisitedNode = getRectOnPosition(x, y)
-                    removeNode(lastVisitedNode)
-                } else if (readyToReaddNodes)
-                    readdNode(getRowAndColAtPosition(x, y))
-            }
-            MotionEvent.ACTION_UP -> {
-                readyToRemoveNodes = (startPoint != uninitialized && endPoint != uninitialized)
-            }
-            MotionEvent.ACTION_CANCEL -> {
-            }
-        }
-        return true
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -105,23 +77,66 @@ class GraphView : View {
         setMeasuredDimension(size, size)
     }
 
-    fun runAlgorithm(alg: SupportedAlgorithms) {
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        drawHorizontalLines(canvas, rows)
+        drawVerticalLines(canvas, cols)
+        drawVisitedNodes(canvas)
+        drawPathNodes(canvas)
+        drawRemovedCellsNodes(canvas)
+        if (hasWeight) {
+            drawWeightIncreasedPoints(canvas)
+        }
+        drawPoints(canvas)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isEnabled) return false
+
+        val x = event.x
+        val y = event.y
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                lastVisitedNode = getRectOnPosition(x, y)
+                markPoint(lastVisitedNode)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (lastVisitedNode != getRectOnPosition(x, y)) {
+                    lastVisitedNode = getRectOnPosition(x, y)
+                    if (readyToIncreaseWeightNodes) {
+                        increaseWeight(lastVisitedNode)
+                    } else if (readyToReaddNodes) {
+                        readdNode(getRowAndColAtPosition(x, y))
+                    }
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                readyToIncreaseWeightNodes =
+                    (startPoint != uninitialized && endPoint != uninitialized)
+            }
+            MotionEvent.ACTION_CANCEL -> { }
+        }
+        return true
+    }
+
+    fun runAlgorithm(alg: PathFindingAlgorithms) {
         if (startPoint == uninitialized || endPoint == uninitialized) return
         if (animating.get()) return
         pathPositions.clear()
         visitedNodesPositions.clear()
 
-        when (alg) {
-            SupportedAlgorithms.DJIKSTRA -> algorithm = Djikstra(graph, startPoint, endPoint)
-            SupportedAlgorithms.ASTAR -> algorithm = AStar(graph, startPoint, endPoint)
-            else -> {
-                println("Unsupported algorithm")
-                return
-            }
+        val nodeA = graph.getNode(startPoint) ?: return
+        val nodeB = graph.getNode(endPoint) ?: return
+        algorithm = when (alg) {
+            PathFindingAlgorithms.DJIKSTRA -> Djikstra(graph, nodeA, nodeB)
+            PathFindingAlgorithms.ASTAR -> AStar(graph, nodeA, nodeB)
+            PathFindingAlgorithms.BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
+            PathFindingAlgorithms.DEPTH_FIRST -> DepthFirst(nodeA, nodeB)
         }
 
         algorithm.run()
-        scheduleDraw(algorithm.getVisitedOrder(), algorithm.getPath(), 30)
+        scheduleDraw(algorithm.getVisitedOrder(), algorithm.getPath(),
+            defaultPathNodePerSec, defaultVisitedNodePerSec)
     }
 
     fun reset() {
@@ -130,8 +145,9 @@ class GraphView : View {
         endPoint = uninitialized
         pathPositions.clear()
         visitedNodesPositions.clear()
+        increasedWeightNodes.clear()
         removedNodes.clear()
-        readyToRemoveNodes = false
+        readyToIncreaseWeightNodes = false
         invalidate()
 
         listeners.forEach { it.onGraphNotReady() }
@@ -160,12 +176,16 @@ class GraphView : View {
             else -> {
                 if (removedNodes[position] != null) {
                     readyToReaddNodes = true
-                    readyToRemoveNodes = false
+                    readyToIncreaseWeightNodes = false
                     this.readdNode(position)
                 } else {
                     readyToReaddNodes = false
-                    readyToRemoveNodes = true
-                    this.removeNode(position)
+                    readyToIncreaseWeightNodes = true
+                    if (hasWeight) {
+                        this.increaseWeight(position)
+                    } else {
+                        this.removeNode(position)
+                    }
                 }
             }
         }
@@ -184,6 +204,33 @@ class GraphView : View {
 
     private fun addPositionToVisitedNodes(position: Pair<Int, Int>) {
         visitedNodesPositions[position] = getRectInsideTablePositionCell(position)
+        invalidate()
+    }
+
+    private fun increaseWeight(position: Pair<Int, Int>, amountToIncrease: Double = Edge.DEFAULT_WEIGHT) {
+        if ((position.first >= cols) || (position.second >= rows)) return
+
+        if (removedNodes.containsKey(position)) {
+            readdNode(position)
+            return
+        }
+
+        var newWeight = amountToIncrease
+        if (increasedWeightNodes.containsKey(position)) {
+            newWeight += increasedWeightNodes[position]!!
+        } else {
+            newWeight += Edge.DEFAULT_WEIGHT
+        }
+
+        if (newWeight > maxWeight) {
+            removeNode(position)
+            increasedWeightNodes.remove(position)
+            graph.getNode(position)?.setAllWeights(Edge.DEFAULT_WEIGHT)
+        } else {
+            increasedWeightNodes[position] = newWeight.toInt()
+            graph.getNode(position)?.setAllWeights(newWeight)
+        }
+
         invalidate()
     }
 
@@ -228,9 +275,11 @@ class GraphView : View {
     private fun drawVisitedNodes(canvas: Canvas) {
         paint.color = colorVisited
         paint.style = Paint.Style.FILL
+        paint.alpha = 200
         for (node in visitedNodesPositions.values) {
             canvas.drawRect(node, paint)
         }
+        paint.alpha = 255
     }
 
     /**
@@ -245,6 +294,18 @@ class GraphView : View {
         if (endPoint != uninitialized) {
             paint.color = colorEndPoint
             canvas.drawRect(getRectOnTableCell(endPoint), paint)
+        }
+    }
+
+    private fun drawWeightIncreasedPoints(canvas: Canvas) {
+        paint.style = Paint.Style.FILL
+        paint.color = colorIncreasedWeightNode
+        increasedWeightNodes.entries.forEach {
+            val center = getCenterOfCell(it.key)
+            canvas.drawText(
+                it.value.toString(), center.first - paint.measureText(it.value.toString()) / 2,
+                center.second - ((paint.descent() + paint.ascent()) / 2), paint
+            )
         }
     }
 
@@ -263,24 +324,29 @@ class GraphView : View {
         }
     }
 
-    private fun scheduleDraw(visitedNodes: LinkedList<Node>, path: Stack<Node>, nodesPerSec: Int) {
+    private fun scheduleDraw(visitedNodes: LinkedList<Node>, path: Stack<Node>,
+                             pathNodesPerSec: Int, visitedNodesPerSec: Int) {
         animating.set(true)
         listeners.forEach { it.onGraphNotReady() }
         listeners.forEach { it.onGraphNotCleanable() }
 
         Handler().post(object : Runnable {
             override fun run() {
-                if (visitedNodes.isNotEmpty()) {
-                    addPositionToVisitedNodes(visitedNodes.removeFirst().position)
-                    handler.postDelayed(this, (1000 / (nodesPerSec * 5)).toLong())
-                } else if (path.isNotEmpty()) {
-                    addPositionToPath(path.pop().position)
-                    handler.postDelayed(this, (1000 / nodesPerSec).toLong())
-                } else {
-                    handler.removeCallbacks(this)
-                    animating.set(false)
-                    listeners.forEach { it.onGraphReady() }
-                    listeners.forEach { it.onGraphCleanable() }
+                when {
+                    visitedNodes.isNotEmpty() -> {
+                        addPositionToVisitedNodes(visitedNodes.removeFirst().position)
+                        handler.postDelayed(this, (1000 / visitedNodesPerSec).toLong())
+                    }
+                    path.isNotEmpty() -> {
+                        addPositionToPath(path.pop().position)
+                        handler.postDelayed(this, (1000 / pathNodesPerSec).toLong())
+                    }
+                    else -> {
+                        handler.removeCallbacks(this)
+                        animating.set(false)
+                        listeners.forEach { it.onGraphReady() }
+                        listeners.forEach { it.onGraphCleanable() }
+                    }
                 }
             }
         })
@@ -302,6 +368,12 @@ class GraphView : View {
         return RectF(topX, topY, topX + squareSide, topY + squareSide)
     }
 
+    private fun getCenterOfCell(position: Pair<Int, Int>): Pair<Float, Float> {
+        val topX = squareSide * position.first
+        val topY = squareSide * position.second
+        return Pair(topX + (squareSide / 2), topY + (squareSide / 2))
+    }
+
     private var cachedPosition: Pair<Int, Int> = uninitialized
     private fun getRectOnPosition(x: Float, y: Float): Pair<Int, Int> {
         return if ((cachedPosition.first == (x / squareSide).toInt()) &&
@@ -317,6 +389,7 @@ class GraphView : View {
     private fun configurePaint() {
         paint.isAntiAlias = true
         paint.strokeWidth = resources.displayMetrics.density
+        paint.textSize = 48f
     }
 
     fun registerListener(listener: GraphListener) {
@@ -328,6 +401,11 @@ class GraphView : View {
         cols = amount
         squareSide = (width / cols).toFloat()
         reset()
+    }
+
+    fun enableWeightIncrease(enable: Boolean) {
+        hasWeight = enable
+        invalidate()
     }
 
 }

@@ -1,7 +1,7 @@
 package site.paulo.pathfinding.data.model
 
 class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
-    var edges: HashMap<String, Edge> = HashMap()
+    var edges: LinkedHashMap<String, Edge> = LinkedHashMap() //LinkedHashMap because the ordering matters when drawing
     /**
      * Shortest distance from S to V
      */
@@ -12,7 +12,21 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
      */
     var previous: Edge? = null
 
-    fun connect(nodeToConnect: Node, weight: Double = 1.0) {
+
+    override fun compareTo(other: Node): Int {
+        val currentValue = this.shortestPath + this.heuristicDistance
+        val valueToCompare = other.shortestPath + other.heuristicDistance
+
+        if (currentValue > valueToCompare) {
+            return 1
+        } else if (currentValue < valueToCompare) {
+            return -1
+        }
+
+        return 0
+    }
+
+    fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) {
         val edge = Edge(this, nodeToConnect, weight)
         this.edges[nodeToConnect.name] = edge
         nodeToConnect.edges[this.name] = edge
@@ -20,12 +34,6 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
 
     fun reconnect(nodeToReconnect: Node) {
         this.edges[nodeToReconnect.name]?.connected = true
-    }
-
-    fun reconnectAll() {
-        edges.values.forEach {
-            it.connected = true
-        }
     }
 
     fun disconnect(nodeToDisconnect: Node) {
@@ -47,15 +55,20 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
         return nodes
     }
 
-    override fun compareTo(other: Node): Int {
-        if (this.shortestPath + this.heuristicDistance > other.shortestPath + other.heuristicDistance) {
-            return 1
-        } else if (this.shortestPath + this.heuristicDistance < other.shortestPath + other.heuristicDistance) {
-            return -1
-        } else {
-            if (this.heuristicDistance < other.heuristicDistance) return -1
-        }
-
-        return 0
+    fun reset() {
+        previous = null
+        edges.values.forEach{ it.visited = false}
+        shortestPath = Double.POSITIVE_INFINITY
+        heuristicDistance = 0
     }
+
+    /**
+     * Sets the weight of all edges
+     */
+    fun setAllWeights(amount: Double) {
+        edges.values.forEach {
+            it.weight = amount
+        }
+    }
+
 }
