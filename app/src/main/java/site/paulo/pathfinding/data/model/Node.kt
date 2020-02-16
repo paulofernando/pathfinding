@@ -1,7 +1,12 @@
 package site.paulo.pathfinding.data.model
 
 class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
-    var edges: LinkedHashMap<String, Edge> = LinkedHashMap() //LinkedHashMap because the ordering matters when drawing
+
+    /**
+     * LinkedHashMap (because the ordering matters when drawing) with
+     * connected node name as key, and edge as value
+     */
+    var edges: LinkedHashMap<String, Edge> = LinkedHashMap()
     /**
      * Shortest distance from S to V
      */
