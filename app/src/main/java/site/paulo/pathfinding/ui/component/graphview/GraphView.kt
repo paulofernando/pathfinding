@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
-import site.paulo.pathfinding.data.model.MatrixGraph
+import site.paulo.pathfinding.data.model.GridGraph
 import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.ArrayList
@@ -40,7 +40,7 @@ class GraphView : View {
     private var startPoint = uninitialized
     private var endPoint = uninitialized
     private var lastVisitedNode = uninitialized
-    private var graph: MatrixGraph = MatrixGraph(rows, cols)
+    private var graph: GridGraph = GridGraph(rows, cols)
     private lateinit var algorithm: PathFindingAlgorithm
     private val pathPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private val visitedNodesPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
@@ -140,7 +140,7 @@ class GraphView : View {
     }
 
     fun reset() {
-        graph = MatrixGraph(rows, cols)
+        graph = GridGraph(rows, cols)
         startPoint = uninitialized
         endPoint = uninitialized
         pathPositions.clear()
@@ -207,7 +207,7 @@ class GraphView : View {
         invalidate()
     }
 
-    private fun increaseWeight(position: Pair<Int, Int>, amountToIncrease: Double = Edge.DEFAULT_WEIGHT) {
+    private fun increaseWeight(position: Pair<Int, Int>, amountToIncrease: Double = 2.0) {
         if ((position.first >= cols) || (position.second >= rows)) return
 
         if (removedNodes.containsKey(position)) {

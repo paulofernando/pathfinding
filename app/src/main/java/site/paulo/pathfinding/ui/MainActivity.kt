@@ -1,14 +1,18 @@
 package site.paulo.pathfinding.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.SeekBar
-import site.paulo.pathfinding.R
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.HRadioGroup
 import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
+import site.paulo.pathfinding.R
+
 
 class MainActivity : AppCompatActivity(),
     GraphListener, HRadioGroup.HRadioListener {
@@ -28,6 +32,23 @@ class MainActivity : AppCompatActivity(),
 
         configureSeekbar()
         graphView.configureSides(defaultMatrixRows)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_item -> {
+                val packageInfo = packageManager.getPackageInfo(packageName, 0)
+                Toast.makeText(this,"Pathfinding v${packageInfo.versionName}",
+                    Toast.LENGTH_LONG).show()
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     fun runAlgorithm(view: View) {
