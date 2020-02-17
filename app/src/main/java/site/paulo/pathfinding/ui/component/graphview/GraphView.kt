@@ -207,7 +207,7 @@ class GraphView : View {
         invalidate()
     }
 
-    private fun increaseWeight(position: Pair<Int, Int>, amountToIncrease: Double = Edge.DEFAULT_WEIGHT) {
+    private fun increaseWeight(position: Pair<Int, Int>, amountToIncrease: Double = 2.0) {
         if ((position.first >= cols) || (position.second >= rows)) return
 
         if (removedNodes.containsKey(position)) {
