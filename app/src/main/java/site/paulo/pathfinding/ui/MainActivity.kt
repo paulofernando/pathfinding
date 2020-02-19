@@ -1,5 +1,6 @@
 package site.paulo.pathfinding.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -42,9 +43,7 @@ class MainActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_item -> {
-                val packageInfo = packageManager.getPackageInfo(packageName, 0)
-                Toast.makeText(this,"Pathfinding v${packageInfo.versionName}",
-                    Toast.LENGTH_LONG).show()
+                startActivity(Intent(this, AboutActivity::class.java))
                 return true
             }
             else -> super.onOptionsItemSelected(item)
