@@ -15,4 +15,7 @@
     <string name="weighted_shortest">Weighted - Shortest</string>
     <string name="unweighted">Unweighted</string>
     <string name="about">About</string>
+
+    <string name="tab_1">Grid</string>
+    <string name="tab_2">Drawable</string>
 </resources>

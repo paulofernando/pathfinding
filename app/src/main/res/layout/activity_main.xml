@@ -6,14 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-    <site.paulo.pathfinding.ui.component.graphview.GraphView
-        android:id="@+id/graphView"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="12dp"
-        android:layout_alignParentTop="true"
-        />
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="?actionBarSize"
+            android:padding="@dimen/appbar_padding"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appBar"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <LinearLayout
         android:id="@+id/buttonsContainer"
@@ -55,43 +76,10 @@
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/seekBarContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_margin"
-        android:layout_below="@id/graphView"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/minSeekBarTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/min_matrix_rows"/>
-
-        <SeekBar
-            android:id="@+id/seekBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:max="20"
-            android:progress="5"
-            android:layout_toEndOf="@id/minSeekBarTextView"
-            android:layout_toStartOf="@id/maxSeekBarTextView"/>
-
-        <TextView
-            android:id="@+id/maxSeekBarTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="@string/max_matrix_rows"/>
-
-    </RelativeLayout>
-
     <HorizontalScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/seekBarContainer">
+        android:layout_above="@id/buttonsContainer">
 
         <site.paulo.pathfinding.ui.component.graphview.HRadioGroup
             android:id="@+id/horizontalRadioGroup"
@@ -101,5 +89,6 @@
         </site.paulo.pathfinding.ui.component.graphview.HRadioGroup>
 
     </HorizontalScrollView>
+
 
 </RelativeLayout>

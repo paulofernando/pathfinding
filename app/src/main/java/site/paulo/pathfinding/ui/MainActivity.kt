@@ -8,11 +8,18 @@ import android.view.View
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.fragment_main.view.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.HRadioGroup
 import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 import site.paulo.pathfinding.R
+import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 
 
 class MainActivity : AppCompatActivity(),
@@ -27,12 +34,16 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
 
         horizontalRadioGroup.registerListener(this)
-        graphView.registerListener(this)
+        //graphView.registerListener(this)
         runImageView.isEnabled = false
         clearImageView.isEnabled = false
 
         configureSeekbar()
-        graphView.configureSides(defaultMatrixRows)
+        //graphView.configureSides(defaultMatrixRows)
+
+        val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
+        viewPager.adapter = sectionsPagerAdapter
+        tabs.setupWithViewPager(viewPager)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -51,23 +62,23 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun runAlgorithm(view: View) {
-        graphView.runAlgorithm(selectedAlgorithm)
+        //graphView.runAlgorithm(selectedAlgorithm)
     }
 
     fun reset(view: View) {
-        graphView.reset()
+        //graphView.reset()
         clearImageView.isEnabled = false
     }
 
     private fun configureSeekbar() {
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-                graphView.configureSides(i + minMatrixGraphRows)
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) { }
-            override fun onStopTrackingTouch(seekBar: SeekBar) { }
-        })
+//        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+//                graphView.configureSides(i + minMatrixGraphRows)
+//            }
+//
+//            override fun onStartTrackingTouch(seekBar: SeekBar) { }
+//            override fun onStopTrackingTouch(seekBar: SeekBar) { }
+//        })
     }
 
     override fun onGraphReady() {
@@ -87,12 +98,12 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onChangeOption(newOption: PathFindingAlgorithms) {
-        selectedAlgorithm = newOption
-        when(newOption) {
-            PathFindingAlgorithms.DJIKSTRA -> graphView.enableWeightIncrease(true)
-            PathFindingAlgorithms.ASTAR -> graphView.enableWeightIncrease(true)
-            PathFindingAlgorithms.BREADTH_FIRST -> graphView.enableWeightIncrease(false)
-            PathFindingAlgorithms.DEPTH_FIRST -> graphView.enableWeightIncrease(false)
-        }
+//        selectedAlgorithm = newOption
+//        when(newOption) {
+//            PathFindingAlgorithms.DJIKSTRA -> graphView.enableWeightIncrease(true)
+//            PathFindingAlgorithms.ASTAR -> graphView.enableWeightIncrease(true)
+//            PathFindingAlgorithms.BREADTH_FIRST -> graphView.enableWeightIncrease(false)
+//            PathFindingAlgorithms.DEPTH_FIRST -> graphView.enableWeightIncrease(false)
+//        }
     }
 }
