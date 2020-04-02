@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.page.PlaceholderFragment">
+    tools:context=".ui.page.GridGraphFragment">
 
     <site.paulo.pathfinding.ui.component.graphview.GraphView
         android:id="@+id/graphView"

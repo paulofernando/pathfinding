@@ -13,8 +13,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_main.*
-import kotlinx.android.synthetic.main.fragment_main.view.*
+import kotlinx.android.synthetic.main.fragment_grid_graph.*
+import kotlinx.android.synthetic.main.fragment_grid_graph.view.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.HRadioGroup
 import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
@@ -25,7 +25,7 @@ import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 class MainActivity : AppCompatActivity(),
     GraphListener, HRadioGroup.HRadioListener {
 
-    private val minMatrixGraphRows: Int = 5
+
     private val defaultMatrixRows = 10
     private var selectedAlgorithm = PathFindingAlgorithms.DJIKSTRA
 
@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity(),
         runImageView.isEnabled = false
         clearImageView.isEnabled = false
 
-        configureSeekbar()
         //graphView.configureSides(defaultMatrixRows)
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
@@ -68,17 +67,6 @@ class MainActivity : AppCompatActivity(),
     fun reset(view: View) {
         //graphView.reset()
         clearImageView.isEnabled = false
-    }
-
-    private fun configureSeekbar() {
-//        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-//            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-//                graphView.configureSides(i + minMatrixGraphRows)
-//            }
-//
-//            override fun onStartTrackingTouch(seekBar: SeekBar) { }
-//            override fun onStopTrackingTouch(seekBar: SeekBar) { }
-//        })
     }
 
     override fun onGraphReady() {
