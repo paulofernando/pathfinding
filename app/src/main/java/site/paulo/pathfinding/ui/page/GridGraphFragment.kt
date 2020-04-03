@@ -8,13 +8,17 @@ import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_grid_graph.*
 import site.paulo.pathfinding.R
+import site.paulo.pathfinding.data.model.Graph
+import site.paulo.pathfinding.ui.MainActivity
+import site.paulo.pathfinding.ui.TabReadyListener
 import site.paulo.pathfinding.ui.component.graphview.GraphView
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class GridGraphFragment : Fragment() {
+class GridGraphFragment : Fragment(), GraphFragment {
 
+    private val defaultMatrixRows = 10
     private val minMatrixGraphRows: Int = 5
 
     override fun onCreateView(
@@ -27,7 +31,10 @@ class GridGraphFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        graphView.configureSides(defaultMatrixRows)
         configureSeekbar()
+        graphView.registerListener(activity as MainActivity)
+        (activity as TabReadyListener).tabReady(graphView)
     }
 
     private fun configureSeekbar() {
@@ -41,10 +48,6 @@ class GridGraphFragment : Fragment() {
         })
     }
 
-    fun getGraphView(): GraphView {
-        return graphView
-    }
-
     companion object {
         private const val ARG_SECTION_NUMBER = "grid_graph"
 
@@ -56,5 +59,9 @@ class GridGraphFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun getGraph(): GraphView {
+        return graphView
     }
 }

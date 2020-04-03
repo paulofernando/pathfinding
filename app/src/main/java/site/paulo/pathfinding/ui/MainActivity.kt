@@ -19,26 +19,25 @@ import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.HRadioGroup
 import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 import site.paulo.pathfinding.R
+import site.paulo.pathfinding.ui.component.graphview.GraphView
+import site.paulo.pathfinding.ui.page.GridGraphFragment
 import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 
 
 class MainActivity : AppCompatActivity(),
-    GraphListener, HRadioGroup.HRadioListener {
+    GraphListener, HRadioGroup.HRadioListener, TabReadyListener {
 
-
-    private val defaultMatrixRows = 10
     private var selectedAlgorithm = PathFindingAlgorithms.DJIKSTRA
+    private lateinit var gridGraph: GraphView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         horizontalRadioGroup.registerListener(this)
-        //graphView.registerListener(this)
         runImageView.isEnabled = false
         clearImageView.isEnabled = false
 
-        //graphView.configureSides(defaultMatrixRows)
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         viewPager.adapter = sectionsPagerAdapter
@@ -61,11 +60,11 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun runAlgorithm(view: View) {
-        //graphView.runAlgorithm(selectedAlgorithm)
+        gridGraph.runAlgorithm(selectedAlgorithm)
     }
 
     fun reset(view: View) {
-        //graphView.reset()
+        gridGraph.reset()
         clearImageView.isEnabled = false
     }
 
@@ -86,12 +85,16 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onChangeOption(newOption: PathFindingAlgorithms) {
-//        selectedAlgorithm = newOption
-//        when(newOption) {
-//            PathFindingAlgorithms.DJIKSTRA -> graphView.enableWeightIncrease(true)
-//            PathFindingAlgorithms.ASTAR -> graphView.enableWeightIncrease(true)
-//            PathFindingAlgorithms.BREADTH_FIRST -> graphView.enableWeightIncrease(false)
-//            PathFindingAlgorithms.DEPTH_FIRST -> graphView.enableWeightIncrease(false)
-//        }
+        selectedAlgorithm = newOption
+        when(newOption) {
+            PathFindingAlgorithms.DJIKSTRA -> gridGraph.enableWeightIncrease(true)
+            PathFindingAlgorithms.ASTAR -> gridGraph.enableWeightIncrease(true)
+            PathFindingAlgorithms.BREADTH_FIRST -> gridGraph.enableWeightIncrease(false)
+            PathFindingAlgorithms.DEPTH_FIRST -> gridGraph.enableWeightIncrease(false)
+        }
+    }
+
+    override fun tabReady(graphView: GraphView) {
+        gridGraph = graphView
     }
 }

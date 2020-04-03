@@ -6,11 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import site.paulo.pathfinding.R
+import site.paulo.pathfinding.ui.component.graphview.GraphView
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class DrawableGraphFragment : Fragment() {
+class DrawableGraphFragment : Fragment(), GraphFragment {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,5 +32,9 @@ class DrawableGraphFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun getGraph(): GraphView {
+        TODO("Not yet implemented")
     }
 }
