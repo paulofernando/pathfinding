@@ -10,8 +10,8 @@ import kotlinx.android.synthetic.main.fragment_grid_graph.*
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.MainActivity
 import site.paulo.pathfinding.ui.TabReadyListener
-import site.paulo.pathfinding.ui.component.graphview.GraphView
-import site.paulo.pathfinding.ui.component.graphview.HRadioGroup
+import site.paulo.pathfinding.ui.component.graphview.grid.GraphView
+import site.paulo.pathfinding.ui.component.graphview.grid.HRadioGroup
 import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 
 /**

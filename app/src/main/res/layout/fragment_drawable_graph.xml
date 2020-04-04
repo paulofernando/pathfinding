@@ -6,10 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".ui.page.GridGraphFragment">
 
-    <TextView
-        android:id="@+id/drawableTextView"
-        android:layout_width="wrap_content"
+    <site.paulo.pathfinding.ui.component.graphview.drawable.DrawableGraphView
+        android:id="@+id/drawableGraphView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="DrawableTextView"/>
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"/>
 
 </RelativeLayout>

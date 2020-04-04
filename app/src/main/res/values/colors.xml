@@ -21,4 +21,7 @@
     <color name="colorIncreasedWeightText">#555555</color>
     <color name="colorTableHorizontalLines">#222222</color>
     <color name="colorTableVerticalLines">#222222</color>
+
+    <color name="colorNode">@color/colorAccent</color>
+    <color name="colorNodeText">#FFFFFF</color>
 </resources>

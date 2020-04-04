@@ -5,8 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.data.model.Graph
-import site.paulo.pathfinding.ui.component.graphview.GraphView
+import site.paulo.pathfinding.ui.component.graphview.grid.GraphView
 
 private val TAB_TITLES = arrayOf(
         R.string.tab_1,
@@ -26,12 +25,12 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager)
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> {
-                gridGraphFragment = GridGraphFragment.newInstance(position + 1)
-                gridGraphFragment
-            }
-            else -> {
                 drawableGraphFragment = DrawableGraphFragment.newInstance(position + 1)
                 drawableGraphFragment
+            }
+            else -> {
+                gridGraphFragment = GridGraphFragment.newInstance(position + 1)
+                gridGraphFragment
             }
         }
     }

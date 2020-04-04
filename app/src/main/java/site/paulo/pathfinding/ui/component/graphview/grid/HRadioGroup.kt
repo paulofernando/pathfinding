@@ -1,4 +1,4 @@
-package site.paulo.pathfinding.ui.component.graphview
+package site.paulo.pathfinding.ui.component.graphview.grid
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.h_radio_group.view.*
 import site.paulo.pathfinding.R
+import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms.*
 
 class HRadioGroup(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {

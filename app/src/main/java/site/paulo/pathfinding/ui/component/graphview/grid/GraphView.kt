@@ -1,4 +1,4 @@
-package site.paulo.pathfinding.ui.component.graphview
+package site.paulo.pathfinding.ui.component.graphview.grid
 
 import android.content.Context
 import android.graphics.Canvas
@@ -17,6 +17,8 @@ import kotlin.collections.HashMap
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import site.paulo.pathfinding.data.model.Edge
+import site.paulo.pathfinding.ui.component.graphview.GraphListener
+import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 import java.util.concurrent.atomic.AtomicBoolean
 
 class GraphView : View {
@@ -36,7 +38,8 @@ class GraphView : View {
     private var animating: AtomicBoolean = AtomicBoolean(false)
     private val defaultPathNodePerSec = 50
     private val defaultVisitedNodePerSec = defaultPathNodePerSec * 5
-    private var selectedAlgorithm: PathFindingAlgorithms = PathFindingAlgorithms.DJIKSTRA
+    private var selectedAlgorithm: PathFindingAlgorithms =
+        PathFindingAlgorithms.DJIKSTRA
 
     private var startPoint = uninitialized
     private var endPoint = uninitialized

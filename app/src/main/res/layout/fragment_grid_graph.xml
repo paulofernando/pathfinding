@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.page.GridGraphFragment">
 
-    <site.paulo.pathfinding.ui.component.graphview.GraphView
+    <site.paulo.pathfinding.ui.component.graphview.grid.GraphView
         android:id="@+id/graphView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -52,12 +52,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/seekBarContainer">
 
-        <site.paulo.pathfinding.ui.component.graphview.HRadioGroup
+        <site.paulo.pathfinding.ui.component.graphview.grid.HRadioGroup
             android:id="@+id/horizontalRadioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        </site.paulo.pathfinding.ui.component.graphview.HRadioGroup>
+        </site.paulo.pathfinding.ui.component.graphview.grid.HRadioGroup>
 
     </HorizontalScrollView>
 
