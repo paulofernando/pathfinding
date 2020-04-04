@@ -8,15 +8,16 @@ import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_grid_graph.*
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.data.model.Graph
 import site.paulo.pathfinding.ui.MainActivity
 import site.paulo.pathfinding.ui.TabReadyListener
 import site.paulo.pathfinding.ui.component.graphview.GraphView
+import site.paulo.pathfinding.ui.component.graphview.HRadioGroup
+import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class GridGraphFragment : Fragment(), GraphFragment {
+class GridGraphFragment : Fragment(), GraphFragment, HRadioGroup.HRadioListener {
 
     private val defaultMatrixRows = 10
     private val minMatrixGraphRows: Int = 5
@@ -33,6 +34,7 @@ class GridGraphFragment : Fragment(), GraphFragment {
         super.onViewCreated(view, savedInstanceState)
         graphView.configureSides(defaultMatrixRows)
         configureSeekbar()
+        horizontalRadioGroup.registerListener(this)
         graphView.registerListener(activity as MainActivity)
         (activity as TabReadyListener).tabReady(graphView)
     }
@@ -63,5 +65,9 @@ class GridGraphFragment : Fragment(), GraphFragment {
 
     override fun getGraph(): GraphView {
         return graphView
+    }
+
+    override fun onChangeOption(newOption: PathFindingAlgorithms) {
+        graphView.setAlgorithm(newOption)
     }
 }

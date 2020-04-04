@@ -76,19 +76,5 @@
 
     </LinearLayout>
 
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/buttonsContainer">
-
-        <site.paulo.pathfinding.ui.component.graphview.HRadioGroup
-            android:id="@+id/horizontalRadioGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-        </site.paulo.pathfinding.ui.component.graphview.HRadioGroup>
-
-    </HorizontalScrollView>
-
 
 </RelativeLayout>

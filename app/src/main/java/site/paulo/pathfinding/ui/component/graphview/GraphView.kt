@@ -36,6 +36,7 @@ class GraphView : View {
     private var animating: AtomicBoolean = AtomicBoolean(false)
     private val defaultPathNodePerSec = 50
     private val defaultVisitedNodePerSec = defaultPathNodePerSec * 5
+    private var selectedAlgorithm: PathFindingAlgorithms = PathFindingAlgorithms.DJIKSTRA
 
     private var startPoint = uninitialized
     private var endPoint = uninitialized
@@ -119,7 +120,17 @@ class GraphView : View {
         return true
     }
 
-    fun runAlgorithm(alg: PathFindingAlgorithms) {
+    fun setAlgorithm(alg: PathFindingAlgorithms) {
+        selectedAlgorithm = alg
+        when(selectedAlgorithm) {
+            PathFindingAlgorithms.DJIKSTRA -> enableWeightIncrease(true)
+            PathFindingAlgorithms.ASTAR -> enableWeightIncrease(true)
+            PathFindingAlgorithms.BREADTH_FIRST -> enableWeightIncrease(false)
+            PathFindingAlgorithms.DEPTH_FIRST -> enableWeightIncrease(false)
+        }
+    }
+
+    fun runAlgorithm() {
         if (startPoint == uninitialized || endPoint == uninitialized) return
         if (animating.get()) return
         pathPositions.clear()
@@ -127,7 +138,7 @@ class GraphView : View {
 
         val nodeA = graph.getNode(startPoint) ?: return
         val nodeB = graph.getNode(endPoint) ?: return
-        algorithm = when (alg) {
+        algorithm = when (selectedAlgorithm) {
             PathFindingAlgorithms.DJIKSTRA -> Djikstra(graph, nodeA, nodeB)
             PathFindingAlgorithms.ASTAR -> AStar(graph, nodeA, nodeB)
             PathFindingAlgorithms.BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
