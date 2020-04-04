@@ -13,4 +13,18 @@
         android:layout_alignParentTop="true"
         android:layout_gravity="center"/>
 
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/drawableGraphView">
+
+        <site.paulo.pathfinding.ui.component.graphview.drawable.HRadioDrawableItem
+            android:id="@+id/horizontalDrawableItemRadioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </site.paulo.pathfinding.ui.component.graphview.drawable.HRadioDrawableItem>
+
+    </HorizontalScrollView>
+
 </RelativeLayout>

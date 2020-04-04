@@ -4,19 +4,19 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.Button
 import android.widget.FrameLayout
-import kotlinx.android.synthetic.main.h_radio_group.view.*
+import kotlinx.android.synthetic.main.h_radio_algorithms.view.*
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms.*
 
-class HRadioGroup(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
+class HRadioAlgorithms(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
 
     private var currentOption: PathFindingAlgorithms = DJIKSTRA
     private var currentRadio: Button
     private var listener: HRadioListener? = null
 
     init {
-        inflate(context, R.layout.h_radio_group, this)
+        inflate(context, R.layout.h_radio_algorithms, this)
         djikstraRadio.setOnClickListener { checkRadio(DJIKSTRA) }
         aStarRadio.setOnClickListener { checkRadio(ASTAR) }
         breadthFirstRadio.setOnClickListener { checkRadio(BREADTH_FIRST) }

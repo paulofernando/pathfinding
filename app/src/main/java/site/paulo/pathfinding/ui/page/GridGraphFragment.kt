@@ -11,13 +11,13 @@ import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.MainActivity
 import site.paulo.pathfinding.ui.TabReadyListener
 import site.paulo.pathfinding.ui.component.graphview.grid.GraphView
-import site.paulo.pathfinding.ui.component.graphview.grid.HRadioGroup
+import site.paulo.pathfinding.ui.component.graphview.grid.HRadioAlgorithms
 import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class GridGraphFragment : Fragment(), GraphFragment, HRadioGroup.HRadioListener {
+class GridGraphFragment : Fragment(), GraphFragment, HRadioAlgorithms.HRadioListener {
 
     private val defaultMatrixRows = 10
     private val minMatrixGraphRows: Int = 5

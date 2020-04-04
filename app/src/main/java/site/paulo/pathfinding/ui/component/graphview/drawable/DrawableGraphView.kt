@@ -36,7 +36,14 @@ class DrawableGraphView : View {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        drawBounderies(canvas)
         drawNodes(canvas)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val size = if (measuredWidth > measuredHeight) measuredHeight else measuredWidth
+        setMeasuredDimension(size, size)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -78,6 +85,12 @@ class DrawableGraphView : View {
                 return true
         }
         return false
+    }
+
+    private fun drawBounderies(canvas: Canvas) {
+        paint.style = Paint.Style.STROKE
+        paint.color = Color.BLACK
+        canvas.drawRect(1f, 1f, width - 1f, height - 1f, paint)
     }
 
     private fun drawNodes(canvas: Canvas) {

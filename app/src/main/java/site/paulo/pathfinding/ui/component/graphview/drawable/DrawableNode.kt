@@ -1,10 +1,12 @@
 package site.paulo.pathfinding.ui.component.graphview.drawable
 
 import android.graphics.RectF
+import site.paulo.pathfinding.data.model.Node
 
 class DrawableNode (val id: Int, var centerX: Float, var centerY: Float) {
 
     var rect: RectF
+    val node: Node
 
     companion object {
         const val DIAMETER = 100f
@@ -18,5 +20,7 @@ class DrawableNode (val id: Int, var centerX: Float, var centerY: Float) {
             centerX + RADIUS,
             centerY + RADIUS
         )
+
+        node = Node(id.toString(), Pair(centerX.toInt(), centerY.toInt()))
     }
 }
