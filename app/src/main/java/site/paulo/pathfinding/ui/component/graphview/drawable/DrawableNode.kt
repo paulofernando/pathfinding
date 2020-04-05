@@ -7,6 +7,7 @@ class DrawableNode (val id: Int, var centerX: Float, var centerY: Float) {
 
     var rect: RectF
     val node: Node
+    var connectedAmount: Int = 0
 
     companion object {
         const val DIAMETER = 100f

@@ -90,13 +90,15 @@ class DrawableGraphView : View {
     private fun addDrawableEdge(x: Float, y: Float) {
         val node = getDrawableNodeAtPoint(x, y)
         if (node != null) {
-            if (drawableEdges.isEmpty() || drawableEdges.last().endNode != null) {
-                drawableEdges.add(DrawableEdge(drawableEdges.size + 1, node))
-            } else {
-                if (drawableEdges.last().startNode != node)
-                    drawableEdges.last().connectTo(node)
+            if (node.connectedAmount < drawableNodes.size - 1) {
+                if (drawableEdges.isEmpty() || drawableEdges.last().endNode != null) {
+                    drawableEdges.add(DrawableEdge(drawableEdges.size + 1, node))
+                } else {
+                    if (drawableEdges.last().startNode != node)
+                        drawableEdges.last().connectTo(node)
+                }
+                invalidate()
             }
-            invalidate()
         }
     }
 
