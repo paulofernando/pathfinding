@@ -1,10 +1,7 @@
 package site.paulo.pathfinding.ui.component.graphview.drawable
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -34,6 +31,8 @@ class DrawableGraphView : View {
     private val colorNode: Int = ContextCompat.getColor(context, R.color.colorNode)
     private val colorNodeText: Int = ContextCompat.getColor(context, R.color.colorNodeText)
     private val colorEdge: Int = ContextCompat.getColor(context, R.color.colorEdge)
+    private val colorTextWeight: Int = ContextCompat.getColor(context, R.color.colorTextWeight)
+    private val colorBoxWeight: Int = ContextCompat.getColor(context, R.color.colorBoxWeight)
     // --------------------------
 
     init {
@@ -181,16 +180,28 @@ class DrawableGraphView : View {
 
     private fun drawWeights(canvas: Canvas) {
         paint.style = Paint.Style.FILL
-        paint.color = Color.BLACK
-        paint.strokeWidth = resources.displayMetrics.density
-        for (edge in drawableEdges) {
-            val startNode = edge.startNode
-            val endNode = edge.endNode
+        for (drawableEdge in drawableEdges) {
+            val startNode = drawableEdge.startNode
+            val endNode = drawableEdge.endNode
             if (endNode != null) {
-                canvas.drawText(
-                    edge.weight.toString(), (startNode.centerX + endNode.centerX) / 2,
-                    (startNode.centerY + endNode.centerY) / 2, paint
+                val textCenterX = (startNode.centerX + endNode.centerX) / 2
+                val textCenterY = (startNode.centerY + endNode.centerY) / 2
+                val textWeight = drawableEdge.edge?.weight?.toInt().toString()
+                paint.color = colorBoxWeight
+                canvas.drawRoundRect(
+                    RectF(textCenterX - (paint.measureText(textWeight) / 2) - 20,
+                    textCenterY - (paint.descent() + paint.ascent()),
+                    textCenterX + (paint.measureText(textWeight) / 2) + 20,
+                    textCenterY + (paint.descent() + paint.ascent())),
+                    15f,
+                    15f,
+                    paint
                 )
+
+
+                paint.color = colorTextWeight
+                canvas.drawText(textWeight, textCenterX - (paint.measureText(textWeight) / 2),
+                    textCenterY - ((paint.descent() + paint.ascent()) / 2), paint)
             }
         }
     }

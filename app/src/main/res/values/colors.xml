@@ -24,5 +24,7 @@
 
     <color name="colorNode">@color/colorAccent</color>
     <color name="colorNodeText">#FFFFFF</color>
-    <color name="colorEdge">#777777</color>
+    <color name="colorEdge">#AAAAAA</color>
+    <color name="colorTextWeight">#FFFFFF</color>
+    <color name="colorBoxWeight">#AAAAAA</color>
 </resources>
