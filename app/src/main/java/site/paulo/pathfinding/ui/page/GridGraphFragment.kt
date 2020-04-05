@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.fragment_grid_graph.*
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.MainActivity
 import site.paulo.pathfinding.ui.TabReadyListener
+import site.paulo.pathfinding.ui.component.graphview.HRadio
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.component.graphview.grid.HRadioAlgorithms
 import site.paulo.pathfinding.ui.component.graphview.grid.PathFindingAlgorithms
@@ -17,7 +18,7 @@ import site.paulo.pathfinding.ui.component.graphview.grid.PathFindingAlgorithms
 /**
  * A placeholder fragment containing a simple view.
  */
-class GridGraphFragment : Fragment(), GraphFragment, HRadioAlgorithms.HRadioListener {
+class GridGraphFragment : Fragment(), GraphFragment, HRadio.HRadioListener<PathFindingAlgorithms> {
 
     private val defaultMatrixRows = 10
     private val minMatrixGraphRows: Int = 5

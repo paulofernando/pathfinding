@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_drawable_graph.*
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.MainActivity
+import site.paulo.pathfinding.ui.component.graphview.HRadio
 import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableItems
 import site.paulo.pathfinding.ui.component.graphview.drawable.HRadioDrawableItem
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
@@ -15,7 +16,7 @@ import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 /**
  * A placeholder fragment containing a simple view.
  */
-class DrawableGraphFragment : Fragment(), GraphFragment, HRadioDrawableItem.HRadioListener {
+class DrawableGraphFragment : Fragment(), GraphFragment, HRadio.HRadioListener<DrawableItems> {
 
     override fun onCreateView(
         inflater: LayoutInflater,
