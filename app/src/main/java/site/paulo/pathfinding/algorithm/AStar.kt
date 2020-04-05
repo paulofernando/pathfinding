@@ -2,7 +2,7 @@ package site.paulo.pathfinding.algorithm
 
 import site.paulo.pathfinding.data.model.GridGraph
 import site.paulo.pathfinding.data.model.Node
-import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
+import site.paulo.pathfinding.ui.component.graphview.grid.PathFindingAlgorithms
 import kotlin.math.abs
 
 class AStar(gridGraph: GridGraph, startNode: Node, endNode: Node) :

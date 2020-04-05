@@ -6,8 +6,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.h_radio_drawable_items.view.*
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.component.graphview.DrawableItems
-import site.paulo.pathfinding.ui.component.graphview.DrawableItems.*
+import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableItems.*
 
 class HRadioDrawableItem(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
 
@@ -19,7 +18,6 @@ class HRadioDrawableItem(context: Context, attrs: AttributeSet) : FrameLayout(co
         inflate(context, R.layout.h_radio_drawable_items, this)
         nodeRadio.setOnClickListener { checkRadio(NODE) }
         edgeRadio.setOnClickListener { checkRadio(EDGE) }
-        weightRadio.setOnClickListener { checkRadio(WEIGHT) }
         currentRadio = nodeRadio
     }
 
@@ -40,7 +38,6 @@ class HRadioDrawableItem(context: Context, attrs: AttributeSet) : FrameLayout(co
         return when (option) {
             NODE -> nodeRadio
             EDGE -> edgeRadio
-            WEIGHT -> weightRadio
         }
     }
 

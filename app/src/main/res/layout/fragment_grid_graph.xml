@@ -7,8 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.page.GridGraphFragment">
 
-    <site.paulo.pathfinding.ui.component.graphview.grid.GraphView
-        android:id="@+id/graphView"
+    <site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
+        android:id="@+id/gridGraphView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_margin"
-        android:layout_below="@id/graphView"
+        android:layout_below="@id/gridGraphView"
         android:orientation="horizontal">
 
         <TextView

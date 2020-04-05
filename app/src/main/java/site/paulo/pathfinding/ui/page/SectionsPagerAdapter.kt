@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.component.graphview.grid.GraphView
+import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 
 private val TAB_TITLES = arrayOf(
         R.string.tab_1,
@@ -35,7 +35,7 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager)
         }
     }
 
-    fun getGraph(position: Int): GraphView {
+    fun getGraph(position: Int): GridGraphView {
         return when (position) {
             0 -> gridGraphFragment.getGraph()
             else -> drawableGraphFragment.getGraph()

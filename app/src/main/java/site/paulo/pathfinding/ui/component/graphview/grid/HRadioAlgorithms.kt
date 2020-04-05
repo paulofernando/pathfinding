@@ -6,8 +6,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.h_radio_algorithms.view.*
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
-import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms.*
+import site.paulo.pathfinding.ui.component.graphview.grid.PathFindingAlgorithms.*
 
 class HRadioAlgorithms(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
 

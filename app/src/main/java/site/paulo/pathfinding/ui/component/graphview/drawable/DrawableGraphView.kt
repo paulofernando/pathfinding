@@ -12,15 +12,18 @@ import androidx.core.content.ContextCompat
 import kotlin.collections.ArrayList
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
+import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableItems.*
 
 class DrawableGraphView : View {
 
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
 
+    private var selectedOption: DrawableItems = DrawableItems.NODE
     private var listeners: ArrayList<GraphListener> = ArrayList()
 
     private val drawableNodes: ArrayList<DrawableNode> = ArrayList()
+    private val drawableEdges: ArrayList<DrawableEdge> = ArrayList()
 
     private val paint = Paint()
     // --------- colors ---------
@@ -28,6 +31,7 @@ class DrawableGraphView : View {
     private val colorEndNode: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
     private val colorNode: Int = ContextCompat.getColor(context, R.color.colorNode)
     private val colorNodeText: Int = ContextCompat.getColor(context, R.color.colorNodeText)
+    private val colorEdge: Int = ContextCompat.getColor(context, R.color.colorEdge)
     // --------------------------
 
     init {
@@ -37,6 +41,7 @@ class DrawableGraphView : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         drawBounderies(canvas)
+        drawEdges(canvas)
         drawNodes(canvas)
     }
 
@@ -53,7 +58,10 @@ class DrawableGraphView : View {
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                addDrawableNode(x ,y)
+                when (selectedOption) {
+                    NODE -> addDrawableNode(x ,y)
+                    EDGE -> addDrawableEdge(x, y)
+                }
             }
             MotionEvent.ACTION_MOVE -> {
 
@@ -79,12 +87,35 @@ class DrawableGraphView : View {
         }
     }
 
+    private fun addDrawableEdge(x: Float, y: Float) {
+        val node = getDrawableNodeAtPoint(x, y)
+        if (node != null) {
+            if (drawableEdges.isEmpty() || drawableEdges.last().endNode != null) {
+                drawableEdges.add(DrawableEdge(drawableEdges.size + 1, node))
+            } else {
+                if (drawableEdges.last().startNode != node)
+                    drawableEdges.last().connectTo(node)
+            }
+            invalidate()
+        }
+    }
+
     private fun hasCollision(node: DrawableNode): Boolean {
         for (n in drawableNodes) {
             if (node.rect.intersect(n.rect))
                 return true
         }
         return false
+    }
+
+    private fun getDrawableNodeAtPoint(x: Float, y: Float): DrawableNode? {
+        val touchedPoint = RectF(x - DrawableNode.RADIUS, y - DrawableNode.RADIUS,
+            x + DrawableNode.RADIUS, y + DrawableNode.RADIUS)
+        for (n in drawableNodes) {
+            if (touchedPoint.intersect(n.rect))
+                return n
+        }
+        return null
     }
 
     private fun drawBounderies(canvas: Canvas) {
@@ -106,6 +137,24 @@ class DrawableGraphView : View {
         }
     }
 
+    private fun drawEdges(canvas: Canvas) {
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = resources.displayMetrics.density * 2
+        for (edge in drawableEdges) {
+            paint.color = colorEdge
+            val startNode = edge.startNode
+            val endNode = edge.endNode
+            if (endNode != null) {
+                canvas.drawLine(edge.startNode.centerX, edge.startNode.centerY,
+                    endNode.centerX, endNode.centerY, paint)
+            } else {
+                paint.color = Color.RED
+                canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS + 4, paint)
+            }
+        }
+        paint.strokeWidth = resources.displayMetrics.density
+    }
+
     private fun configurePaint() {
         paint.isAntiAlias = true
         paint.strokeWidth = resources.displayMetrics.density
@@ -114,6 +163,10 @@ class DrawableGraphView : View {
 
     fun registerListener(listener: GraphListener) {
         listeners.add(listener)
+    }
+
+    fun setDrawableType(newOption: DrawableItems) {
+        selectedOption = newOption
     }
 
 }

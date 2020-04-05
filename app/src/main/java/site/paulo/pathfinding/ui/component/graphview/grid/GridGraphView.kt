@@ -18,10 +18,9 @@ import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
-import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
 import java.util.concurrent.atomic.AtomicBoolean
 
-class GraphView : View {
+class GridGraphView : View {
 
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)

@@ -9,14 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.component.graphview.grid.GraphView
+import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 
 
 class MainActivity : AppCompatActivity(),
     GraphListener, TabReadyListener {
 
-    private lateinit var gridGraph: GraphView
+    private lateinit var gridGridGraph: GridGraphView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,11 +46,11 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun runAlgorithm(view: View) {
-        gridGraph.runAlgorithm()
+        gridGridGraph.runAlgorithm()
     }
 
     fun reset(view: View) {
-        gridGraph.reset()
+        gridGridGraph.reset()
         clearImageView.isEnabled = false
     }
 
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(),
         clearImageView.isEnabled = false
     }
 
-    override fun tabReady(graphView: GraphView) {
-        gridGraph = graphView
+    override fun tabReady(gridGraphView: GridGraphView) {
+        gridGridGraph = gridGraphView
     }
 }

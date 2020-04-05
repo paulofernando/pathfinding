@@ -10,9 +10,9 @@ import kotlinx.android.synthetic.main.fragment_grid_graph.*
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.MainActivity
 import site.paulo.pathfinding.ui.TabReadyListener
-import site.paulo.pathfinding.ui.component.graphview.grid.GraphView
+import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.component.graphview.grid.HRadioAlgorithms
-import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
+import site.paulo.pathfinding.ui.component.graphview.grid.PathFindingAlgorithms
 
 /**
  * A placeholder fragment containing a simple view.
@@ -32,17 +32,17 @@ class GridGraphFragment : Fragment(), GraphFragment, HRadioAlgorithms.HRadioList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        graphView.configureSides(defaultMatrixRows)
+        gridGraphView.configureSides(defaultMatrixRows)
         configureSeekbar()
         horizontalRadioGroup.registerListener(this)
-        graphView.registerListener(activity as MainActivity)
-        (activity as TabReadyListener).tabReady(graphView)
+        gridGraphView.registerListener(activity as MainActivity)
+        (activity as TabReadyListener).tabReady(gridGraphView)
     }
 
     private fun configureSeekbar() {
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-                graphView.configureSides(i + minMatrixGraphRows)
+                gridGraphView.configureSides(i + minMatrixGraphRows)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) { }
@@ -63,11 +63,11 @@ class GridGraphFragment : Fragment(), GraphFragment, HRadioAlgorithms.HRadioList
         }
     }
 
-    override fun getGraph(): GraphView {
-        return graphView
+    override fun getGraph(): GridGraphView {
+        return gridGraphView
     }
 
     override fun onChangeOption(newOption: PathFindingAlgorithms) {
-        graphView.setAlgorithm(newOption)
+        gridGraphView.setAlgorithm(newOption)
     }
 }
