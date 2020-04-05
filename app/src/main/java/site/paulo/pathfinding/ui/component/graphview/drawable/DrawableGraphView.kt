@@ -25,6 +25,8 @@ class DrawableGraphView : View {
     private val drawableNodes: ArrayList<DrawableNode> = ArrayList()
     private val drawableEdges: ArrayList<DrawableEdge> = ArrayList()
 
+    private lateinit var selectedNode: DrawableNode
+
     private val paint = Paint()
     // --------- colors ---------
     private val colorStartNode: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
@@ -42,6 +44,7 @@ class DrawableGraphView : View {
         super.onDraw(canvas)
         drawBounderies(canvas)
         drawEdges(canvas)
+        drawWeights(canvas)
         drawNodes(canvas)
     }
 
@@ -59,12 +62,23 @@ class DrawableGraphView : View {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 when (selectedOption) {
-                    NODE -> addDrawableNode(x ,y)
+                    NODE -> {
+                        val node = getDrawableNodeAtPoint(x, y)
+                        if (node == null) {
+                            addDrawableNode(x, y)
+                        } else {
+                            selectedNode = node
+                        }
+                    }
                     EDGE -> addDrawableEdge(x, y)
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-
+                when (selectedOption) {
+                    NODE -> {
+                        moveNode(selectedNode, x, y)
+                    }
+                }
             }
             MotionEvent.ACTION_UP -> {
 
@@ -83,6 +97,7 @@ class DrawableGraphView : View {
         val node = DrawableNode(drawableNodes.size + 1, x, y)
         if (!hasCollision(node)) {
             drawableNodes.add(node)
+            selectedNode = node
             invalidate()
         }
     }
@@ -100,6 +115,12 @@ class DrawableGraphView : View {
                 invalidate()
             }
         }
+    }
+
+    private fun moveNode(selectedNode: DrawableNode, x: Float, y: Float) {
+        selectedNode.centerX = x
+        selectedNode.centerY = y
+        invalidate()
     }
 
     private fun hasCollision(node: DrawableNode): Boolean {
@@ -143,10 +164,10 @@ class DrawableGraphView : View {
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = resources.displayMetrics.density * 2
         for (edge in drawableEdges) {
-            paint.color = colorEdge
             val startNode = edge.startNode
             val endNode = edge.endNode
             if (endNode != null) {
+                paint.color = colorEdge
                 canvas.drawLine(edge.startNode.centerX, edge.startNode.centerY,
                     endNode.centerX, endNode.centerY, paint)
             } else {
@@ -154,7 +175,24 @@ class DrawableGraphView : View {
                 canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS + 4, paint)
             }
         }
+
         paint.strokeWidth = resources.displayMetrics.density
+    }
+
+    private fun drawWeights(canvas: Canvas) {
+        paint.style = Paint.Style.FILL
+        paint.color = Color.BLACK
+        paint.strokeWidth = resources.displayMetrics.density
+        for (edge in drawableEdges) {
+            val startNode = edge.startNode
+            val endNode = edge.endNode
+            if (endNode != null) {
+                canvas.drawText(
+                    edge.weight.toString(), (startNode.centerX + endNode.centerX) / 2,
+                    (startNode.centerY + endNode.centerY) / 2, paint
+                )
+            }
+        }
     }
 
     private fun configurePaint() {
