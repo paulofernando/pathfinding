@@ -5,9 +5,9 @@ import site.paulo.pathfinding.data.model.Node
 
 class DrawableNode (val id: Int, var centerX: Float, var centerY: Float) {
 
-    var rect: RectF
+    lateinit var rect: RectF
     val node: Node
-    var connectedAmount: Int = 0
+    var connectedTo: HashMap<Int, DrawableNode> = HashMap()
 
     companion object {
         const val DIAMETER = 100f
@@ -19,9 +19,16 @@ class DrawableNode (val id: Int, var centerX: Float, var centerY: Float) {
             centerX - RADIUS,
             centerY - RADIUS,
             centerX + RADIUS,
-            centerY + RADIUS
-        )
-
+            centerY + RADIUS)
         node = Node(id.toString(), Pair(centerX.toInt(), centerY.toInt()))
+    }
+
+    fun updatePosition(x: Float, y: Float) {
+        centerX = x;
+        centerY = y
+        rect.left = centerX - RADIUS
+        rect.top = centerY - RADIUS
+        rect.right = centerX + RADIUS
+        rect.bottom = centerY + RADIUS
     }
 }

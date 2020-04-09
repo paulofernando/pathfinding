@@ -8,13 +8,11 @@ class DrawableEdge (val id: Int, var startNode: DrawableNode) {
     var endNode: DrawableNode? = null
     var edge: Edge? = null
 
-    init {
-        startNode.connectedAmount++
-    }
-
     fun connectTo(drawableNode: DrawableNode, weight: Double = 1.0) {
-        drawableNode.connectedAmount++
         endNode = drawableNode
         edge = Edge(startNode.node, drawableNode.node, weight)
+
+        startNode.connectedTo[drawableNode.id] = drawableNode
+        drawableNode.connectedTo[startNode.id] = startNode
     }
 }

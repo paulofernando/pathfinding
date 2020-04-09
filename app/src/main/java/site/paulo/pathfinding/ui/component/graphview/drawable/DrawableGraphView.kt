@@ -104,7 +104,12 @@ class DrawableGraphView : View {
     private fun addDrawableEdge(x: Float, y: Float) {
         val node = getDrawableNodeAtPoint(x, y)
         if (node != null) {
-            if (node.connectedAmount < drawableNodes.size - 1) {
+            if (drawableEdges.isNotEmpty() && drawableEdges.last().endNode == null) { //
+                if (drawableEdges.last().startNode == node)
+                    return
+            }
+
+            if (node.connectedTo.size < drawableNodes.size - 1) {
                 if (drawableEdges.isEmpty() || drawableEdges.last().endNode != null) {
                     drawableEdges.add(DrawableEdge(drawableEdges.size + 1, node))
                 } else {
@@ -117,13 +122,19 @@ class DrawableGraphView : View {
     }
 
     private fun moveNode(selectedNode: DrawableNode, x: Float, y: Float) {
-        selectedNode.centerX = x
-        selectedNode.centerY = y
-        invalidate()
+        val tempX = selectedNode.centerX
+        val tempY = selectedNode.centerY
+        selectedNode.updatePosition(x, y)
+        if (hasCollision(selectedNode)) {
+            selectedNode.updatePosition(tempX, tempY)
+        } else {
+            invalidate()
+        }
     }
 
     private fun hasCollision(node: DrawableNode): Boolean {
         for (n in drawableNodes) {
+            if (n == node) continue
             if (node.rect.intersect(n.rect))
                 return true
         }
