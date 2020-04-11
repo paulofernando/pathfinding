@@ -1,6 +1,6 @@
 package site.paulo.pathfinding.data.model
 
-class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
+open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
 
     /**
      * LinkedHashMap (because the ordering matters when drawing) with

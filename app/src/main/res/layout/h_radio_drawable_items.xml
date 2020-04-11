@@ -17,7 +17,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/button_space"
             android:background="@drawable/radio_checked"
-            android:drawableRight="@drawable/ic_check_mark"
             android:padding="@dimen/button_space"
             android:text="@string/node_radio" />
 
@@ -29,6 +28,15 @@
             android:background="@drawable/radio"
             android:padding="@dimen/button_space"
             android:text="@string/edge_radio" />
+
+        <Button
+            android:id="@+id/selectRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/button_space"
+            android:background="@drawable/radio"
+            android:padding="@dimen/button_space"
+            android:text="@string/select_radio"/>
 
     </LinearLayout>
 

@@ -3,10 +3,10 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 import android.graphics.RectF
 import site.paulo.pathfinding.data.model.Node
 
-class DrawableNode (val id: Int, var centerX: Float, var centerY: Float) {
+class DrawableNode (val id: Int, var centerX: Float, var centerY: Float):
+    Node(id.toString(), Pair(centerX.toInt(), centerY.toInt())) {
 
-    lateinit var rect: RectF
-    val node: Node
+    var rect: RectF
     var connectedTo: HashMap<Int, DrawableNode> = HashMap()
 
     companion object {
@@ -20,7 +20,6 @@ class DrawableNode (val id: Int, var centerX: Float, var centerY: Float) {
             centerY - RADIUS,
             centerX + RADIUS,
             centerY + RADIUS)
-        node = Node(id.toString(), Pair(centerX.toInt(), centerY.toInt()))
     }
 
     fun updatePosition(x: Float, y: Float) {

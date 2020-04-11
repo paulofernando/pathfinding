@@ -23,5 +23,6 @@
     <string name="tab_2">Drawable</string>
     <string name="node_radio">Node</string>
     <string name="edge_radio">Edge</string>
+    <string name="select_radio">Select</string>
     <string name="weight_radio">Weight</string>
 </resources>

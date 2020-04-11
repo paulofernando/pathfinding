@@ -21,7 +21,8 @@ class DrawableGraphView : View {
 
     private val drawableNodes: ArrayList<DrawableNode> = ArrayList()
     private val drawableEdges: ArrayList<DrawableEdge> = ArrayList()
-
+    private var startPoint: DrawableNode? = null
+    private var endPoint: DrawableNode? = null
     private lateinit var selectedNode: DrawableNode
 
     private val paint = Paint()
@@ -41,10 +42,12 @@ class DrawableGraphView : View {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawBounderies(canvas)
+        drawBoundaries(canvas)
         drawEdges(canvas)
         drawWeights(canvas)
         drawNodes(canvas)
+        drawStartAndEndPoints(canvas)
+        drawTextNodes(canvas)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -70,6 +73,7 @@ class DrawableGraphView : View {
                         }
                     }
                     EDGE -> addDrawableEdge(x, y)
+                    SELECT -> selectDrawableNode(x, y)
                 }
             }
             MotionEvent.ACTION_MOVE -> {
@@ -121,6 +125,19 @@ class DrawableGraphView : View {
         }
     }
 
+    private fun selectDrawableNode(x: Float, y: Float) {
+        val node = getDrawableNodeAtPoint(x, y)
+        if (node != null) {
+            if (startPoint == null) {
+                startPoint = node
+                invalidate()
+            } else if (endPoint == null) {
+                endPoint = node
+                invalidate()
+            }
+        }
+    }
+
     private fun moveNode(selectedNode: DrawableNode, x: Float, y: Float) {
         val tempX = selectedNode.centerX
         val tempY = selectedNode.centerY
@@ -151,7 +168,7 @@ class DrawableGraphView : View {
         return null
     }
 
-    private fun drawBounderies(canvas: Canvas) {
+    private fun drawBoundaries(canvas: Canvas) {
         paint.style = Paint.Style.STROKE
         paint.color = Color.BLACK
         canvas.drawRect(1f, 1f, width - 1f, height - 1f, paint)
@@ -159,13 +176,29 @@ class DrawableGraphView : View {
 
     private fun drawNodes(canvas: Canvas) {
         paint.style = Paint.Style.FILL
-        for (node in drawableNodes) {
-            paint.color = colorNode
+        paint.color = colorNode
+        for (node in drawableNodes)
             canvas.drawCircle(node.centerX, node.centerY, DrawableNode.RADIUS, paint)
-            paint.color = colorNodeText
+    }
+
+    private fun drawStartAndEndPoints(canvas: Canvas) {
+        if (startPoint != null) {
+            paint.style = Paint.Style.FILL
+            paint.color = colorStartNode
+            canvas.drawCircle(startPoint!!.centerX, startPoint!!.centerY, DrawableNode.RADIUS, paint)
+            if (endPoint != null) {
+                paint.color = colorEndNode
+                canvas.drawCircle(endPoint!!.centerX, endPoint!!.centerY, DrawableNode.RADIUS, paint)
+            }
+        }
+    }
+
+    private fun drawTextNodes(canvas: Canvas) {
+        paint.color = colorNodeText
+        for (node in drawableNodes) {
             canvas.drawText(
                 node.id.toString(), node.centerX - paint.measureText(node.id.toString()) / 2,
-                    node.centerY - ((paint.descent() + paint.ascent()) / 2), paint
+                node.centerY - ((paint.descent() + paint.ascent()) / 2), paint
             )
         }
     }
@@ -174,15 +207,15 @@ class DrawableGraphView : View {
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = resources.displayMetrics.density * 2
         for (edge in drawableEdges) {
-            val startNode = edge.startNode
-            val endNode = edge.endNode
-            if (endNode != null) {
+            val firstNode = edge.startNode
+            val secondNode = edge.endNode
+            if (secondNode != null) {
                 paint.color = colorEdge
                 canvas.drawLine(edge.startNode.centerX, edge.startNode.centerY,
-                    endNode.centerX, endNode.centerY, paint)
+                    secondNode.centerX, secondNode.centerY, paint)
             } else {
                 paint.color = Color.RED
-                canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS + 4, paint)
+                canvas.drawCircle(firstNode.centerX, firstNode.centerY, DrawableNode.RADIUS + 4, paint)
             }
         }
 
@@ -208,7 +241,6 @@ class DrawableGraphView : View {
                     15f,
                     paint
                 )
-
 
                 paint.color = colorTextWeight
                 canvas.drawText(textWeight, textCenterX - (paint.measureText(textWeight) / 2),

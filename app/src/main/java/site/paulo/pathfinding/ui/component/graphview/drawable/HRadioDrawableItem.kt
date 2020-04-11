@@ -13,8 +13,9 @@ class HRadioDrawableItem(context: Context, attrs: AttributeSet) :
 
     init {
         inflate(context, R.layout.h_radio_drawable_items, this)
-        nodeRadio.setOnClickListener { checkRadio(NODE) }
-        edgeRadio.setOnClickListener { checkRadio(EDGE) }
+        selectRadio.setOnClickListener { checkRadio(SELECT, false) }
+        nodeRadio.setOnClickListener { checkRadio(NODE, false) }
+        edgeRadio.setOnClickListener { checkRadio(EDGE, false) }
         currentRadio = nodeRadio
     }
 
@@ -22,6 +23,7 @@ class HRadioDrawableItem(context: Context, attrs: AttributeSet) :
         return when (option) {
             NODE -> nodeRadio
             EDGE -> edgeRadio
+            SELECT -> selectRadio
         }
     }
 
