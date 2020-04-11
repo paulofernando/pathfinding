@@ -17,8 +17,10 @@ import kotlin.collections.HashMap
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import site.paulo.pathfinding.data.model.Edge
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import java.util.concurrent.atomic.AtomicBoolean
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
 
 class GridGraphView : View {
 
@@ -125,10 +127,10 @@ class GridGraphView : View {
     fun setAlgorithm(alg: PathFindingAlgorithms) {
         selectedAlgorithm = alg
         when(selectedAlgorithm) {
-            PathFindingAlgorithms.DJIKSTRA -> enableWeightIncrease(true)
-            PathFindingAlgorithms.ASTAR -> enableWeightIncrease(true)
-            PathFindingAlgorithms.BREADTH_FIRST -> enableWeightIncrease(false)
-            PathFindingAlgorithms.DEPTH_FIRST -> enableWeightIncrease(false)
+            DJIKSTRA -> enableWeightIncrease(true)
+            ASTAR -> enableWeightIncrease(true)
+            BREADTH_FIRST -> enableWeightIncrease(false)
+            DEPTH_FIRST -> enableWeightIncrease(false)
         }
     }
 
@@ -141,10 +143,10 @@ class GridGraphView : View {
         val nodeA = graph.getNode(startPoint) ?: return
         val nodeB = graph.getNode(endPoint) ?: return
         algorithm = when (selectedAlgorithm) {
-            PathFindingAlgorithms.DJIKSTRA -> Djikstra(graph, nodeA, nodeB)
-            PathFindingAlgorithms.ASTAR -> AStar(graph, nodeA, nodeB)
-            PathFindingAlgorithms.BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
-            PathFindingAlgorithms.DEPTH_FIRST -> DepthFirst(nodeA, nodeB)
+            DJIKSTRA -> Djikstra(graph.getNodes(), nodeA, nodeB)
+            ASTAR -> AStar(graph, nodeA, nodeB)
+            BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
+            DEPTH_FIRST -> DepthFirst(nodeA, nodeB)
         }
 
         algorithm.run()

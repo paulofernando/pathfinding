@@ -12,8 +12,7 @@ import site.paulo.pathfinding.ui.MainActivity
 import site.paulo.pathfinding.ui.TabReadyListener
 import site.paulo.pathfinding.ui.component.graphview.HRadio
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
-import site.paulo.pathfinding.ui.component.graphview.grid.HRadioAlgorithms
-import site.paulo.pathfinding.ui.component.graphview.grid.PathFindingAlgorithms
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 
 /**
  * A placeholder fragment containing a simple view.

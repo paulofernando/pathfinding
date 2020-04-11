@@ -38,7 +38,7 @@ internal class AStarTest {
     @Test
     fun `test A* algorithm grid graph - no path start at corner - lock around start point`() {
         val gridGraph = GridGraph(3,3)
-        val aStar = Djikstra(gridGraph, gridGraph.getNode(Pair(0,0))!!, gridGraph.getNode(Pair(2,2))!!)
+        val aStar = AStar(gridGraph, gridGraph.getNode(Pair(0,0))!!, gridGraph.getNode(Pair(2,2))!!)
 
         gridGraph.removeNode(Pair(0,1))
         gridGraph.removeNode(Pair(1,0))
@@ -65,7 +65,7 @@ internal class AStarTest {
     @Test
     fun `test A* algorithm in grid graph - short grid graph`() {
         val gridGraph = GridGraph(2,2)
-        val aStar = Djikstra(gridGraph, gridGraph.getNode(Pair(0,0))!!, gridGraph.getNode(Pair(1,1))!!)
+        val aStar = AStar(gridGraph, gridGraph.getNode(Pair(0,0))!!, gridGraph.getNode(Pair(1,1))!!)
 
         aStar.run()
 
@@ -75,7 +75,7 @@ internal class AStarTest {
     @Test
     fun `test A* algorithm in grid graph - shortest grid graph`() {
         val gridGraph = GridGraph(1,1)
-        val aStar = Djikstra(gridGraph, gridGraph.getNode(Pair(0,0))!!, gridGraph.getNode(Pair(0,0))!!)
+        val aStar = AStar(gridGraph, gridGraph.getNode(Pair(0,0))!!, gridGraph.getNode(Pair(0,0))!!)
 
         aStar.run()
 

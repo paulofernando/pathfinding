@@ -3,7 +3,7 @@ package site.paulo.pathfinding.data.model
 import java.util.*
 import kotlin.collections.HashMap
 
-class GridGraph(private val rows: Int, private val columns: Int) : Graph {
+class GridGraph(private val rows: Int, private val columns: Int) : Graph<Node> {
 
     val table = Array(rows) { arrayOfNulls<Node>(columns) }
     private val removedNodes = HashMap<String,Node>()
