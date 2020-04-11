@@ -28,4 +28,5 @@
     <color name="colorTextWeight">#FFFFFF</color>
     <color name="colorBoxWeight">#AAAAAA</color>
     <color name="colorDrawablePath">#D500F9</color>
+    <color name="colorSelectedNode">#FF1744</color>
 </resources>

@@ -28,7 +28,7 @@ class DrawableGraphView : View {
     private val drawableEdges: ArrayList<DrawableEdge> = ArrayList()
     private var startPoint: DrawableNode? = null
     private var endPoint: DrawableNode? = null
-    private lateinit var selectedNode: DrawableNode
+    private var selectedNode: DrawableNode? = null
 
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
@@ -45,6 +45,7 @@ class DrawableGraphView : View {
     private val colorEdge: Int = ContextCompat.getColor(context, R.color.colorEdge)
     private val colorTextWeight: Int = ContextCompat.getColor(context, R.color.colorTextWeight)
     private val colorBoxWeight: Int = ContextCompat.getColor(context, R.color.colorBoxWeight)
+    private val colorSelectedNode: Int = ContextCompat.getColor(context, R.color.colorSelectedNode)
     // --------------------------
 
     init {
@@ -61,6 +62,7 @@ class DrawableGraphView : View {
             drawVisitedNodes(canvas)
         drawStartAndEndPoints(canvas)
         drawTextNodes(canvas)
+        drawSelectedNode(canvas)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -92,12 +94,16 @@ class DrawableGraphView : View {
             MotionEvent.ACTION_MOVE -> {
                 when (selectedOption) {
                     NODE -> {
-                        moveNode(selectedNode, x, y)
+                        val node = selectedNode ?: return false
+                        moveNode(node, x, y)
                     }
                 }
             }
             MotionEvent.ACTION_UP -> {
-
+                if (selectedOption == NODE) {
+                    selectedNode = null
+                    invalidate()
+                }
             }
             MotionEvent.ACTION_CANCEL -> { }
         }
@@ -133,37 +139,36 @@ class DrawableGraphView : View {
     }
 
     private fun addDrawableEdge(x: Float, y: Float) {
-        val node = getDrawableNodeAtPoint(x, y)
-        if (node != null) {
-            if (drawableEdges.isNotEmpty() && drawableEdges.last().endNode == null) { //
-                if (drawableEdges.last().startNode == node)
-                    return
-            }
+        val node = getDrawableNodeAtPoint(x, y) ?: return
+        if ((drawableEdges.isNotEmpty() && drawableEdges.last().endNode == null) &&
+            (drawableEdges.last().startNode == node)) return
 
-            if (node.connectedTo.size < graph.getNodes().size - 1) {
-                if (drawableEdges.isEmpty() || drawableEdges.last().endNode != null) {
-                    drawableEdges.add(DrawableEdge(drawableEdges.size + 1, node))
-                } else {
-                    if (drawableEdges.last().startNode != node)
-                        drawableEdges.last().connectTo(node)
+        if (node.connectedTo.size < graph.getNodes().size - 1) {
+            if (drawableEdges.isEmpty() || drawableEdges.last().endNode != null) {
+                drawableEdges.add(DrawableEdge(drawableEdges.size + 1, node))
+                selectedNode = node
+            } else {
+                if (drawableEdges.last().startNode != node) {
+                    drawableEdges.last().connectTo(node)
+                    selectedNode = null
                 }
-                invalidate()
             }
+            invalidate()
         }
+
     }
 
     private fun selectDrawableNode(x: Float, y: Float) {
-        val node = getDrawableNodeAtPoint(x, y)
-        if (node != null) {
-            if (startPoint == null) {
-                startPoint = node
-                invalidate()
-            } else if (endPoint == null) {
-                endPoint = node
-                listeners.forEach { it.onGraphReady() }
-                invalidate()
-            }
+        val node = getDrawableNodeAtPoint(x, y) ?: return
+        if (startPoint == null) {
+            startPoint = node
+            invalidate()
+        } else if (endPoint == null) {
+            endPoint = node
+            listeners.forEach { it.onGraphReady() }
+            invalidate()
         }
+
     }
 
     private fun moveNode(selectedNode: DrawableNode, x: Float, y: Float) {
@@ -213,6 +218,13 @@ class DrawableGraphView : View {
         canvas.drawCircle(node.centerX, node.centerY, DrawableNode.RADIUS, paint)
     }
 
+    private fun drawSelectedNode(canvas: Canvas) {
+        val node = selectedNode ?: return
+        paint.style = Paint.Style.STROKE
+        paint.color = colorSelectedNode
+        drawNode(node, canvas)
+    }
+
     private fun drawVisitedNodes(canvas: Canvas) {
         paint.style = Paint.Style.FILL
         paint.color = colorDrawablePath
@@ -224,15 +236,14 @@ class DrawableGraphView : View {
     }
 
     private fun drawStartAndEndPoints(canvas: Canvas) {
-        if (startPoint != null) {
-            paint.style = Paint.Style.FILL
-            paint.color = colorStartNode
-            canvas.drawCircle(startPoint!!.centerX, startPoint!!.centerY, DrawableNode.RADIUS, paint)
-            if (endPoint != null) {
-                paint.color = colorEndNode
-                canvas.drawCircle(endPoint!!.centerX, endPoint!!.centerY, DrawableNode.RADIUS, paint)
-            }
-        }
+        val startNode = startPoint ?: return
+        paint.style = Paint.Style.FILL
+        paint.color = colorStartNode
+        canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS, paint)
+
+        val endNode = endPoint ?: return
+        paint.color = colorEndNode
+        canvas.drawCircle(endNode.centerX, endNode.centerY, DrawableNode.RADIUS, paint)
     }
 
     private fun drawTextNodes(canvas: Canvas) {
@@ -252,21 +263,20 @@ class DrawableGraphView : View {
 
     private fun drawEdges(canvas: Canvas) {
         paint.style = Paint.Style.STROKE
+        paint.color = colorEdge
         paint.strokeWidth = resources.displayMetrics.density * 2
         for (edge in drawableEdges) {
-            val firstNode = edge.startNode
-            val secondNode = edge.endNode
-            if (secondNode != null) {
-                paint.color = colorEdge
-                canvas.drawLine(edge.startNode.centerX, edge.startNode.centerY,
-                    secondNode.centerX, secondNode.centerY, paint)
-            } else {
-                paint.color = Color.RED
-                canvas.drawCircle(firstNode.centerX, firstNode.centerY, DrawableNode.RADIUS + 4, paint)
-            }
+            drawEdge(edge, canvas)
         }
-
         paint.strokeWidth = resources.displayMetrics.density
+    }
+
+    private fun drawEdge(edge: DrawableEdge, canvas: Canvas) {
+        val secondNode = edge.endNode
+        if (secondNode != null) {
+            canvas.drawLine(edge.startNode.centerX, edge.startNode.centerY,
+                secondNode.centerX, secondNode.centerY, paint)
+        }
     }
 
     private fun drawWeights(canvas: Canvas) {
