@@ -154,21 +154,6 @@ class GridGraphView : View {
             defaultPathNodePerSec, defaultVisitedNodePerSec)
     }
 
-    fun reset() {
-        graph = GridGraph(rows, cols)
-        startPoint = uninitialized
-        endPoint = uninitialized
-        pathPositions.clear()
-        visitedNodesPositions.clear()
-        increasedWeightNodes.clear()
-        removedNodes.clear()
-        readyToIncreaseWeightNodes = false
-        invalidate()
-
-        listeners.forEach { it.onGraphNotReady() }
-        listeners.forEach { it.onGraphNotCleanable() }
-    }
-
     private fun markPoint(position: Pair<Int, Int>) {
         if ((position.first >= cols) || (position.second >= rows)) return
         when {
@@ -415,12 +400,27 @@ class GridGraphView : View {
         rows = amount
         cols = amount
         squareSide = (width / cols).toFloat()
-        reset()
+        resetGraphView()
     }
 
     fun enableWeightIncrease(enable: Boolean) {
         hasWeight = enable
         invalidate()
+    }
+
+    fun resetGraphView() {
+        graph = GridGraph(rows, cols)
+        startPoint = uninitialized
+        endPoint = uninitialized
+        pathPositions.clear()
+        visitedNodesPositions.clear()
+        increasedWeightNodes.clear()
+        removedNodes.clear()
+        readyToIncreaseWeightNodes = false
+        invalidate()
+
+        listeners.forEach { it.onGraphNotReady() }
+        listeners.forEach { it.onGraphNotCleanable() }
     }
 
 }

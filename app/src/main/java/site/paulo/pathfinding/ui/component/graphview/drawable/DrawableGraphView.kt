@@ -12,7 +12,6 @@ import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import site.paulo.pathfinding.data.model.DrawableGraph
 import site.paulo.pathfinding.data.model.Node
-import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableItems.*
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
@@ -127,6 +126,7 @@ class DrawableGraphView : View {
             selectedNode = node
             invalidate()
         }
+        listeners.forEach { it.onGraphCleanable() }
     }
 
     private fun addDrawableEdge(x: Float, y: Float) {
@@ -287,5 +287,18 @@ class DrawableGraphView : View {
     fun setDrawableType(newOption: DrawableItems) {
         selectedOption = newOption
     }
+
+    fun resetGraphView() {
+        graph = DrawableGraph()
+        startPoint = null
+        endPoint = null
+        pathPositions.clear()
+        drawableEdges.clear()
+        invalidate()
+
+        listeners.forEach { it.onGraphNotReady() }
+        listeners.forEach { it.onGraphNotCleanable() }
+    }
+
 
 }

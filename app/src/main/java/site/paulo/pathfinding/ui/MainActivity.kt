@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_drawable_graph.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
@@ -50,7 +51,8 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun reset(view: View) {
-        gridGridGraph.reset()
+        gridGridGraph.resetGraphView()
+        drawableGraphView.resetGraphView()
         clearImageView.isEnabled = false
     }
 
