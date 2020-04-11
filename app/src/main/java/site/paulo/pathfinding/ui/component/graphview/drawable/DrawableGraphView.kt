@@ -56,10 +56,12 @@ class DrawableGraphView : View {
         super.onDraw(canvas)
         drawBoundaries(canvas)
         drawEdges(canvas)
-        drawWeights(canvas)
         drawNodes(canvas)
-        if (visitedNodesOrder.isNotEmpty())
+        if (visitedNodesOrder.isNotEmpty()) {
             drawVisitedNodes(canvas)
+            drawVisitedEdges(canvas)
+        }
+        drawWeights(canvas)
         drawStartAndEndPoints(canvas)
         drawTextNodes(canvas)
         drawSelectedNode(canvas)
@@ -266,17 +268,28 @@ class DrawableGraphView : View {
         paint.color = colorEdge
         paint.strokeWidth = resources.displayMetrics.density * 2
         for (edge in drawableEdges) {
-            drawEdge(edge, canvas)
+            val endNode = edge.endNode ?: continue
+            drawEdge(edge.startNode, endNode, canvas)
         }
         paint.strokeWidth = resources.displayMetrics.density
     }
 
-    private fun drawEdge(edge: DrawableEdge, canvas: Canvas) {
-        val secondNode = edge.endNode
-        if (secondNode != null) {
-            canvas.drawLine(edge.startNode.centerX, edge.startNode.centerY,
-                secondNode.centerX, secondNode.centerY, paint)
+    private fun drawEdge(nodeA: DrawableNode, nodeB: DrawableNode, canvas: Canvas) {
+        canvas.drawLine(nodeA.centerX, nodeA.centerY, nodeB.centerX, nodeB.centerY, paint)
+    }
+
+    private fun drawVisitedEdges(canvas: Canvas) {
+        paint.style = Paint.Style.STROKE
+        paint.color = colorDrawablePath
+        paint.strokeWidth = resources.displayMetrics.density * 2
+
+        var startNode = visitedNodesOrder.get(index = 0) as DrawableNode
+        for (i in 1 until visitedNodesOrder.size) {
+            drawEdge(startNode, visitedNodesOrder.get(index = i) as DrawableNode, canvas)
+            startNode = visitedNodesOrder.get(index = i) as DrawableNode
         }
+
+        paint.strokeWidth = resources.displayMetrics.density
     }
 
     private fun drawWeights(canvas: Canvas) {
