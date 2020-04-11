@@ -400,7 +400,7 @@ class GridGraphView : View {
         rows = amount
         cols = amount
         squareSide = (width / cols).toFloat()
-        resetGraphView()
+        reset()
     }
 
     fun enableWeightIncrease(enable: Boolean) {
@@ -408,7 +408,7 @@ class GridGraphView : View {
         invalidate()
     }
 
-    fun resetGraphView() {
+    fun reset() {
         graph = GridGraph(rows, cols)
         startPoint = uninitialized
         endPoint = uninitialized

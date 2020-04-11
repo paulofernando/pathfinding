@@ -47,12 +47,16 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun runAlgorithm(view: View) {
-        gridGridGraph.runAlgorithm()
+        if (viewPager.currentItem == 0)
+            drawableGraphView.runAlgorithm()
+        else
+            gridGridGraph.runAlgorithm()
+
     }
 
     fun reset(view: View) {
-        gridGridGraph.resetGraphView()
-        drawableGraphView.resetGraphView()
+        gridGridGraph.reset()
+        drawableGraphView.reset()
         clearImageView.isEnabled = false
     }
 

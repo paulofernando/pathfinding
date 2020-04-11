@@ -32,14 +32,15 @@ class DrawableGraphView : View {
 
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
-    private val pathPositions: ArrayList<DrawableNode> = ArrayList()
-    private val visitedNodesOrder: Stack<DrawableNode> = Stack()
+    private val pathPositions: ArrayList<Node> = ArrayList()
+    private val visitedNodesOrder: Stack<Node> = Stack()
 
     private val paint = Paint()
     // --------- colors ---------
     private val colorStartNode: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
     private val colorEndNode: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
     private val colorNode: Int = ContextCompat.getColor(context, R.color.colorNode)
+    private val colorDrawablePath: Int = ContextCompat.getColor(context, R.color.colorDrawablePath)
     private val colorNodeText: Int = ContextCompat.getColor(context, R.color.colorNodeText)
     private val colorEdge: Int = ContextCompat.getColor(context, R.color.colorEdge)
     private val colorTextWeight: Int = ContextCompat.getColor(context, R.color.colorTextWeight)
@@ -56,6 +57,8 @@ class DrawableGraphView : View {
         drawEdges(canvas)
         drawWeights(canvas)
         drawNodes(canvas)
+        if (visitedNodesOrder.isNotEmpty())
+            drawVisitedNodes(canvas)
         drawStartAndEndPoints(canvas)
         drawTextNodes(canvas)
     }
@@ -111,16 +114,16 @@ class DrawableGraphView : View {
             startPoint as Node,
             endPoint as Node)
         algorithm.run()
-        algorithm.getPath().forEach{ Log.d("TAG", it.name) }
-    }
 
-    fun reset() {
-        listeners.forEach { it.onGraphNotReady() }
-        listeners.forEach { it.onGraphNotCleanable() }
+        val path = algorithm.getPath()
+        while (path.isNotEmpty())
+            visitedNodesOrder.add(path.pop())
+
+        invalidate()
     }
 
     private fun addDrawableNode(x: Float, y: Float) {
-        val node = DrawableNode(graph.getNodes().size + 1, x, y)
+        val node = DrawableNode((graph.getNodes().size + 1).toString(), x, y)
         if (!hasCollision(node)) {
             graph.addNode(node)
             selectedNode = node
@@ -157,7 +160,7 @@ class DrawableGraphView : View {
                 invalidate()
             } else if (endPoint == null) {
                 endPoint = node
-                runAlgorithm()
+                listeners.forEach { it.onGraphReady() }
                 invalidate()
             }
         }
@@ -203,7 +206,21 @@ class DrawableGraphView : View {
         paint.style = Paint.Style.FILL
         paint.color = colorNode
         for (node in graph.getNodes())
-            canvas.drawCircle(node.centerX, node.centerY, DrawableNode.RADIUS, paint)
+            drawNode(node, canvas)
+    }
+
+    private fun drawNode(node: DrawableNode, canvas: Canvas) {
+        canvas.drawCircle(node.centerX, node.centerY, DrawableNode.RADIUS, paint)
+    }
+
+    private fun drawVisitedNodes(canvas: Canvas) {
+        paint.style = Paint.Style.FILL
+        paint.color = colorDrawablePath
+        for (node in visitedNodesOrder) {
+            val drawableNode = graph.getNode(node.name)
+            if (drawableNode != null)
+                drawNode(drawableNode, canvas)
+        }
     }
 
     private fun drawStartAndEndPoints(canvas: Canvas) {
@@ -221,11 +238,16 @@ class DrawableGraphView : View {
     private fun drawTextNodes(canvas: Canvas) {
         paint.color = colorNodeText
         for (node in graph.getNodes()) {
-            canvas.drawText(
-                node.id.toString(), node.centerX - paint.measureText(node.id.toString()) / 2,
-                node.centerY - ((paint.descent() + paint.ascent()) / 2), paint
-            )
+            drawTextNode(node, canvas)
         }
+    }
+
+    private fun drawTextNode(node: DrawableNode, canvas: Canvas) {
+        canvas.drawText(
+            node.id,
+            node.centerX - paint.measureText(node.id) / 2,
+            node.centerY - ((paint.descent() + paint.ascent()) / 2), paint
+        )
     }
 
     private fun drawEdges(canvas: Canvas) {
@@ -288,7 +310,7 @@ class DrawableGraphView : View {
         selectedOption = newOption
     }
 
-    fun resetGraphView() {
+    fun reset() {
         graph = DrawableGraph()
         startPoint = null
         endPoint = null

@@ -35,13 +35,6 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager)
         }
     }
 
-    fun getGraph(position: Int): GridGraphView {
-        return when (position) {
-            0 -> gridGraphFragment.getGraph()
-            else -> drawableGraphFragment.getGraph()
-        }
-    }
-
     override fun getPageTitle(position: Int): CharSequence? {
         return context.resources.getString(TAB_TITLES[position])
     }

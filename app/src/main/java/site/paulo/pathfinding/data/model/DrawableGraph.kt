@@ -11,7 +11,7 @@ class DrawableGraph: Graph<DrawableNode> {
         return drawableNodes
     }
 
-    fun getNode(id: Int): DrawableNode? {
+    fun getNode(id: String): DrawableNode? {
         for (node in drawableNodes) {
             if (node.id == id)
                 return node

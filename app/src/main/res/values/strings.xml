@@ -19,8 +19,8 @@
     <string name="item_weight">Weight</string>
     <string name="about">About</string>
 
-    <string name="tab_1">Grid</string>
-    <string name="tab_2">Drawable</string>
+    <string name="tab_1">Drawable</string>
+    <string name="tab_2">Grid</string>
     <string name="node_radio">Node</string>
     <string name="edge_radio">Edge</string>
     <string name="select_radio">Select</string>

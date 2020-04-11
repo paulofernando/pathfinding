@@ -27,4 +27,5 @@
     <color name="colorEdge">#AAAAAA</color>
     <color name="colorTextWeight">#FFFFFF</color>
     <color name="colorBoxWeight">#AAAAAA</color>
+    <color name="colorDrawablePath">#D500F9</color>
 </resources>

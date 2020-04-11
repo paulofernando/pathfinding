@@ -3,11 +3,11 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 import android.graphics.RectF
 import site.paulo.pathfinding.data.model.Node
 
-class DrawableNode (val id: Int, var centerX: Float, var centerY: Float):
-    Node(id.toString(), Pair(centerX.toInt(), centerY.toInt())) {
+class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
+    Node(id, Pair(centerX.toInt(), centerY.toInt())) {
 
     var rect: RectF
-    var connectedTo: HashMap<Int, DrawableNode> = HashMap()
+    var connectedTo: HashMap<String, DrawableNode> = HashMap()
 
     companion object {
         const val DIAMETER = 100f
