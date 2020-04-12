@@ -52,12 +52,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/seekBarContainer">
 
-        <site.paulo.pathfinding.ui.component.graphview.grid.HRadioAlgorithms
+        <site.paulo.pathfinding.ui.component.graphview.HRadioAlgorithms
             android:id="@+id/horizontalRadioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        </site.paulo.pathfinding.ui.component.graphview.grid.HRadioAlgorithms>
+        </site.paulo.pathfinding.ui.component.graphview.HRadioAlgorithms>
 
     </HorizontalScrollView>
 

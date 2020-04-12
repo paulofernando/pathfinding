@@ -14,19 +14,18 @@
         android:layout_gravity="center"/>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_below="@id/drawableGraphView">
 
-        <site.paulo.pathfinding.ui.component.graphview.drawable.HRadioDrawableItem
-            android:id="@+id/horizontalDrawableItemRadioGroup"
+        <site.paulo.pathfinding.ui.component.graphview.HRadioAlgorithms
+            android:id="@+id/horizontalDrawableRadioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        </site.paulo.pathfinding.ui.component.graphview.drawable.HRadioDrawableItem>
+        </site.paulo.pathfinding.ui.component.graphview.HRadioAlgorithms>
 
-    </LinearLayout>
+    </HorizontalScrollView>
 
 </RelativeLayout>

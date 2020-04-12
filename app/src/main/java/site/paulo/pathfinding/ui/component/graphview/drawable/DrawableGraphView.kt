@@ -12,8 +12,9 @@ import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import site.paulo.pathfinding.data.model.DrawableGraph
 import site.paulo.pathfinding.data.model.Node
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
-import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableItems.*
 import java.util.*
 
 class DrawableGraphView : View {
@@ -21,7 +22,7 @@ class DrawableGraphView : View {
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
 
-    private var selectedOption: DrawableItems = NODE
+    private var selectedOption: PathFindingAlgorithms = DJIKSTRA
     private var listeners: ArrayList<GraphListener> = ArrayList()
 
     private val drawableEdges: ArrayList<DrawableEdge> = ArrayList()
@@ -341,7 +342,7 @@ class DrawableGraphView : View {
         listeners.add(listener)
     }
 
-    fun setDrawableType(newOption: DrawableItems) {
+    fun setDrawableType(newOption: PathFindingAlgorithms) {
         selectedOption = newOption
     }
 
@@ -352,7 +353,7 @@ class DrawableGraphView : View {
         pathPositions.clear()
         drawableEdges.clear()
         visitedNodesOrder.clear()
-        selectedOption = NODE
+        selectedOption = DJIKSTRA
         invalidate()
 
         listeners.forEach { it.onGraphNotReady() }

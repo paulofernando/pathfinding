@@ -7,16 +7,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_drawable_graph.*
 import site.paulo.pathfinding.R
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import site.paulo.pathfinding.ui.MainActivity
 import site.paulo.pathfinding.ui.component.graphview.HRadio
-import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableItems
-import site.paulo.pathfinding.ui.component.graphview.drawable.HRadioDrawableItem
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class DrawableGraphFragment : Fragment(), GraphFragment, HRadio.HRadioListener<DrawableItems> {
+class DrawableGraphFragment : Fragment(), GraphFragment, HRadio.HRadioListener<PathFindingAlgorithms> {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +27,8 @@ class DrawableGraphFragment : Fragment(), GraphFragment, HRadio.HRadioListener<D
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        horizontalDrawableItemRadioGroup.registerListener(this)
+        horizontalDrawableRadioGroup.registerListener(this)
+        horizontalDrawableRadioGroup.hideOption(PathFindingAlgorithms.ASTAR)
         drawableGraphView.registerListener(activity as MainActivity)
     }
 
@@ -49,7 +49,7 @@ class DrawableGraphFragment : Fragment(), GraphFragment, HRadio.HRadioListener<D
         TODO("Not yet implemented")
     }
 
-    override fun onChangeOption(newOption: DrawableItems) {
+    override fun onChangeOption(newOption: PathFindingAlgorithms) {
         drawableGraphView.setDrawableType(newOption)
     }
 }

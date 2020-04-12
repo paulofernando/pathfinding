@@ -1,4 +1,4 @@
-package site.paulo.pathfinding.ui.component.graphview.grid
+package site.paulo.pathfinding.ui.component.graphview
 
 import android.content.Context
 import android.util.AttributeSet
@@ -27,6 +27,15 @@ class HRadioAlgorithms(context: Context, attrs: AttributeSet) :
             ASTAR -> aStarRadio
             BREADTH_FIRST -> breadthFirstRadio
             DEPTH_FIRST -> depthFirstRadio
+        }
+    }
+
+    fun hideOption(option: PathFindingAlgorithms) {
+        when (option) {
+            DJIKSTRA -> djikstraRadio.visibility = GONE
+            ASTAR -> aStarRadio.visibility = GONE
+            BREADTH_FIRST -> breadthFirstRadio.visibility = GONE
+            DEPTH_FIRST -> depthFirstRadio.visibility = GONE
         }
     }
 
