@@ -79,7 +79,15 @@ class DrawableGraphView : View {
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                selectedNode = getDrawableNodeAtPoint(x, y)
+                if (selectedNode == null) {
+                    selectedNode = getDrawableNodeAtPoint(x, y)
+                } else {
+                    val nodeB = getDrawableNodeAtPoint(x, y)
+                    if (nodeB!= null && selectedNode != nodeB) {
+                        addDrawableEdge(selectedNode!!, nodeB)
+                        selectedNode = null
+                    }
+                }
                 when (selectedOption) {
                     NODE -> {
                         if (selectedNode == null) {
@@ -89,13 +97,13 @@ class DrawableGraphView : View {
                             readyToAddEdges = true
                         }
                     }
-                    EDGE -> addDrawableEdge(x, y)
                     SELECT -> selectDrawableNode(x, y)
                 }
             }
             MotionEvent.ACTION_MOVE -> {
                 val node = selectedNode ?: return false
                 moveNode(node, x, y)
+                readyToAddEdges = false
             }
             MotionEvent.ACTION_UP -> {
                 val sn = selectedNode ?: return false
@@ -155,7 +163,14 @@ class DrawableGraphView : View {
             }
             invalidate()
         }
+    }
 
+    private fun addDrawableEdge(nodeA: DrawableNode, nodeB: DrawableNode) {
+        if (nodeA.connectedTo.size < graph.getNodes().size - 1) {
+            drawableEdges.add(DrawableEdge(drawableEdges.size + 1, nodeA))
+            drawableEdges.last().connectTo(nodeB, paint)
+            invalidate()
+        }
     }
 
     private fun selectDrawableNode(x: Float, y: Float) {
