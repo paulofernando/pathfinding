@@ -60,8 +60,9 @@ open class Djikstra (
         setShortestPath(startNode, 0.0)
         for (edge in startNode.edges.values) {
             if (edge.connected) {
-                setShortestPath(edge.getOpposite(startNode), edge.weight)
-                edge.getOpposite(startNode).previous = edge
+                val opposite = edge.getOpposite(startNode) ?: continue
+                setShortestPath(opposite, edge.weight)
+                opposite.previous = edge
             }
         }
     }

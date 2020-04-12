@@ -23,7 +23,7 @@ class BreadthFirst(private val startNode: Node, private val endNode: Node) : Pat
             currentNode?.edges?.values?.forEach {edge ->
                 if(edge.connected) {
                     val nodeToVisit = edge.getOpposite(currentNode)
-                    if (!nodeVisited.contains(nodeToVisit.name)) {
+                    if (nodeToVisit != null && !nodeVisited.contains(nodeToVisit.name)) {
                         addToFrontier(edge, nodeToVisit)
                     }
                 }

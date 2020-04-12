@@ -22,7 +22,7 @@ class DepthFirst(private val startNode: Node, private val endNode: Node) : PathF
         node.edges.values.forEach {edge ->
             if(edge.connected && !nodeVisited.contains(endNode.name)) {
                 val nodeToVisit = edge.getOpposite(node)
-                if (!nodeVisited.contains(nodeToVisit.name)) {
+                if (nodeToVisit != null && !nodeVisited.contains(nodeToVisit.name)) {
                     nodeToVisit.previous = edge
                     dfs(nodeToVisit)
                 }

@@ -31,7 +31,7 @@ open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Nod
         return 0
     }
 
-    fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) {
+    open fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) {
         val edge = Edge(this, nodeToConnect, weight)
         this.edges[nodeToConnect.name] = edge
         nodeToConnect.edges[this.name] = edge
@@ -54,7 +54,8 @@ open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Nod
     fun getAdjacentNodes(): ArrayList<Node> {
         val nodes = ArrayList<Node>()
         for (edge in edges.values) {
-            nodes.add(edge.getOpposite(this))
+            val opposite = edge.getOpposite(this) ?: continue
+            nodes.add(opposite)
         }
 
         return nodes

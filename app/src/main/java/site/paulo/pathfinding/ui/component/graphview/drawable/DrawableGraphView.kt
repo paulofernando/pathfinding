@@ -20,7 +20,7 @@ class DrawableGraphView : View {
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
 
-    private var selectedOption: DrawableItems = DrawableItems.NODE
+    private var selectedOption: DrawableItems = NODE
     private var listeners: ArrayList<GraphListener> = ArrayList()
 
     private val drawableEdges: ArrayList<DrawableEdge> = ArrayList()
@@ -140,15 +140,15 @@ class DrawableGraphView : View {
 
     private fun addDrawableEdge(x: Float, y: Float) {
         val node = getDrawableNodeAtPoint(x, y) ?: return
-        if ((drawableEdges.isNotEmpty() && drawableEdges.last().endNode == null) &&
-            (drawableEdges.last().startNode == node)) return
+        if ((drawableEdges.isNotEmpty() && drawableEdges.last().nodeB == null) &&
+            (drawableEdges.last().nodeA == node)) return
 
         if (node.connectedTo.size < graph.getNodes().size - 1) {
-            if (drawableEdges.isEmpty() || drawableEdges.last().endNode != null) {
+            if (drawableEdges.isEmpty() || drawableEdges.last().nodeB != null) {
                 drawableEdges.add(DrawableEdge(drawableEdges.size + 1, node))
                 selectedNode = node
             } else {
-                if (drawableEdges.last().startNode != node) {
+                if (drawableEdges.last().nodeA != node) {
                     drawableEdges.last().connectTo(node)
                     selectedNode = null
                 }
@@ -273,8 +273,8 @@ class DrawableGraphView : View {
         paint.strokeWidth = resources.displayMetrics.density * 2
 
         for (edge in drawableEdges) {
-            val endNode = edge.endNode ?: continue
-            drawEdge(edge.startNode, endNode, canvas)
+            val endNode = edge.nodeB ?: continue
+            drawEdge(edge.nodeA as DrawableNode, endNode as DrawableNode, canvas)
         }
         paint.strokeWidth = resources.displayMetrics.density
     }
@@ -310,9 +310,9 @@ class DrawableGraphView : View {
 
         paint.textSize /= 1.5f
         for (drawableEdge in drawableEdges) {
-            val nodeA = drawableEdge.startNode
-            val nodeB = drawableEdge.endNode ?: continue
-            drawWeight(nodeA, nodeB, drawableEdge.weight.toInt().toString(),
+            val nodeA = drawableEdge.nodeA
+            val nodeB = drawableEdge.nodeB ?: continue
+            drawWeight(nodeA as DrawableNode, nodeB as DrawableNode, drawableEdge.weight.toInt().toString(),
                 colorBoxWeight, canvas)
         }
         paint.textSize *= 1.5f
@@ -360,6 +360,7 @@ class DrawableGraphView : View {
         pathPositions.clear()
         drawableEdges.clear()
         visitedNodesOrder.clear()
+        selectedOption = NODE
         invalidate()
 
         listeners.forEach { it.onGraphNotReady() }

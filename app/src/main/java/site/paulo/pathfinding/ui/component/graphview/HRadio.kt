@@ -14,7 +14,7 @@ abstract class HRadio<T>(context: Context, attrs: AttributeSet) : FrameLayout(co
     var currentRadio: Button? = null
     private var listener: HRadioListener<T>? = null
 
-    protected fun checkRadio(option: T, showCheckMark: Boolean = true) {
+    fun checkRadio(option: T, showCheckMark: Boolean = true) {
         currentRadio?.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
         currentRadio?.setBackgroundResource(R.drawable.radio)
 

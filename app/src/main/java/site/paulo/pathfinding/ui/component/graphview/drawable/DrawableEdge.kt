@@ -1,19 +1,17 @@
 package site.paulo.pathfinding.ui.component.graphview.drawable
 
+import android.graphics.RectF
 import site.paulo.pathfinding.data.model.Edge
+import site.paulo.pathfinding.data.model.Node
 
 
-class DrawableEdge (val id: Int, var startNode: DrawableNode) {
+class DrawableEdge (val id: Int, override val nodeA: DrawableNode) : Edge (nodeA, null) {
 
-    var endNode: DrawableNode? = null
-    var weight: Double = .0
+    override var nodeB: Node? = null
+    val weightBox: RectF = RectF(0f, 0f, 0f, 0f)
 
     fun connectTo(drawableNode: DrawableNode, weight: Double = Edge.DEFAULT_WEIGHT) {
-        endNode = drawableNode
-        this.weight = weight
-
-        startNode.connect(drawableNode, weight)
-        startNode.connectedTo[drawableNode.id] = drawableNode
-        drawableNode.connectedTo[startNode.id] = startNode
+        nodeB = drawableNode
+        nodeA.connectByEdge(drawableNode, this, weight)
     }
 }
