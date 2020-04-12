@@ -149,7 +149,7 @@ class DrawableGraphView : View {
                 selectedNode = node
             } else {
                 if (drawableEdges.last().nodeA != node) {
-                    drawableEdges.last().connectTo(node)
+                    drawableEdges.last().connectTo(node, paint)
                     selectedNode = null
                 }
             }
@@ -178,6 +178,9 @@ class DrawableGraphView : View {
         if (hasCollision(selectedNode)) {
             selectedNode.updatePosition(tempX, tempY)
         } else {
+            for(edge in selectedNode.connectedByEdge.values) {
+                edge.updateWeightBox(paint)
+            }
             invalidate()
         }
     }
@@ -320,19 +323,12 @@ class DrawableGraphView : View {
 
     private fun drawWeight(nodeA: DrawableNode, nodeB: DrawableNode, weight: String,
                            boxColor: Int, canvas: Canvas) {
+        val edge = nodeA.connectedByEdge[nodeB.id] ?: return
         val textCenterX = (nodeA.centerX + nodeB.centerX) / 2
         val textCenterY = (nodeA.centerY + nodeB.centerY) / 2
 
         paint.color = boxColor
-        canvas.drawRoundRect(
-            RectF(textCenterX - (paint.measureText(weight) / 2) - 20,
-                textCenterY - (paint.descent() + paint.ascent()),
-                textCenterX + (paint.measureText(weight) / 2) + 20,
-                textCenterY + (paint.descent() + paint.ascent())),
-            15f,
-            15f,
-            paint
-        )
+        canvas.drawRoundRect(edge.weightBox, 15f, 15f, paint)
 
         paint.color = colorTextWeight
         canvas.drawText(weight, textCenterX - (paint.measureText(weight) / 2),

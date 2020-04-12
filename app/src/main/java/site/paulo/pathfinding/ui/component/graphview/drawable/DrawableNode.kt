@@ -12,7 +12,7 @@ class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
     var connectedByEdge: HashMap<String, DrawableEdge> = HashMap()
 
     companion object {
-        const val DIAMETER = 100f
+        private const val DIAMETER = 100f
         const val RADIUS = DIAMETER / 2
     }
 
