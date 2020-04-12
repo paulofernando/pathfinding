@@ -37,6 +37,9 @@ class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
         super.connect(nodeToConnect, Edge.DEFAULT_WEIGHT)
         connectedTo[nodeToConnect.id] = nodeToConnect
         connectedByEdge[nodeToConnect.id] = drawableEdge
+
+        nodeToConnect.connectedTo[id] = this
+        nodeToConnect.connectedByEdge[id] = drawableEdge
     }
 
 }

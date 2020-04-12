@@ -27,6 +27,7 @@ class DrawableGraphView : View {
     private var startPoint: DrawableNode? = null
     private var endPoint: DrawableNode? = null
     private var selectedNode: DrawableNode? = null
+    private var readyToAddEdges: Boolean = false
 
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
@@ -78,13 +79,14 @@ class DrawableGraphView : View {
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                selectedNode = getDrawableNodeAtPoint(x, y)
                 when (selectedOption) {
                     NODE -> {
-                        val node = getDrawableNodeAtPoint(x, y)
-                        if (node == null) {
+                        if (selectedNode == null) {
                             addDrawableNode(x, y)
+                            readyToAddEdges = false
                         } else {
-                            selectedNode = node
+                            readyToAddEdges = true
                         }
                     }
                     EDGE -> addDrawableEdge(x, y)
@@ -92,18 +94,16 @@ class DrawableGraphView : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-                when (selectedOption) {
-                    NODE -> {
-                        val node = selectedNode ?: return false
-                        moveNode(node, x, y)
-                    }
-                }
+                val node = selectedNode ?: return false
+                moveNode(node, x, y)
             }
             MotionEvent.ACTION_UP -> {
-                if (selectedOption == NODE) {
+                val sn = selectedNode ?: return false
+                if ((sn.connectedTo.size == graph.getNodes().size - 1) ||
+                        (!readyToAddEdges)) {
                     selectedNode = null
-                    invalidate()
                 }
+                invalidate()
             }
             MotionEvent.ACTION_CANCEL -> { }
         }
