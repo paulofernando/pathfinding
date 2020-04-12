@@ -1,9 +1,9 @@
 package site.paulo.pathfinding.data.model
 
-class Edge(val nodeA: Node, val nodeB: Node, var weight: Double) {
+open class Edge(open val nodeA: Node, open val nodeB: Node, var weight: Double = DEFAULT_WEIGHT) {
 
     companion object {
-        val DEFAULT_WEIGHT = 1.0
+        const val DEFAULT_WEIGHT = 1.0
     }
 
     var visited: Boolean = false

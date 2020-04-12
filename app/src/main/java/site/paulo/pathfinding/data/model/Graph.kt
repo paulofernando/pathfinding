@@ -2,6 +2,6 @@ package site.paulo.pathfinding.data.model
 
 import java.util.*
 
-interface Graph {
-    fun getNodes() : LinkedList<Node>
+interface Graph<T> {
+    fun getNodes() : LinkedList<T>
 }

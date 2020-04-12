@@ -14,5 +14,15 @@
     <string name="alg_depth_first">Depth-first</string>
     <string name="weighted_shortest">Weighted - Shortest</string>
     <string name="unweighted">Unweighted</string>
+    <string name="item_node">Node</string>
+    <string name="item_edge">Edge</string>
+    <string name="item_weight">Weight</string>
     <string name="about">About</string>
+
+    <string name="tab_1">Drawable</string>
+    <string name="tab_2">Grid</string>
+    <string name="node_radio">Node</string>
+    <string name="edge_radio">Edge</string>
+    <string name="select_radio">Select</string>
+    <string name="weight_radio">Weight</string>
 </resources>

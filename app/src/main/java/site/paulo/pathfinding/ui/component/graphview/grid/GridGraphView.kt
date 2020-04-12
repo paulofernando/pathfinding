@@ -1,4 +1,4 @@
-package site.paulo.pathfinding.ui.component.graphview
+package site.paulo.pathfinding.ui.component.graphview.grid
 
 import android.content.Context
 import android.graphics.Canvas
@@ -17,9 +17,12 @@ import kotlin.collections.HashMap
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import site.paulo.pathfinding.data.model.Edge
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms
+import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import java.util.concurrent.atomic.AtomicBoolean
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
 
-class GraphView : View {
+class GridGraphView : View {
 
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
@@ -36,6 +39,7 @@ class GraphView : View {
     private var animating: AtomicBoolean = AtomicBoolean(false)
     private val defaultPathNodePerSec = 50
     private val defaultVisitedNodePerSec = defaultPathNodePerSec * 5
+    private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
 
     private var startPoint = uninitialized
     private var endPoint = uninitialized
@@ -119,7 +123,17 @@ class GraphView : View {
         return true
     }
 
-    fun runAlgorithm(alg: PathFindingAlgorithms) {
+    fun setAlgorithm(alg: PathFindingAlgorithms) {
+        selectedAlgorithm = alg
+        when(selectedAlgorithm) {
+            DJIKSTRA -> enableWeightIncrease(true)
+            ASTAR -> enableWeightIncrease(true)
+            BREADTH_FIRST -> enableWeightIncrease(false)
+            DEPTH_FIRST -> enableWeightIncrease(false)
+        }
+    }
+
+    fun runAlgorithm() {
         if (startPoint == uninitialized || endPoint == uninitialized) return
         if (animating.get()) return
         pathPositions.clear()
@@ -127,31 +141,16 @@ class GraphView : View {
 
         val nodeA = graph.getNode(startPoint) ?: return
         val nodeB = graph.getNode(endPoint) ?: return
-        algorithm = when (alg) {
-            PathFindingAlgorithms.DJIKSTRA -> Djikstra(graph, nodeA, nodeB)
-            PathFindingAlgorithms.ASTAR -> AStar(graph, nodeA, nodeB)
-            PathFindingAlgorithms.BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
-            PathFindingAlgorithms.DEPTH_FIRST -> DepthFirst(nodeA, nodeB)
+        algorithm = when (selectedAlgorithm) {
+            DJIKSTRA -> Djikstra(graph.getNodes(), nodeA, nodeB)
+            ASTAR -> AStar(graph, nodeA, nodeB)
+            BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
+            DEPTH_FIRST -> DepthFirst(nodeA, nodeB)
         }
 
         algorithm.run()
         scheduleDraw(algorithm.getVisitedOrder(), algorithm.getPath(),
             defaultPathNodePerSec, defaultVisitedNodePerSec)
-    }
-
-    fun reset() {
-        graph = GridGraph(rows, cols)
-        startPoint = uninitialized
-        endPoint = uninitialized
-        pathPositions.clear()
-        visitedNodesPositions.clear()
-        increasedWeightNodes.clear()
-        removedNodes.clear()
-        readyToIncreaseWeightNodes = false
-        invalidate()
-
-        listeners.forEach { it.onGraphNotReady() }
-        listeners.forEach { it.onGraphNotCleanable() }
     }
 
     private fun markPoint(position: Pair<Int, Int>) {
@@ -406,6 +405,21 @@ class GraphView : View {
     fun enableWeightIncrease(enable: Boolean) {
         hasWeight = enable
         invalidate()
+    }
+
+    fun reset() {
+        graph = GridGraph(rows, cols)
+        startPoint = uninitialized
+        endPoint = uninitialized
+        pathPositions.clear()
+        visitedNodesPositions.clear()
+        increasedWeightNodes.clear()
+        removedNodes.clear()
+        readyToIncreaseWeightNodes = false
+        invalidate()
+
+        listeners.forEach { it.onGraphNotReady() }
+        listeners.forEach { it.onGraphNotCleanable() }
     }
 
 }

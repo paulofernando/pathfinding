@@ -1,7 +1,7 @@
 package site.paulo.pathfinding.algorithm
 
 import site.paulo.pathfinding.data.model.Node
-import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -22,7 +22,7 @@ class DepthFirst(private val startNode: Node, private val endNode: Node) : PathF
         node.edges.values.forEach {edge ->
             if(edge.connected && !nodeVisited.contains(endNode.name)) {
                 val nodeToVisit = edge.getOpposite(node)
-                if (!nodeVisited.contains(nodeToVisit.name)) {
+                if (nodeToVisit != null && !nodeVisited.contains(nodeToVisit.name)) {
                     nodeToVisit.previous = edge
                     dfs(nodeToVisit)
                 }

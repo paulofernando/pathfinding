@@ -2,7 +2,7 @@ package site.paulo.pathfinding.algorithm
 
 import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.data.model.Node
-import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -23,7 +23,7 @@ class BreadthFirst(private val startNode: Node, private val endNode: Node) : Pat
             currentNode?.edges?.values?.forEach {edge ->
                 if(edge.connected) {
                     val nodeToVisit = edge.getOpposite(currentNode)
-                    if (!nodeVisited.contains(nodeToVisit.name)) {
+                    if (nodeToVisit != null && !nodeVisited.contains(nodeToVisit.name)) {
                         addToFrontier(edge, nodeToVisit)
                     }
                 }

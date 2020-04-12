@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayoutDrawableGraph"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.page.GridGraphFragment">
+
+    <site.paulo.pathfinding.ui.component.graphview.drawable.DrawableGraphView
+        android:id="@+id/drawableGraphView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"/>
+
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/drawableGraphView">
+
+        <site.paulo.pathfinding.ui.component.graphview.HRadioAlgorithms
+            android:id="@+id/horizontalDrawableRadioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </site.paulo.pathfinding.ui.component.graphview.HRadioAlgorithms>
+
+    </HorizontalScrollView>
+
+</RelativeLayout>

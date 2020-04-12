@@ -1,13 +1,12 @@
 package site.paulo.pathfinding.algorithm
 
-import site.paulo.pathfinding.data.model.Graph
 import site.paulo.pathfinding.data.model.Node
-import site.paulo.pathfinding.ui.component.graphview.PathFindingAlgorithms
+import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import java.util.*
 import kotlin.collections.HashMap
 
 open class Djikstra (
-    var graph: Graph,
+    var graph: LinkedList<Node>,
     var startNode: Node,
     var endNode: Node
 ) : PathFindingAlgorithm {
@@ -57,12 +56,13 @@ open class Djikstra (
     }
 
     open fun prepare() {
-        graph.getNodes().forEach { node -> node.reset()} //make sure that the nodes has no 'previous' from older processing
+        graph.forEach { node -> node.reset()} //make sure that the nodes has no 'previous' from older processing
         setShortestPath(startNode, 0.0)
         for (edge in startNode.edges.values) {
             if (edge.connected) {
-                setShortestPath(edge.getOpposite(startNode), edge.weight)
-                edge.getOpposite(startNode).previous = edge
+                val opposite = edge.getOpposite(startNode) ?: continue
+                setShortestPath(opposite, edge.weight)
+                opposite.previous = edge
             }
         }
     }

@@ -1,6 +1,6 @@
 package site.paulo.pathfinding.data.model
 
-class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
+open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
 
     /**
      * LinkedHashMap (because the ordering matters when drawing) with
@@ -31,7 +31,7 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
         return 0
     }
 
-    fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) {
+    open fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) {
         val edge = Edge(this, nodeToConnect, weight)
         this.edges[nodeToConnect.name] = edge
         nodeToConnect.edges[this.name] = edge
@@ -53,9 +53,8 @@ class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
 
     fun getAdjacentNodes(): ArrayList<Node> {
         val nodes = ArrayList<Node>()
-        for (edge in edges.values) {
+        for (edge in edges.values)
             nodes.add(edge.getOpposite(this))
-        }
 
         return nodes
     }
