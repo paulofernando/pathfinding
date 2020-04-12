@@ -285,6 +285,7 @@ class DrawableGraphView : View {
 
     private fun drawVisitedEdges(canvas: Canvas) {
         var currentNode = visitedNodesOrder.get(index = 0) as DrawableNode
+        paint.textSize /= 1.5f
         for (i in 1 until visitedNodesOrder.size) {
             val nodeB = visitedNodesOrder.get(index = i) as DrawableNode
             paint.color = colorDrawablePath
@@ -295,27 +296,34 @@ class DrawableGraphView : View {
 
             paint.style = Paint.Style.FILL
             paint.strokeWidth = resources.displayMetrics.density
-            drawWeight(currentNode, nodeB, currentNode.edges[nodeB.id]!!.weight.toInt().toString(), canvas)
+            drawWeight(currentNode, nodeB, currentNode.edges[nodeB.id]!!.weight.toInt().toString(),
+                colorDrawablePath, canvas)
 
             currentNode = visitedNodesOrder.get(index = i) as DrawableNode
             invalidate()
         }
+        paint.textSize *= 1.5f
     }
 
     private fun drawWeights(canvas: Canvas) {
         paint.style = Paint.Style.FILL
 
+        paint.textSize /= 1.5f
         for (drawableEdge in drawableEdges) {
             val nodeA = drawableEdge.startNode
             val nodeB = drawableEdge.endNode ?: continue
-            paint.color = colorBoxWeight
-            drawWeight(nodeA, nodeB, drawableEdge.weight.toInt().toString(), canvas)
+            drawWeight(nodeA, nodeB, drawableEdge.weight.toInt().toString(),
+                colorBoxWeight, canvas)
         }
+        paint.textSize *= 1.5f
     }
 
-    private fun drawWeight(nodeA: DrawableNode, nodeB: DrawableNode, weight: String, canvas: Canvas) {
+    private fun drawWeight(nodeA: DrawableNode, nodeB: DrawableNode, weight: String,
+                           boxColor: Int, canvas: Canvas) {
         val textCenterX = (nodeA.centerX + nodeB.centerX) / 2
         val textCenterY = (nodeA.centerY + nodeB.centerY) / 2
+
+        paint.color = boxColor
         canvas.drawRoundRect(
             RectF(textCenterX - (paint.measureText(weight) / 2) - 20,
                 textCenterY - (paint.descent() + paint.ascent()),
