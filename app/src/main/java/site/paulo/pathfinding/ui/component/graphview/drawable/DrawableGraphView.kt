@@ -3,7 +3,6 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -14,7 +13,6 @@ import site.paulo.pathfinding.data.model.DrawableGraph
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableItems.*
-import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
 import java.util.*
 
 class DrawableGraphView : View {
@@ -57,11 +55,11 @@ class DrawableGraphView : View {
         drawBoundaries(canvas)
         drawEdges(canvas)
         drawNodes(canvas)
+        drawWeights(canvas)
         if (visitedNodesOrder.isNotEmpty()) {
             drawVisitedNodes(canvas)
             drawVisitedEdges(canvas)
         }
-        drawWeights(canvas)
         drawStartAndEndPoints(canvas)
         drawTextNodes(canvas)
         drawSelectedNode(canvas)
@@ -206,12 +204,14 @@ class DrawableGraphView : View {
     private fun drawBoundaries(canvas: Canvas) {
         paint.style = Paint.Style.STROKE
         paint.color = Color.BLACK
+
         canvas.drawRect(1f, 1f, width - 1f, height - 1f, paint)
     }
 
     private fun drawNodes(canvas: Canvas) {
         paint.style = Paint.Style.FILL
         paint.color = colorNode
+
         for (node in graph.getNodes())
             drawNode(node, canvas)
     }
@@ -224,12 +224,14 @@ class DrawableGraphView : View {
         val node = selectedNode ?: return
         paint.style = Paint.Style.STROKE
         paint.color = colorSelectedNode
+
         drawNode(node, canvas)
     }
 
     private fun drawVisitedNodes(canvas: Canvas) {
         paint.style = Paint.Style.FILL
         paint.color = colorDrawablePath
+
         for (node in visitedNodesOrder) {
             val drawableNode = graph.getNode(node.name)
             if (drawableNode != null)
@@ -241,6 +243,7 @@ class DrawableGraphView : View {
         val startNode = startPoint ?: return
         paint.style = Paint.Style.FILL
         paint.color = colorStartNode
+
         canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS, paint)
 
         val endNode = endPoint ?: return
@@ -250,6 +253,7 @@ class DrawableGraphView : View {
 
     private fun drawTextNodes(canvas: Canvas) {
         paint.color = colorNodeText
+
         for (node in graph.getNodes()) {
             drawTextNode(node, canvas)
         }
@@ -267,6 +271,7 @@ class DrawableGraphView : View {
         paint.style = Paint.Style.STROKE
         paint.color = colorEdge
         paint.strokeWidth = resources.displayMetrics.density * 2
+
         for (edge in drawableEdges) {
             val endNode = edge.endNode ?: continue
             drawEdge(edge.startNode, endNode, canvas)
@@ -279,44 +284,51 @@ class DrawableGraphView : View {
     }
 
     private fun drawVisitedEdges(canvas: Canvas) {
-        paint.style = Paint.Style.STROKE
-        paint.color = colorDrawablePath
-        paint.strokeWidth = resources.displayMetrics.density * 2
-
-        var startNode = visitedNodesOrder.get(index = 0) as DrawableNode
+        var currentNode = visitedNodesOrder.get(index = 0) as DrawableNode
         for (i in 1 until visitedNodesOrder.size) {
-            drawEdge(startNode, visitedNodesOrder.get(index = i) as DrawableNode, canvas)
-            startNode = visitedNodesOrder.get(index = i) as DrawableNode
-        }
+            val nodeB = visitedNodesOrder.get(index = i) as DrawableNode
+            paint.color = colorDrawablePath
 
-        paint.strokeWidth = resources.displayMetrics.density
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = resources.displayMetrics.density * 2
+            drawEdge(currentNode, nodeB, canvas)
+
+            paint.style = Paint.Style.FILL
+            paint.strokeWidth = resources.displayMetrics.density
+            drawWeight(currentNode, nodeB, currentNode.edges[nodeB.id]!!.weight.toInt().toString(), canvas)
+
+            currentNode = visitedNodesOrder.get(index = i) as DrawableNode
+            invalidate()
+        }
     }
 
     private fun drawWeights(canvas: Canvas) {
         paint.style = Paint.Style.FILL
-        for (drawableEdge in drawableEdges) {
-            val startNode = drawableEdge.startNode
-            val endNode = drawableEdge.endNode
-            if (endNode != null) {
-                val textCenterX = (startNode.centerX + endNode.centerX) / 2
-                val textCenterY = (startNode.centerY + endNode.centerY) / 2
-                val textWeight = drawableEdge.weight.toInt().toString()
-                paint.color = colorBoxWeight
-                canvas.drawRoundRect(
-                    RectF(textCenterX - (paint.measureText(textWeight) / 2) - 20,
-                    textCenterY - (paint.descent() + paint.ascent()),
-                    textCenterX + (paint.measureText(textWeight) / 2) + 20,
-                    textCenterY + (paint.descent() + paint.ascent())),
-                    15f,
-                    15f,
-                    paint
-                )
 
-                paint.color = colorTextWeight
-                canvas.drawText(textWeight, textCenterX - (paint.measureText(textWeight) / 2),
-                    textCenterY - ((paint.descent() + paint.ascent()) / 2), paint)
-            }
+        for (drawableEdge in drawableEdges) {
+            val nodeA = drawableEdge.startNode
+            val nodeB = drawableEdge.endNode ?: continue
+            paint.color = colorBoxWeight
+            drawWeight(nodeA, nodeB, drawableEdge.weight.toInt().toString(), canvas)
         }
+    }
+
+    private fun drawWeight(nodeA: DrawableNode, nodeB: DrawableNode, weight: String, canvas: Canvas) {
+        val textCenterX = (nodeA.centerX + nodeB.centerX) / 2
+        val textCenterY = (nodeA.centerY + nodeB.centerY) / 2
+        canvas.drawRoundRect(
+            RectF(textCenterX - (paint.measureText(weight) / 2) - 20,
+                textCenterY - (paint.descent() + paint.ascent()),
+                textCenterX + (paint.measureText(weight) / 2) + 20,
+                textCenterY + (paint.descent() + paint.ascent())),
+            15f,
+            15f,
+            paint
+        )
+
+        paint.color = colorTextWeight
+        canvas.drawText(weight, textCenterX - (paint.measureText(weight) / 2),
+            textCenterY - ((paint.descent() + paint.ascent()) / 2), paint)
     }
 
     private fun configurePaint() {
@@ -339,6 +351,7 @@ class DrawableGraphView : View {
         endPoint = null
         pathPositions.clear()
         drawableEdges.clear()
+        visitedNodesOrder.clear()
         invalidate()
 
         listeners.forEach { it.onGraphNotReady() }
