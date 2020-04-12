@@ -43,10 +43,8 @@ class GridGraph(private val rows: Int, private val columns: Int) : Graph<Node> {
         removedNodes.remove(nodeName)
         node.edges.values.forEach {
             val opposite = it.getOpposite(node)
-            if (opposite != null) {
-                if (!removedNodes.containsKey(opposite.name)) {
-                    node.reconnect(opposite)
-                }
+            if (!removedNodes.containsKey(opposite.name)) {
+                node.reconnect(opposite)
             }
         }
     }

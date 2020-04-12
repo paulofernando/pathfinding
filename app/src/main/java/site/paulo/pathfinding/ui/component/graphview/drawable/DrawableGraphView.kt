@@ -3,6 +3,7 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -28,6 +29,7 @@ class DrawableGraphView : View {
     private var endPoint: DrawableNode? = null
     private var selectedNode: DrawableNode? = null
     private var readyToAddEdges: Boolean = false
+    private var readyToAddStartAndEndNodes: Boolean = false
 
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
@@ -83,21 +85,22 @@ class DrawableGraphView : View {
                     selectedNode = getDrawableNodeAtPoint(x, y)
                 } else {
                     val nodeB = getDrawableNodeAtPoint(x, y)
-                    if (nodeB!= null && selectedNode != nodeB) {
+                    if (nodeB != null && selectedNode != nodeB) {
                         addDrawableEdge(selectedNode!!, nodeB)
                         selectedNode = null
                     }
-                }
-                when (selectedOption) {
-                    NODE -> {
-                        if (selectedNode == null) {
-                            addDrawableNode(x, y)
-                            readyToAddEdges = false
-                        } else {
-                            readyToAddEdges = true
-                        }
+
+                    if (selectedNode == nodeB) {
+                        selectDrawableNode(x, y)
+                        selectedNode = null
                     }
-                    SELECT -> selectDrawableNode(x, y)
+                }
+
+                if (selectedNode == null) {
+                    addDrawableNode(x, y)
+                    readyToAddEdges = false
+                } else {
+                    readyToAddEdges = true
                 }
             }
             MotionEvent.ACTION_MOVE -> {
@@ -106,9 +109,7 @@ class DrawableGraphView : View {
                 readyToAddEdges = false
             }
             MotionEvent.ACTION_UP -> {
-                val sn = selectedNode ?: return false
-                if ((sn.connectedTo.size == graph.getNodes().size - 1) ||
-                        (!readyToAddEdges)) {
+                if (!readyToAddEdges && !readyToAddStartAndEndNodes) {
                     selectedNode = null
                 }
                 invalidate()
@@ -146,28 +147,9 @@ class DrawableGraphView : View {
         listeners.forEach { it.onGraphCleanable() }
     }
 
-    private fun addDrawableEdge(x: Float, y: Float) {
-        val node = getDrawableNodeAtPoint(x, y) ?: return
-        if ((drawableEdges.isNotEmpty() && drawableEdges.last().nodeB == null) &&
-            (drawableEdges.last().nodeA == node)) return
-
-        if (node.connectedTo.size < graph.getNodes().size - 1) {
-            if (drawableEdges.isEmpty() || drawableEdges.last().nodeB != null) {
-                drawableEdges.add(DrawableEdge(drawableEdges.size + 1, node))
-                selectedNode = node
-            } else {
-                if (drawableEdges.last().nodeA != node) {
-                    drawableEdges.last().connectTo(node, paint)
-                    selectedNode = null
-                }
-            }
-            invalidate()
-        }
-    }
-
     private fun addDrawableEdge(nodeA: DrawableNode, nodeB: DrawableNode) {
         if (nodeA.connectedTo.size < graph.getNodes().size - 1) {
-            drawableEdges.add(DrawableEdge(drawableEdges.size + 1, nodeA))
+            drawableEdges.add(DrawableEdge(drawableEdges.size + 1, nodeA, nodeB))
             drawableEdges.last().connectTo(nodeB, paint)
             invalidate()
         }
@@ -291,8 +273,7 @@ class DrawableGraphView : View {
         paint.strokeWidth = resources.displayMetrics.density * 2
 
         for (edge in drawableEdges) {
-            val endNode = edge.nodeB ?: continue
-            drawEdge(edge.nodeA as DrawableNode, endNode as DrawableNode, canvas)
+            drawEdge(edge.nodeA, edge.nodeB, canvas)
         }
         paint.strokeWidth = resources.displayMetrics.density
     }
@@ -330,7 +311,7 @@ class DrawableGraphView : View {
         for (drawableEdge in drawableEdges) {
             val nodeA = drawableEdge.nodeA
             val nodeB = drawableEdge.nodeB ?: continue
-            drawWeight(nodeA as DrawableNode, nodeB as DrawableNode, drawableEdge.weight.toInt().toString(),
+            drawWeight(nodeA, nodeB, drawableEdge.weight.toInt().toString(),
                 colorBoxWeight, canvas)
         }
         paint.textSize *= 1.5f

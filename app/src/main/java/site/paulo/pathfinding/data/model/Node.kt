@@ -53,10 +53,8 @@ open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Nod
 
     fun getAdjacentNodes(): ArrayList<Node> {
         val nodes = ArrayList<Node>()
-        for (edge in edges.values) {
-            val opposite = edge.getOpposite(this) ?: continue
-            nodes.add(opposite)
-        }
+        for (edge in edges.values)
+            nodes.add(edge.getOpposite(this))
 
         return nodes
     }
