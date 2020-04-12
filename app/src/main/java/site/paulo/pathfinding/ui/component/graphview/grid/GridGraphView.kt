@@ -39,8 +39,7 @@ class GridGraphView : View {
     private var animating: AtomicBoolean = AtomicBoolean(false)
     private val defaultPathNodePerSec = 50
     private val defaultVisitedNodePerSec = defaultPathNodePerSec * 5
-    private var selectedAlgorithm: PathFindingAlgorithms =
-        PathFindingAlgorithms.DJIKSTRA
+    private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
 
     private var startPoint = uninitialized
     private var endPoint = uninitialized

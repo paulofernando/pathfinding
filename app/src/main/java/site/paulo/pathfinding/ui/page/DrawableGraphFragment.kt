@@ -50,6 +50,7 @@ class DrawableGraphFragment : Fragment(), GraphFragment, HRadio.HRadioListener<P
     }
 
     override fun onChangeOption(newOption: PathFindingAlgorithms) {
-        drawableGraphView.setDrawableType(newOption)
+        drawableGraphView.setAlgorithm(newOption)
     }
+
 }

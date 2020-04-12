@@ -36,6 +36,7 @@ class DrawableGraphView : View {
     private lateinit var algorithm: PathFindingAlgorithm
     private val pathPositions: ArrayList<Node> = ArrayList()
     private val visitedNodesOrder: Stack<Node> = Stack()
+    private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
 
     private val paint = Paint()
     // --------- colors ---------
@@ -120,15 +121,25 @@ class DrawableGraphView : View {
         return true
     }
 
+    fun setAlgorithm(alg: PathFindingAlgorithms) {
+        selectedAlgorithm = alg
+    }
+
     fun runAlgorithm() {
         if (startPoint == null || endPoint == null) return
 
         pathPositions.clear()
         visitedNodesOrder.clear()
 
-        algorithm = Djikstra(graph.getNodes() as LinkedList<Node>,
-            startPoint as Node,
-            endPoint as Node)
+        val nodes = graph.getNodes() as LinkedList<Node>
+        val nodeA = startPoint as Node
+        val nodeB = endPoint as Node
+        algorithm = when (selectedAlgorithm) {
+            DJIKSTRA -> Djikstra(nodes, nodeA, nodeB)
+            BREADTH_FIRST -> BreadthFirst(nodeA, nodeB)
+            else -> DepthFirst(nodeA, nodeB)
+        }
+
         algorithm.run()
 
         val path = algorithm.getPath()
@@ -340,10 +351,6 @@ class DrawableGraphView : View {
 
     fun registerListener(listener: GraphListener) {
         listeners.add(listener)
-    }
-
-    fun setDrawableType(newOption: PathFindingAlgorithms) {
-        selectedOption = newOption
     }
 
     fun reset() {
