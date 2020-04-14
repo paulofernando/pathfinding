@@ -1,6 +1,6 @@
 package site.paulo.pathfinding.data.model
 
-open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
+open class Node(val name: String) : Comparable<Node> {
 
     /**
      * LinkedHashMap (because the ordering matters when drawing) with
@@ -16,6 +16,8 @@ open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Nod
      * Connection to previous node of the shortest distance
      */
     var previous: Edge? = null
+
+    var position: Pair<Int, Int> = Pair(-1, -1)
 
 
     override fun compareTo(other: Node): Int {

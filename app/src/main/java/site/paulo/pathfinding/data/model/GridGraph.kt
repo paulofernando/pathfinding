@@ -51,7 +51,9 @@ class GridGraph(private val rows: Int, private val columns: Int) : Graph<Node> {
 
     private fun addNode(row: Int, col: Int) {
         if ((row >= rows) || (col >= columns)) return
-        table[row][col] = Node("${row},${col}", Pair(row,col))
+        val node = Node("${row},${col}")
+        node.position = Pair(row,col)
+        table[row][col] = node
     }
 
     /**
