@@ -154,9 +154,9 @@ class DrawableGraphView : View {
         invalidate()
     }
 
-    private fun increaseEdgeWeight(edge: DrawableEdge) {
-        edge.weight += 1.0
-        Log.d("EDGE", edge.weight.toString())
+    private fun increaseEdgeWeight(drawableEdge: DrawableEdge) {
+        drawableEdge.increaseWeight(1.0)
+        Log.d("EDGE", drawableEdge.edge?.weight.toString())
         invalidate()
     }
 
@@ -342,9 +342,10 @@ class DrawableGraphView : View {
 
         paint.textSize /= 1.5f
         for (drawableEdge in drawableEdges) {
+            val edge = drawableEdge.edge ?: continue
             val nodeA = drawableEdge.nodeA
             val nodeB = drawableEdge.nodeB ?: continue
-            drawWeight(nodeA, nodeB, drawableEdge.weight.toInt().toString(),
+            drawWeight(nodeA, nodeB, edge.weight.toInt().toString(),
                 colorBoxWeight, canvas)
         }
         paint.textSize *= 1.5f

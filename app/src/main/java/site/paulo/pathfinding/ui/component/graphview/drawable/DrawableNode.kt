@@ -34,7 +34,8 @@ class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
     }
 
     fun connectByEdge(nodeToConnect: DrawableNode, drawableEdge: DrawableEdge, weight: Double) {
-        super.connect(nodeToConnect, Edge.DEFAULT_WEIGHT)
+        drawableEdge.edge = super.connect(nodeToConnect, Edge.DEFAULT_WEIGHT)
+
         connectedTo[nodeToConnect.id] = nodeToConnect
         connectedByEdge[nodeToConnect.id] = drawableEdge
 

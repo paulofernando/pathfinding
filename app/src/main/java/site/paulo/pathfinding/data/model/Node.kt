@@ -31,10 +31,11 @@ open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Nod
         return 0
     }
 
-    open fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) {
+    open fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) : Edge {
         val edge = Edge(this, nodeToConnect, weight)
         this.edges[nodeToConnect.name] = edge
         nodeToConnect.edges[this.name] = edge
+        return edge
     }
 
     fun reconnect(nodeToReconnect: Node) {
