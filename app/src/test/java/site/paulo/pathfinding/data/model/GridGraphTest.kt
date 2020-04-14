@@ -1,8 +1,9 @@
-package site.paulo.pathfinding.data.model
+package test.site.paulo.pathfinding.data.model
 
 import io.mockk.clearAllMocks
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import site.paulo.pathfinding.data.model.GridGraph
 
 class GridGraphTest {
 
