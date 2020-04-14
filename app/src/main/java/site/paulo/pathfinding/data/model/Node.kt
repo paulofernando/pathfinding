@@ -6,7 +6,7 @@ open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Nod
      * LinkedHashMap (because the ordering matters when drawing) with
      * connected node name as key, and edge as value
      */
-    var edges: LinkedHashMap<String, Edge> = LinkedHashMap()
+    open val edges: LinkedHashMap<String, Edge> = LinkedHashMap()
     /**
      * Shortest distance from S to V
      */

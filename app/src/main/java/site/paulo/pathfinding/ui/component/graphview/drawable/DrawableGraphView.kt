@@ -99,8 +99,13 @@ class DrawableGraphView : View {
                 }
 
                 if (selectedNode == null) {
-                    addDrawableNode(x, y)
-                    readyToAddEdges = false
+                    val edge = getEdgeBoxAtPoint(x, y)
+                    if (edge != null) {
+                        increaseEdgeWeight(edge)
+                    } else {
+                        addDrawableNode(x, y)
+                        readyToAddEdges = false
+                    }
                 } else {
                     readyToAddEdges = true
                 }
@@ -146,6 +151,12 @@ class DrawableGraphView : View {
         while (path.isNotEmpty())
             visitedNodesOrder.add(path.pop())
 
+        invalidate()
+    }
+
+    private fun increaseEdgeWeight(edge: DrawableEdge) {
+        edge.weight += 1.0
+        Log.d("EDGE", edge.weight.toString())
         invalidate()
     }
 
@@ -209,6 +220,16 @@ class DrawableGraphView : View {
         for (n in graph.getNodes()) {
             if (touchedPoint.intersect(n.rect))
                 return n
+        }
+        return null
+    }
+
+    private fun getEdgeBoxAtPoint(x: Float, y: Float): DrawableEdge? {
+        val touchedPoint = RectF(x - DrawableNode.RADIUS, y - DrawableNode.RADIUS,
+            x + DrawableNode.RADIUS, y + DrawableNode.RADIUS)
+        for (e in drawableEdges) {
+            if (touchedPoint.intersect(e.touchableArea))
+                return e
         }
         return null
     }
