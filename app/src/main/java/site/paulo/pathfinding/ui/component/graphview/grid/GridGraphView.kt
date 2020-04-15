@@ -9,15 +9,12 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
-import site.paulo.pathfinding.data.model.GridGraph
-import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
-import site.paulo.pathfinding.data.model.Edge
-import site.paulo.pathfinding.data.model.PathFindingAlgorithms
+import site.paulo.pathfinding.data.model.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import java.util.concurrent.atomic.AtomicBoolean
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
@@ -148,7 +145,7 @@ class GridGraphView : View {
             DEPTH_FIRST -> DepthFirst(nodeA, nodeB)
         }
 
-        algorithm.run()
+        algorithm.run(GraphTypes.GRID)
         scheduleDraw(algorithm.getVisitedOrder(), algorithm.getPath(),
             defaultPathNodePerSec, defaultVisitedNodePerSec)
     }

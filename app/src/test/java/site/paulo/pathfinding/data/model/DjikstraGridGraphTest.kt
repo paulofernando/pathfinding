@@ -2,6 +2,7 @@ package test.site.paulo.pathfinding.data.model
 
 import org.junit.jupiter.api.Test
 import site.paulo.pathfinding.algorithm.Djikstra
+import site.paulo.pathfinding.data.model.GraphTypes
 import site.paulo.pathfinding.data.model.GridGraph
 
 internal class DjikstraGridGraphTest {
@@ -14,7 +15,7 @@ internal class DjikstraGridGraphTest {
             gridGraph.getNode(Pair(0, 0))!!,
             gridGraph.getNode(Pair(2, 2))!!
         )
-        djikstra.run()
+        djikstra.run(GraphTypes.GRID)
         assert(djikstra.getPath().size == 5)
     }
 
@@ -26,7 +27,7 @@ internal class DjikstraGridGraphTest {
             gridGraph.getNode(Pair(2, 2))!!,
             gridGraph.getNode(Pair(0, 0))!!
         )
-        djikstra.run()
+        djikstra.run(GraphTypes.GRID)
 
         assert(djikstra.getPath().size == 5)
     }
@@ -43,7 +44,7 @@ internal class DjikstraGridGraphTest {
         gridGraph.removeNode(Pair(0,2))
         gridGraph.removeNode(Pair(2,0))
         gridGraph.removeNode(Pair(1,1))
-        djikstra.run()
+        djikstra.run(GraphTypes.GRID)
 
         assert(djikstra.getPath().size == 0)
     }
@@ -60,7 +61,7 @@ internal class DjikstraGridGraphTest {
         gridGraph.removeNode(Pair(0,1))
         gridGraph.removeNode(Pair(1,0))
         gridGraph.removeNode(Pair(1,1))
-        djikstra.run()
+        djikstra.run(GraphTypes.GRID)
 
         assert(djikstra.getPath().size == 0)
     }
@@ -78,7 +79,7 @@ internal class DjikstraGridGraphTest {
         gridGraph.removeNode(Pair(5,6))
         gridGraph.removeNode(Pair(4,5))
         gridGraph.removeNode(Pair(6,5))
-        djikstra.run()
+        djikstra.run(GraphTypes.GRID)
 
         assert(djikstra.getPath().size == 0)
     }
@@ -92,7 +93,7 @@ internal class DjikstraGridGraphTest {
             gridGraph.getNode(Pair(1, 1))!!
         )
 
-        djikstra.run()
+        djikstra.run(GraphTypes.GRID)
 
         assert(djikstra.getPath().size == 3)
     }
@@ -106,7 +107,7 @@ internal class DjikstraGridGraphTest {
             gridGraph.getNode(Pair(0, 0))!!
         )
 
-        djikstra.run()
+        djikstra.run(GraphTypes.GRID)
 
         assert(djikstra.getPath().size == 1)
     }

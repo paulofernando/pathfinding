@@ -2,6 +2,7 @@ package test.site.paulo.pathfinding.data.model
 
 import org.junit.jupiter.api.Test
 import site.paulo.pathfinding.algorithm.AStar
+import site.paulo.pathfinding.data.model.GraphTypes
 import site.paulo.pathfinding.data.model.GridGraph
 
 internal class AStarGridGraphTest {
@@ -14,7 +15,7 @@ internal class AStarGridGraphTest {
             gridGraph.getNode(Pair(0, 0))!!,
             gridGraph.getNode(Pair(2, 2))!!
         )
-        aStar.run()
+        aStar.run(GraphTypes.GRID)
         assert(aStar.getPath().size == 5)
     }
 
@@ -26,7 +27,7 @@ internal class AStarGridGraphTest {
             gridGraph.getNode(Pair(2, 2))!!,
             gridGraph.getNode(Pair(0, 0))!!
         )
-        aStart.run()
+        aStart.run(GraphTypes.GRID)
 
         assert(aStart.getPath().size == 5)
     }
@@ -43,7 +44,7 @@ internal class AStarGridGraphTest {
         gridGraph.removeNode(Pair(0,2))
         gridGraph.removeNode(Pair(2,0))
         gridGraph.removeNode(Pair(1,1))
-        aStar.run()
+        aStar.run(GraphTypes.GRID)
 
         assert(aStar.getPath().size == 0)
     }
@@ -60,7 +61,7 @@ internal class AStarGridGraphTest {
         gridGraph.removeNode(Pair(0,1))
         gridGraph.removeNode(Pair(1,0))
         gridGraph.removeNode(Pair(1,1))
-        aStar.run()
+        aStar.run(GraphTypes.GRID)
 
         assert(aStar.getPath().size == 0)
     }
@@ -78,7 +79,7 @@ internal class AStarGridGraphTest {
         gridGraph.removeNode(Pair(5,6))
         gridGraph.removeNode(Pair(4,5))
         gridGraph.removeNode(Pair(6,5))
-        aStar.run()
+        aStar.run(GraphTypes.GRID)
 
         assert(aStar.getPath().size == 0)
     }
@@ -92,7 +93,7 @@ internal class AStarGridGraphTest {
             gridGraph.getNode(Pair(1, 1))!!
         )
 
-        aStar.run()
+        aStar.run(GraphTypes.GRID)
 
         assert(aStar.getPath().size == 3)
     }
@@ -106,7 +107,7 @@ internal class AStarGridGraphTest {
             gridGraph.getNode(Pair(0, 0))!!
         )
 
-        aStar.run()
+        aStar.run(GraphTypes.GRID)
 
         assert(aStar.getPath().size == 1)
     }

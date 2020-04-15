@@ -64,7 +64,6 @@ open class Node(val name: String) : Comparable<Node> {
 
     fun reset() {
         previous = null
-        edges.values.forEach{ it.visited = false}
         shortestPath = Double.POSITIVE_INFINITY
         heuristicDistance = 0
     }
