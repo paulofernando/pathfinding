@@ -8,7 +8,41 @@ import java.util.*
 internal class DjikstraTest {
 
     @Test
-    fun `test Djikstra algorithm - shortest`() {
+    fun `test Djikstra algorithm - simple`() {
+        val nodes = LinkedList<Node>()
+        nodes.add(Node("1"))
+        nodes.add(Node("2"))
+
+        nodes[0].connect(nodes[1])
+
+        val djikstra = Djikstra(nodes, nodes[0], nodes[1])
+
+        djikstra.run()
+
+        assert(djikstra.getPath().size == 2)
+        assert(djikstra.getPath()[0] == nodes[1])
+        assert(djikstra.getPath()[1] == nodes[0])
+    }
+
+    @Test
+    fun `test Djikstra algorithm - simple reverse`() {
+        val nodes = LinkedList<Node>()
+        nodes.add(Node("1"))
+        nodes.add(Node("2"))
+
+        nodes[0].connect(nodes[1])
+
+        val djikstra = Djikstra(nodes, nodes[1], nodes[0])
+
+        djikstra.run()
+
+        assert(djikstra.getPath().size == 2)
+        assert(djikstra.getPath()[0] == nodes[0])
+        assert(djikstra.getPath()[1] == nodes[1])
+    }
+
+    @Test
+    fun `test Djikstra algorithm`() {
         val nodes = LinkedList<Node>()
         nodes.add(Node("1"))
         nodes.add(Node("2"))
@@ -48,7 +82,27 @@ internal class DjikstraTest {
     }
 
     @Test
-    fun `test Djikstra algorithm - circle`() {
+    fun `test Djikstra algorithm - circular`() {
+        val nodes = LinkedList<Node>()
+        nodes.add(Node("1"))
+        nodes.add(Node("2"))
+        nodes.add(Node("3"))
+
+        nodes[0].connect(nodes[1])
+        nodes[1].connect(nodes[2])
+        nodes[2].connect(nodes[0])
+
+        val djikstra = Djikstra(nodes, nodes[0], nodes[2])
+
+        djikstra.run()
+
+        assert(djikstra.getPath().size == 2)
+        assert(djikstra.getPath()[0] == nodes[2])
+        assert(djikstra.getPath()[1] == nodes[0])
+    }
+
+    @Test
+    fun `test Djikstra algorithm - circular with weight`() {
         val nodes = LinkedList<Node>()
         nodes.add(Node("1"))
         nodes.add(Node("2"))
@@ -68,7 +122,7 @@ internal class DjikstraTest {
     }
 
     @Test
-    fun `test Djikstra algorithm - circle 2`() {
+    fun `test Djikstra algorithm - circular with weight 2`() {
         val nodes = LinkedList<Node>()
         nodes.add(Node("1"))
         nodes.add(Node("2"))
@@ -85,6 +139,27 @@ internal class DjikstraTest {
         assert(djikstra.getPath().size == 3)
         assert(djikstra.getPath()[0] == nodes[2])
         assert(djikstra.getPath()[1] == nodes[1])
+        assert(djikstra.getPath()[2] == nodes[0])
+    }
+
+    @Test
+    fun `test Djikstra algorithm - circular with weight 3`() {
+        val nodes = LinkedList<Node>()
+        nodes.add(Node("1"))
+        nodes.add(Node("2"))
+        nodes.add(Node("3"))
+
+        nodes[0].connect(nodes[1], 10.0)
+        nodes[1].connect(nodes[2])
+        nodes[2].connect(nodes[0])
+
+        val djikstra = Djikstra(nodes, nodes[0], nodes[1])
+
+        djikstra.run()
+
+        assert(djikstra.getPath().size == 3)
+        assert(djikstra.getPath()[0] == nodes[1])
+        assert(djikstra.getPath()[1] == nodes[2])
         assert(djikstra.getPath()[2] == nodes[0])
     }
 
