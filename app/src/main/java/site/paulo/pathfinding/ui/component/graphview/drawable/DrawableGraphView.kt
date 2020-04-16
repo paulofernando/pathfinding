@@ -31,6 +31,7 @@ class DrawableGraphView : View {
     private var selectedNode: DrawableNode? = null
     private var readyToAddEdges: Boolean = false
     private var readyToAddStartAndEndNodes: Boolean = false
+    private var readyToRunAgain: Boolean = false
 
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
@@ -60,10 +61,15 @@ class DrawableGraphView : View {
         drawBoundaries(canvas)
         drawEdges(canvas)
         drawNodes(canvas)
-        drawWeights(canvas)
+        if (selectedAlgorithm == DJIKSTRA) {
+            drawWeights(canvas)
+        }
         if (visitedNodesOrder.isNotEmpty()) {
             drawVisitedNodes(canvas)
             drawVisitedEdges(canvas)
+            if (selectedAlgorithm == DJIKSTRA) {
+                drawVisitedWeights(canvas)
+            }
         }
         drawStartAndEndPoints(canvas)
         drawTextNodes(canvas)
@@ -128,6 +134,10 @@ class DrawableGraphView : View {
 
     fun setAlgorithm(alg: PathFindingAlgorithms) {
         selectedAlgorithm = alg
+        invalidate()
+        if(readyToRunAgain) {
+            runAlgorithm()
+        }
     }
 
     fun runAlgorithm() {
@@ -146,6 +156,7 @@ class DrawableGraphView : View {
         }
 
         algorithm.run()
+        readyToRunAgain = true
 
         val path = algorithm.getPath()
         while (path.isNotEmpty())
@@ -155,9 +166,13 @@ class DrawableGraphView : View {
     }
 
     private fun increaseEdgeWeight(drawableEdge: DrawableEdge) {
-        drawableEdge.increaseWeight(1.0)
-        Log.d("EDGE", drawableEdge.edge?.weight.toString())
-        invalidate()
+        if (selectedAlgorithm == DJIKSTRA) {
+            drawableEdge.increaseWeight(1.0)
+            invalidate()
+            if(readyToRunAgain) {
+                runAlgorithm()
+            }
+        }
     }
 
     private fun addDrawableNode(x: Float, y: Float) {
@@ -175,6 +190,9 @@ class DrawableGraphView : View {
             drawableEdges.add(DrawableEdge(drawableEdges.size + 1, nodeA, nodeB))
             drawableEdges.last().connectTo(nodeB, paint)
             invalidate()
+            if(readyToRunAgain) {
+                runAlgorithm()
+            }
         }
     }
 
@@ -317,24 +335,30 @@ class DrawableGraphView : View {
 
     private fun drawVisitedEdges(canvas: Canvas) {
         var currentNode = visitedNodesOrder.get(index = 0) as DrawableNode
-        paint.textSize /= 1.5f
+        paint.color = colorDrawablePath
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = resources.displayMetrics.density * 2
         for (i in 1 until visitedNodesOrder.size) {
             val nodeB = visitedNodesOrder.get(index = i) as DrawableNode
-            paint.color = colorDrawablePath
-
-            paint.style = Paint.Style.STROKE
-            paint.strokeWidth = resources.displayMetrics.density * 2
             drawEdge(currentNode, nodeB, canvas)
+            currentNode = visitedNodesOrder.get(index = i) as DrawableNode
+        }
+        invalidate()
+    }
 
-            paint.style = Paint.Style.FILL
-            paint.strokeWidth = resources.displayMetrics.density
+    private fun drawVisitedWeights(canvas: Canvas) {
+        var currentNode = visitedNodesOrder.get(index = 0) as DrawableNode
+        paint.textSize /= 1.5f
+        paint.style = Paint.Style.FILL
+        paint.strokeWidth = resources.displayMetrics.density
+        for (i in 1 until visitedNodesOrder.size) {
+            val nodeB = visitedNodesOrder.get(index = i) as DrawableNode
             drawWeight(currentNode, nodeB, currentNode.edges[nodeB.id]!!.weight.toInt().toString(),
                 colorDrawablePath, canvas)
-
             currentNode = visitedNodesOrder.get(index = i) as DrawableNode
-            invalidate()
         }
         paint.textSize *= 1.5f
+        invalidate()
     }
 
     private fun drawWeights(canvas: Canvas) {
