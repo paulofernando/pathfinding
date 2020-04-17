@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_drawable_graph.*
 import kotlinx.android.synthetic.main.fragment_grid_graph.*
 import site.paulo.pathfinding.R

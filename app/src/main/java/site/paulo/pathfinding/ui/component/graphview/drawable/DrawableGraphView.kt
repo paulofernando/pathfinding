@@ -50,6 +50,7 @@ class DrawableGraphView : View {
     private val colorTextWeight: Int = ContextCompat.getColor(context, R.color.colorTextWeight)
     private val colorBoxWeight: Int = ContextCompat.getColor(context, R.color.colorBoxWeight)
     private val colorSelectedNode: Int = ContextCompat.getColor(context, R.color.colorSelectedNode)
+    private val colorBoundaries: Int = ContextCompat.getColor(context, R.color.colorBoundaries)
     // --------------------------
 
     init {
@@ -254,7 +255,7 @@ class DrawableGraphView : View {
 
     private fun drawBoundaries(canvas: Canvas) {
         paint.style = Paint.Style.STROKE
-        paint.color = Color.BLACK
+        paint.color = colorBoundaries
 
         canvas.drawRect(1f, 1f, width - 1f, height - 1f, paint)
     }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pathfinding</string>
+    <string name="app_name">Pathfinding Visualizer</string>
     <string name="button_run">Run</string>
     <string name="button_reset">Reset</string>
     <string name="description_trash_can">Trash can</string>
@@ -19,8 +19,6 @@
     <string name="item_weight">Weight</string>
     <string name="about">About</string>
 
-    <string name="tab_1">Drawable</string>
-    <string name="tab_2">Grid</string>
     <string name="node_radio">Node</string>
     <string name="edge_radio">Edge</string>
     <string name="select_radio">Select</string>
