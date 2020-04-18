@@ -17,6 +17,7 @@ import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 import site.paulo.pathfinding.R
+import site.paulo.pathfinding.ui.component.graphview.intro.IntroActivity
 
 
 class MainActivity : AppCompatActivity(),
@@ -78,9 +79,9 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun callMenuAbout(view: View) {
-        startActivity(Intent(this, AboutActivity::class.java))
+        //startActivity(Intent(this, AboutActivity::class.java))
+        startActivity(Intent(this, IntroActivity::class.java))
     }
-
 
 
     fun reset(view: View) {
