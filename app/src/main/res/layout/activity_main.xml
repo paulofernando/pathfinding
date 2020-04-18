@@ -52,13 +52,14 @@
         android:layout_height="match_parent"
         android:layout_below="@id/tabs"
         android:background="@color/colorBackground"
+        android:layout_marginBottom="@dimen/bottom_bar_height"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
     <LinearLayout
         android:id="@+id/buttonsContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/bottom_bar_height"
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
         android:background="@color/colorBackgroundBar"
