@@ -22,6 +22,7 @@ class DrawableGraphView : View {
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
 
+    private val touchableSpace: Float = 10f
     private var selectedOption: PathFindingAlgorithms = DJIKSTRA
     private var listeners: ArrayList<GraphListener> = ArrayList()
 
@@ -94,14 +95,22 @@ class DrawableGraphView : View {
                     selectedNode = getDrawableNodeAtPoint(x, y)
                 } else {
                     val nodeB = getDrawableNodeAtPoint(x, y)
-                    if (nodeB != null && selectedNode != nodeB) {
-                        addDrawableEdge(selectedNode!!, nodeB)
+
+                    if(nodeB == null) { //user clicks on an empty area after choose first node
                         selectedNode = null
+                        return true
                     }
 
-                    if (selectedNode == nodeB) {
+                    if (selectedNode != nodeB) { //user connect nodes
+                        addDrawableEdge(selectedNode!!, nodeB)
+                        selectedNode = null
+                        return true
+                    }
+
+                    if (selectedNode == nodeB) { //user clicks on the same selected node
                         selectDrawableNode(x, y)
                         selectedNode = null
+                        return true
                     }
                 }
 
@@ -234,8 +243,8 @@ class DrawableGraphView : View {
     }
 
     private fun getDrawableNodeAtPoint(x: Float, y: Float): DrawableNode? {
-        val touchedPoint = RectF(x - DrawableNode.RADIUS, y - DrawableNode.RADIUS,
-            x + DrawableNode.RADIUS, y + DrawableNode.RADIUS)
+        val touchedPoint = RectF(x - touchableSpace, y - touchableSpace,
+            x + touchableSpace, y + touchableSpace)
         for (n in graph.getNodes()) {
             if (touchedPoint.intersect(n.rect))
                 return n
@@ -244,8 +253,8 @@ class DrawableGraphView : View {
     }
 
     private fun getEdgeBoxAtPoint(x: Float, y: Float): DrawableEdge? {
-        val touchedPoint = RectF(x - DrawableNode.RADIUS, y - DrawableNode.RADIUS,
-            x + DrawableNode.RADIUS, y + DrawableNode.RADIUS)
+        val touchedPoint = RectF(x - touchableSpace, y - touchableSpace,
+            x + touchableSpace, y + touchableSpace)
         for (e in drawableEdges) {
             if (touchedPoint.intersect(e.touchableArea))
                 return e
@@ -369,7 +378,7 @@ class DrawableGraphView : View {
         for (drawableEdge in drawableEdges) {
             val edge = drawableEdge.edge ?: continue
             val nodeA = drawableEdge.nodeA
-            val nodeB = drawableEdge.nodeB ?: continue
+            val nodeB = drawableEdge.nodeB
             drawWeight(nodeA, nodeB, edge.weight.toInt().toString(),
                 colorBoxWeight, canvas)
         }
