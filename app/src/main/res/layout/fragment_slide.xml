@@ -19,9 +19,9 @@
 
     <ImageView
         android:id="@+id/stepImage"
-        android:layout_width="268dp"
-        android:layout_height="165dp"
-        app:srcCompat="@drawable/final_graph"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:srcCompat="@drawable/graph_add"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/headerTextView"/>
 

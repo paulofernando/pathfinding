@@ -13,12 +13,19 @@ import kotlinx.android.synthetic.main.fragment_slide.view.*
 class IntroAdapter (private val context: Context): PagerAdapter() {
 
     companion object {
-        const val SLIDES_COUNT = 3
+        const val SLIDES_COUNT = 5
     }
 
-    private val slideHeaders = arrayOf("Add", "Connect", "Choose")
-    private val slideImages = intArrayOf(R.drawable.final_graph, R.drawable.final_graph, R.drawable.final_graph)
-    private val slideDescriptions = arrayOf("Description 1", "Description 2", "Description 3")
+    private val slideHeaders = arrayOf("Add", "Connect", "Weight", "Choose", "Run")
+    private val slideImages = intArrayOf(
+        R.drawable.graph_add,
+        R.drawable.graph_connect,
+        R.drawable.graph_weight,
+        R.drawable.graph_choose,
+        R.drawable.graph_run
+    )
+    private val slideDescriptions = arrayOf("Description 1", "Description 2", "Description 3",
+        "Description 4", "Description 5")
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
         return view === `object`
