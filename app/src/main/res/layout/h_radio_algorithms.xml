@@ -31,6 +31,7 @@
                     android:background="@drawable/radio_checked"
                     android:drawableRight="@drawable/ic_check_mark"
                     android:padding="@dimen/button_space"
+                    android:textColor="@color/colorRadioText"
                     android:text="@string/alg_djikstra" />
 
                 <Button
@@ -40,6 +41,7 @@
                     android:layout_margin="@dimen/button_space"
                     android:background="@drawable/radio"
                     android:padding="@dimen/button_space"
+                    android:textColor="@color/colorRadioText"
                     android:text="@string/alg_a_star" />
 
             </LinearLayout>
@@ -77,6 +79,7 @@
                     android:layout_margin="@dimen/button_space"
                     android:background="@drawable/radio"
                     android:padding="@dimen/button_space"
+                    android:textColor="@color/colorRadioText"
                     android:text="@string/alg_breadth_first" />
 
                 <Button
@@ -86,6 +89,7 @@
                     android:layout_margin="@dimen/button_space"
                     android:background="@drawable/radio"
                     android:padding="@dimen/button_space"
+                    android:textColor="@color/colorRadioText"
                     android:text="@string/alg_depth_first" />
 
             </LinearLayout>

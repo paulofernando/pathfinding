@@ -1,5 +1,6 @@
 package site.paulo.pathfinding.algorithm
 
+import site.paulo.pathfinding.data.model.GraphTypes
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import java.util.*
@@ -10,7 +11,7 @@ class DepthFirst(private val startNode: Node, private val endNode: Node) : PathF
     private val nodeVisited = HashSet<String>()
     private val nodeVisitedOrder = LinkedList<Node>()
 
-    override fun run() {
+    override fun run(graphType: GraphTypes) {
         nodeVisited.clear()
         nodeVisitedOrder.clear()
         dfs(startNode)
@@ -22,7 +23,7 @@ class DepthFirst(private val startNode: Node, private val endNode: Node) : PathF
         node.edges.values.forEach {edge ->
             if(edge.connected && !nodeVisited.contains(endNode.name)) {
                 val nodeToVisit = edge.getOpposite(node)
-                if (nodeToVisit != null && !nodeVisited.contains(nodeToVisit.name)) {
+                if (!nodeVisited.contains(nodeToVisit.name)) {
                     nodeToVisit.previous = edge
                     dfs(nodeToVisit)
                 }

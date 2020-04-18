@@ -6,7 +6,6 @@ open class Edge(open val nodeA: Node, open val nodeB: Node, var weight: Double =
         const val DEFAULT_WEIGHT = 1.0
     }
 
-    var visited: Boolean = false
     /**
      * Connection between nodes is valid or not
      */

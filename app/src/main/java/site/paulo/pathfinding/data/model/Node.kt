@@ -1,12 +1,12 @@
 package site.paulo.pathfinding.data.model
 
-open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Node> {
+open class Node(val name: String) : Comparable<Node> {
 
     /**
      * LinkedHashMap (because the ordering matters when drawing) with
      * connected node name as key, and edge as value
      */
-    var edges: LinkedHashMap<String, Edge> = LinkedHashMap()
+    open val edges: LinkedHashMap<String, Edge> = LinkedHashMap()
     /**
      * Shortest distance from S to V
      */
@@ -16,6 +16,8 @@ open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Nod
      * Connection to previous node of the shortest distance
      */
     var previous: Edge? = null
+
+    var position: Pair<Int, Int> = Pair(-1, -1)
 
 
     override fun compareTo(other: Node): Int {
@@ -31,10 +33,11 @@ open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Nod
         return 0
     }
 
-    open fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) {
+    open fun connect(nodeToConnect: Node, weight: Double = Edge.DEFAULT_WEIGHT) : Edge {
         val edge = Edge(this, nodeToConnect, weight)
         this.edges[nodeToConnect.name] = edge
         nodeToConnect.edges[this.name] = edge
+        return edge
     }
 
     fun reconnect(nodeToReconnect: Node) {
@@ -61,7 +64,6 @@ open class Node(val name: String, val position: Pair<Int, Int>) : Comparable<Nod
 
     fun reset() {
         previous = null
-        edges.values.forEach{ it.visited = false}
         shortestPath = Double.POSITIVE_INFINITY
         heuristicDistance = 0
     }

@@ -5,7 +5,7 @@ import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.data.model.Node
 
 class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
-    Node(id, Pair(centerX.toInt(), centerY.toInt())) {
+    Node(id) {
 
     var rect: RectF
     var connectedTo: HashMap<String, DrawableNode> = HashMap()
@@ -22,6 +22,7 @@ class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
             centerY - RADIUS,
             centerX + RADIUS,
             centerY + RADIUS)
+        position = Pair(centerX.toInt(), centerY.toInt())
     }
 
     fun updatePosition(x: Float, y: Float) {
@@ -34,7 +35,8 @@ class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
     }
 
     fun connectByEdge(nodeToConnect: DrawableNode, drawableEdge: DrawableEdge, weight: Double) {
-        super.connect(nodeToConnect, Edge.DEFAULT_WEIGHT)
+        drawableEdge.edge = super.connect(nodeToConnect, Edge.DEFAULT_WEIGHT)
+
         connectedTo[nodeToConnect.id] = nodeToConnect
         connectedByEdge[nodeToConnect.id] = drawableEdge
 

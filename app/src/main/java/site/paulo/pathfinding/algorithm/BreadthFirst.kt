@@ -1,6 +1,7 @@
 package site.paulo.pathfinding.algorithm
 
 import site.paulo.pathfinding.data.model.Edge
+import site.paulo.pathfinding.data.model.GraphTypes
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import java.util.*
@@ -16,14 +17,14 @@ class BreadthFirst(private val startNode: Node, private val endNode: Node) : Pat
         addToFrontier(null, startNode)
     }
 
-    override fun run() {
+    override fun run(graphType: GraphTypes) {
         while (frontier.isNotEmpty()) {
             val currentNode = frontier.poll()
             if(currentNode == endNode) break
             currentNode?.edges?.values?.forEach {edge ->
                 if(edge.connected) {
                     val nodeToVisit = edge.getOpposite(currentNode)
-                    if (nodeToVisit != null && !nodeVisited.contains(nodeToVisit.name)) {
+                    if (!nodeVisited.contains(nodeToVisit.name)) {
                         addToFrontier(edge, nodeToVisit)
                     }
                 }

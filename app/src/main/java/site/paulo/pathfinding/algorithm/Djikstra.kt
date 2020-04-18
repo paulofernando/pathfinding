@@ -1,5 +1,6 @@
 package site.paulo.pathfinding.algorithm
 
+import site.paulo.pathfinding.data.model.GraphTypes
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import java.util.*
@@ -24,12 +25,13 @@ open class Djikstra (
      */
     private val nodeVisitedOrder = LinkedList<Node>()
 
-    override fun run() {
+    override fun run(graphType: GraphTypes) {
         prepare()
         if (remaining.isEmpty()) return
 
         var lowest = remaining.poll()
-        while (lowest != null && (lowest != endNode) && (lowest.shortestPath != Double.POSITIVE_INFINITY)) {
+        while (lowest != null && (lowest.shortestPath != Double.POSITIVE_INFINITY)) {
+            if (graphType == GraphTypes.GRID && (lowest == endNode)) break
             searchPath(lowest)
             lowest = remaining.poll()
         }
@@ -40,7 +42,7 @@ open class Djikstra (
         nodeVisitedOrder.add(currentNode)
         for (adjacentNode in currentNode.getAdjacentNodes()) {
             val edge = currentNode.edges[adjacentNode.name]
-            if (edge != null && !edge.visited && edge.connected) {
+            if (edge != null && edge.connected) {
                 val shortestPathFromAdjacent = adjacentNode.shortestPath + edge.weight
                 if (shortestPathFromAdjacent == Double.POSITIVE_INFINITY) {
                     setShortestPath(adjacentNode, currentNode.shortestPath + edge.weight)
@@ -49,8 +51,6 @@ open class Djikstra (
                     setShortestPath(currentNode, shortestPathFromAdjacent)
                     currentNode.previous = edge
                 }
-
-                edge.visited = true
             }
         }
     }
