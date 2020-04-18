@@ -5,6 +5,7 @@
     <color name="colorAccent">#FFC400</color>
     <color name="colorDisabledAccent">#D6D6D6</color>
     <color name="colorBackground">#FFFFFF</color>
+    <color name="colorBackgroundBar">#11000000</color>
     <color name="colorGraph">#FFFFFF</color>
 
     <color name="colorGroupWeighted">#E0F7FA</color>
@@ -35,5 +36,5 @@
     <color name="colorBoundaries">#AAAAAA</color>
 
     <color name="colorSelectedTabIcon">@color/colorAccent</color>
-    <color name="colorTabIcon">#EEEEEE</color>
+    <color name="colorTabIcon">#BBBBBB</color>
 </resources>
