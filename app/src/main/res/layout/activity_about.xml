@@ -16,9 +16,53 @@
         app:navigationIcon="?attr/homeAsUpIndicator"/>
 
     <ListView
-        android:id="@+id/aboutListView"
+        android:id="@+id/aboutGeneralListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
+        android:layout_height="wrap_content" >
     </ListView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:text="How to use"/>
+
+    <LinearLayout
+        android:id="@+id/buttonsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/clearImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/button_space"
+            android:backgroundTint="@color/colorAccent"
+            android:drawablePadding="8dp"
+            android:textColor="@color/colorAboutTextButton"
+            android:text="@string/drawable_graph"
+            android:drawableEnd="@drawable/ic_graph"
+            android:onClick="openDrawableTutorial"
+            android:contentDescription="@string/description_trash_can">
+        </Button>
+
+        <Button
+            android:id="@+id/runImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/button_space"
+            android:backgroundTint="@color/colorAccent"
+            android:drawablePadding="8dp"
+            android:textColor="@color/colorAboutTextButton"
+            android:text="@string/grid_graph"
+            android:drawableEnd="@drawable/ic_grid"
+            android:onClick="openGridTutorial"
+            android:contentDescription="@string/description_path">
+        </Button>
+
+    </LinearLayout>
+
 </LinearLayout>

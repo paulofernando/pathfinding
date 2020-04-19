@@ -1,4 +1,4 @@
-package site.paulo.pathfinding.ui.intro
+package site.paulo.pathfinding.ui.intro.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,19 +10,22 @@ import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import kotlinx.android.synthetic.main.activity_intro.*
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.intro.IntroAdapter.Companion.SLIDES_COUNT
+import site.paulo.pathfinding.ui.intro.adapter.IntroDrawableGraphAdapter
 
-class IntroActivity : AppCompatActivity() {
+open class IntroGraphActivity(private val slidesCount: Int) : AppCompatActivity() {
 
-    private var currentPage: Int = 0
+    var currentPage: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro)
 
-        slideViewPage.adapter = IntroAdapter(this)
+        slideViewPage.adapter =
+            IntroDrawableGraphAdapter(
+                this
+            )
 
-        val spannable = SpannableString("\u2022".repeat(SLIDES_COUNT))
+        val spannable = SpannableString("\u2022".repeat(slidesCount))
         val color = ForegroundColorSpan(ContextCompat.getColor(applicationContext, R.color.colorSelectedDot))
         spannable.setSpan(color, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         dots.text = spannable
@@ -44,7 +47,7 @@ class IntroActivity : AppCompatActivity() {
 
                 if (position == 0) {
                     introBackButton.visibility = View.INVISIBLE
-                } else if (position == (SLIDES_COUNT - 1)) {
+                } else if (position == (slidesCount - 1)) {
                     introNextButton.text = getString(R.string.finish)
                 }
             }
@@ -56,7 +59,7 @@ class IntroActivity : AppCompatActivity() {
     }
 
     fun nextPage(view: View) {
-        if (currentPage < (SLIDES_COUNT - 1))
+        if (currentPage < (slidesCount - 1))
             slideViewPage.currentItem = currentPage + 1
         else
             finish()

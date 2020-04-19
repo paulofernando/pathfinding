@@ -43,4 +43,6 @@
     <color name="colorIntroButton">#555555</color>
     <color name="colorIntroHeader">#777777</color>
     <color name="colorIntroDescription">#777777</color>
+
+    <color name="colorAboutTextButton">#FFFFFF</color>
 </resources>

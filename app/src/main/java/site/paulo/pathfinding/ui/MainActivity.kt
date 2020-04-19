@@ -2,7 +2,6 @@ package site.paulo.pathfinding.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -16,7 +15,7 @@ import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.intro.IntroActivity
+import site.paulo.pathfinding.ui.intro.ui.IntroDrawableGraphActivity
 
 
 class MainActivity : AppCompatActivity(),
@@ -95,7 +94,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun showIntro() {
-        startActivity(Intent(this, IntroActivity::class.java))
+        startActivity(Intent(this, IntroDrawableGraphActivity::class.java))
     }
 
     fun runAlgorithm(view: View) {
