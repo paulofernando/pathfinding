@@ -31,9 +31,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/stepImage"
         android:gravity="center"
+        android:textSize="16sp"
+        android:padding="60dp"
         android:textColor="@color/colorIntroDescription"
-        android:paddingTop="60dp"
-        android:hint="Description" />
+        android:hint="Description abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc " />
 
 
 </RelativeLayout>

@@ -1,5 +1,7 @@
-package site.paulo.pathfinding.ui.component.graphview.intro
+package site.paulo.pathfinding.ui.intro
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
@@ -10,7 +12,8 @@ import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import kotlinx.android.synthetic.main.activity_intro.*
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.component.graphview.intro.IntroAdapter.Companion.SLIDES_COUNT
+import site.paulo.pathfinding.ui.MainActivity
+import site.paulo.pathfinding.ui.intro.IntroAdapter.Companion.SLIDES_COUNT
 
 class IntroActivity : AppCompatActivity() {
 
@@ -56,7 +59,13 @@ class IntroActivity : AppCompatActivity() {
     }
 
     fun nextPage(view: View) {
-        if (currentPage < SLIDES_COUNT)
+        if (currentPage < (SLIDES_COUNT - 1))
             slideViewPage.currentItem = currentPage + 1
+        else
+            finish()
+    }
+
+    fun closePage(view: View) {
+        finish()
     }
 }

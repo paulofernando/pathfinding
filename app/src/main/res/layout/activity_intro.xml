@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorBackgroundIntro">
 
     <RelativeLayout
         android:id="@+id/dotsLayout"
@@ -44,11 +44,28 @@
     </RelativeLayout>
 
 
+    <RelativeLayout
+        android:id="@+id/introSkipContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/introSkipButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/colorIntroButton"
+            android:background="@android:color/transparent"
+            android:onClick="closePage"
+            android:text="@string/skip" />
+    </RelativeLayout>
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/slideViewPage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/dotsLayout"/>
+        android:layout_above="@id/dotsLayout"
+        android:layout_below="@id/introSkipContainer"/>
 
 
 </RelativeLayout>

@@ -1,14 +1,17 @@
-package site.paulo.pathfinding.ui.component.graphview.intro
+package site.paulo.pathfinding.ui.intro
 
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
+import android.content.Intent
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.view.View
+import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.core.content.ContextCompat.startActivity
 import androidx.viewpager.widget.PagerAdapter
-import site.paulo.pathfinding.R
 import kotlinx.android.synthetic.main.fragment_slide.view.*
+import site.paulo.pathfinding.R
+import site.paulo.pathfinding.ui.MainActivity
 
 class IntroAdapter (private val context: Context): PagerAdapter() {
 
@@ -16,7 +19,7 @@ class IntroAdapter (private val context: Context): PagerAdapter() {
         const val SLIDES_COUNT = 5
     }
 
-    private val slideHeaders = arrayOf("Add", "Connect", "Weight", "Choose", "Run")
+    private val slideHeaders = arrayOf("Add", "Connect", "Weigh", "Choose", "Run")
     private val slideImages = intArrayOf(
         R.drawable.graph_add,
         R.drawable.graph_connect,
@@ -24,8 +27,13 @@ class IntroAdapter (private val context: Context): PagerAdapter() {
         R.drawable.graph_choose,
         R.drawable.graph_run
     )
-    private val slideDescriptions = arrayOf("Description 1", "Description 2", "Description 3",
-        "Description 4", "Description 5")
+    private val slideDescriptions = arrayOf(
+        "Click on the canvas to add nodes\nNodes can be dragged after addition",
+        "Click on a created node to select it, then click on the node you want to connect to it",
+        "Click on edge box to increase the weight",
+        "Double click on node to choose it as initial or final node",
+        "After choosing initial and final nodes, 'run' button will be enabled"
+    )
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
         return view === `object`

@@ -27,4 +27,6 @@
     <string name="back">Back</string>
     <string name="next">Next</string>
     <string name="finish">Finish</string>
+    <string name="skip">Skip</string>
+    <string name="pref_previously_started">pref_previously_started</string>
 </resources>

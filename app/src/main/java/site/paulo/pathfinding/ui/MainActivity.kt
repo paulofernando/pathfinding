@@ -1,15 +1,13 @@
 package site.paulo.pathfinding.ui
 
 import android.content.Intent
-import android.graphics.PorterDuff
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.preference.PreferenceManager
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_drawable_graph.*
@@ -17,7 +15,7 @@ import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.component.graphview.intro.IntroActivity
+import site.paulo.pathfinding.ui.intro.IntroActivity
 
 
 class MainActivity : AppCompatActivity(),
@@ -71,6 +69,24 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        val prefs =
+            PreferenceManager.getDefaultSharedPreferences(baseContext)
+        val previouslyStarted =
+            prefs.getBoolean(getString(R.string.pref_previously_started), false)
+        if (!previouslyStarted) {
+            val edit = prefs.edit()
+            edit.putBoolean(getString(R.string.pref_previously_started), true)
+            edit.apply()
+            showIntro()
+        }
+    }
+
+    fun showIntro() {
+        startActivity(Intent(this, IntroActivity::class.java))
+    }
+
     fun runAlgorithm(view: View) {
         if (viewPager.currentItem == 0)
             drawableGraphView.runAlgorithm()
@@ -79,8 +95,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun callMenuAbout(view: View) {
-        //startActivity(Intent(this, AboutActivity::class.java))
-        startActivity(Intent(this, IntroActivity::class.java))
+        startActivity(Intent(this, AboutActivity::class.java))
     }
 
 

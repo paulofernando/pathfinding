@@ -7,6 +7,7 @@
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorBackgroundBar">#11000000</color>
     <color name="colorGraph">#FFFFFF</color>
+    <color name="colorBackgroundIntro">#EEEEEE</color>
 
     <color name="colorGroupWeighted">#E0F7FA</color>
     <color name="colorGroupUnweighted">#E8EAF6</color>
@@ -39,7 +40,7 @@
     <color name="colorTabIcon">#BBBBBB</color>
     <color name="colorDots">#BBBBBB</color>
     <color name="colorSelectedDot">@color/colorAccent</color>
-    <color name="colorIntroButton">#FFFFFF</color>
-    <color name="colorIntroHeader">#FFFFFF</color>
-    <color name="colorIntroDescription">#FFFFFF</color>
+    <color name="colorIntroButton">#555555</color>
+    <color name="colorIntroHeader">#777777</color>
+    <color name="colorIntroDescription">#777777</color>
 </resources>
