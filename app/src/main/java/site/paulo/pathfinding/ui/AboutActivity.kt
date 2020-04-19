@@ -41,7 +41,7 @@ class AboutActivity : AppCompatActivity() {
 
         val mapDevelopedBy = hashMapOf<String, String>()
         mapDevelopedBy["name"] = "Developed by"
-        mapDevelopedBy["description"] = "Paulo Fernando - github.com/paulofernando"
+        mapDevelopedBy["description"] = "Paulo Fernando - github.com/paulofernando/pathfinding"
         list.add(mapDevelopedBy)
 
         return list

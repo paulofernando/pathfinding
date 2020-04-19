@@ -29,4 +29,17 @@
     <string name="finish">Finish</string>
     <string name="skip">Skip</string>
     <string name="pref_previously_started">pref_previously_started</string>
+
+    <string name="slide_header_add">Add</string>
+    <string name="slide_header_connect">Connect</string>
+    <string name="slide_header_weigh">Weigh</string>
+    <string name="slide_header_choose">Choose</string>
+    <string name="slide_header_run">Run</string>
+
+    <string name="slide_description_add">Click on the canvas to add nodes\nNodes can be dragged after addition</string>
+    <string name="slide_description_connect">Click on a created node to select it, then click on the node you want to connect to it</string>
+    <string name="slide_description_weigh">Click on edge box to increase the weight</string>
+    <string name="slide_description_choose">Double click on node to choose it as initial or final node</string>
+    <string name="slide_description_run">After choosing initial and final nodes, \'run\' button will be enabled</string>
+
 </resources>

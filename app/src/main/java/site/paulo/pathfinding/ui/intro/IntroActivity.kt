@@ -1,7 +1,5 @@
 package site.paulo.pathfinding.ui.intro
 
-import android.app.Activity
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
@@ -12,7 +10,6 @@ import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import kotlinx.android.synthetic.main.activity_intro.*
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.ui.MainActivity
 import site.paulo.pathfinding.ui.intro.IntroAdapter.Companion.SLIDES_COUNT
 
 class IntroActivity : AppCompatActivity() {

@@ -19,7 +19,13 @@ class IntroAdapter (private val context: Context): PagerAdapter() {
         const val SLIDES_COUNT = 5
     }
 
-    private val slideHeaders = arrayOf("Add", "Connect", "Weigh", "Choose", "Run")
+    private val slideHeaders = arrayOf(
+        context.getString(R.string.slide_header_add),
+        context.getString(R.string.slide_header_connect),
+        context.getString(R.string.slide_header_weigh),
+        context.getString(R.string.slide_header_choose),
+        context.getString(R.string.slide_header_run))
+
     private val slideImages = intArrayOf(
         R.drawable.graph_add,
         R.drawable.graph_connect,
@@ -28,12 +34,11 @@ class IntroAdapter (private val context: Context): PagerAdapter() {
         R.drawable.graph_run
     )
     private val slideDescriptions = arrayOf(
-        "Click on the canvas to add nodes\nNodes can be dragged after addition",
-        "Click on a created node to select it, then click on the node you want to connect to it",
-        "Click on edge box to increase the weight",
-        "Double click on node to choose it as initial or final node",
-        "After choosing initial and final nodes, 'run' button will be enabled"
-    )
+        context.getString(R.string.slide_description_add),
+        context.getString(R.string.slide_description_connect),
+        context.getString(R.string.slide_description_weigh),
+        context.getString(R.string.slide_description_choose),
+        context.getString(R.string.slide_description_run))
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
         return view === `object`
