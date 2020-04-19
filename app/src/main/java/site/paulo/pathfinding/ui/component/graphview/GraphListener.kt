@@ -5,4 +5,6 @@ interface GraphListener {
     fun onGraphNotReady()
     fun onGraphCleanable()
     fun onGraphNotCleanable()
+    fun onGraphNodeRemovable()
+    fun onGraphNodeNotRemovable()
 }

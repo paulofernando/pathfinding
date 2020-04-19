@@ -2,6 +2,7 @@ package site.paulo.pathfinding.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -22,12 +23,14 @@ class MainActivity : AppCompatActivity(),
     GraphListener, TabReadyListener {
 
     private lateinit var gridGridGraph: GridGraphView
+    private var nodeRemovable: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         runImageView.isEnabled = false
+        removeNodeImageView.isEnabled = false
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         viewPager.adapter = sectionsPagerAdapter
@@ -56,10 +59,13 @@ class MainActivity : AppCompatActivity(),
                             ContextCompat.getColor(tabs.context, R.color.colorSelectedTabIcon),
                             BlendModeCompat.SRC_ATOP)
 
-                    if (viewPager.currentItem == 0)
+                    if (viewPager.currentItem == 0) {
                         runImageView.isEnabled = drawableGraphView.isReadyToRun()
-                    else if (viewPager.currentItem == 1)
+                        removeNodeImageView.isEnabled = nodeRemovable
+                    } else if (viewPager.currentItem == 1) {
                         runImageView.isEnabled = gridGridGraph.isReadyToRun()
+                        removeNodeImageView.isEnabled = false
+                    }
 
                 }
 
@@ -99,16 +105,19 @@ class MainActivity : AppCompatActivity(),
             gridGridGraph.runAlgorithm()
     }
 
+    fun removeNode(view: View) {
+        drawableGraphView.removeSelectedNode()
+    }
+
     fun callMenuAbout(view: View) {
         startActivity(Intent(this, AboutActivity::class.java))
     }
 
-
     fun reset(view: View) {
         if(tabs.selectedTabPosition == 0)
-            runOnUiThread { drawableGraphView.reset() }
+            drawableGraphView.reset()
         if(tabs.selectedTabPosition == 1)
-            runOnUiThread { gridGridGraph.reset() }
+            gridGridGraph.reset()
     }
 
     override fun onGraphReady() {
@@ -122,6 +131,16 @@ class MainActivity : AppCompatActivity(),
     override fun onGraphCleanable() { }
 
     override fun onGraphNotCleanable() { }
+
+    override fun onGraphNodeRemovable() {
+        nodeRemovable = true
+        removeNodeImageView.isEnabled = nodeRemovable
+    }
+
+    override fun onGraphNodeNotRemovable() {
+        nodeRemovable = false
+        removeNodeImageView.isEnabled = nodeRemovable
+    }
 
     override fun tabReady(gridGraphView: GridGraphView) {
         gridGridGraph = gridGraphView

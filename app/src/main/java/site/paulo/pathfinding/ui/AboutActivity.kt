@@ -35,13 +35,13 @@ class AboutActivity : AppCompatActivity() {
         val list = ArrayList<Map<String, String>>()
 
         val mapAppVersion = hashMapOf<String, String>()
-        mapAppVersion["name"] = "App version"
+        mapAppVersion["name"] = getString(R.string.about_app_version)
         mapAppVersion["description"] = packageManager.getPackageInfo(packageName, 0).versionName
         list.add(mapAppVersion)
 
         val mapDevelopedBy = hashMapOf<String, String>()
-        mapDevelopedBy["name"] = "Developed by"
-        mapDevelopedBy["description"] = "Paulo Fernando - github.com/paulofernando/pathfinding"
+        mapDevelopedBy["name"] = getString(R.string.about_developed_by)
+        mapDevelopedBy["description"] = "github.com/paulofernando/pathfinding"
         list.add(mapDevelopedBy)
 
         return list

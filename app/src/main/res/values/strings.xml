@@ -42,4 +42,8 @@
     <string name="slide_description_choose">Double click on node to choose it as initial or final node</string>
     <string name="slide_description_run">After choosing initial and final nodes, \'run\' button will be enabled</string>
 
+    <string name="about_app_version">App version</string>
+    <string name="about_developed_by">Developed by Paulo Fernando</string>
+
+
 </resources>

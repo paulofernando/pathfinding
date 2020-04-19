@@ -93,23 +93,29 @@ class DrawableGraphView : View {
             MotionEvent.ACTION_DOWN -> {
                 if (selectedNode == null) {
                     selectedNode = getDrawableNodeAtPoint(x, y)
+                    if ((selectedNode != null) && (visitedNodesOrder.isEmpty())) {
+                        listeners.forEach { it.onGraphNodeRemovable() }
+                    }
                 } else {
                     val nodeB = getDrawableNodeAtPoint(x, y)
 
                     if(nodeB == null) { //user clicks on an empty area after choose first node
                         selectedNode = null
+                        listeners.forEach { it.onGraphNodeNotRemovable() }
                         return true
                     }
 
                     if (selectedNode != nodeB) { //user connect nodes
                         addDrawableEdge(selectedNode!!, nodeB)
                         selectedNode = null
+                        listeners.forEach { it.onGraphNodeNotRemovable() }
                         return true
                     }
 
                     if (selectedNode == nodeB) { //user clicks on the same selected node
                         selectDrawableNode(x, y)
                         selectedNode = null
+                        listeners.forEach { it.onGraphNodeNotRemovable() }
                         return true
                     }
                 }
@@ -129,6 +135,7 @@ class DrawableGraphView : View {
             MotionEvent.ACTION_MOVE -> {
                 val node = selectedNode ?: return false
                 moveNode(node, x, y)
+                listeners.forEach { it.onGraphNodeNotRemovable() }
                 readyToAddEdges = false
             }
             MotionEvent.ACTION_UP -> {
@@ -153,6 +160,7 @@ class DrawableGraphView : View {
     fun runAlgorithm() {
         if (startPoint == null || endPoint == null) return
 
+        listeners.forEach { it.onGraphNodeNotRemovable() }
         pathPositions.clear()
         visitedNodesOrder.clear()
 
@@ -190,13 +198,26 @@ class DrawableGraphView : View {
     }
 
     private fun addDrawableNode(x: Float, y: Float) {
-        val node = DrawableNode((graph.getNodes().size + 1).toString(), x, y)
+        val id = if (graph.getNodes().isNotEmpty())
+            (graph.getNodes().last.id.toInt() + 1).toString()
+        else "1"
+        val node = DrawableNode(id, x, y)
         if (!hasCollision(node)) {
             graph.addNode(node)
             selectedNode = node
             invalidate()
         }
         listeners.forEach { it.onGraphCleanable() }
+    }
+
+    fun removeSelectedNode() {
+        val selected = selectedNode ?: return
+        graph.removeNode(selected)
+        drawableEdges.removeAll(
+            drawableEdges.filter{ edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
+        )
+        selectedNode = null
+        invalidate()
     }
 
     private fun addDrawableEdge(nodeA: DrawableNode, nodeB: DrawableNode) {
@@ -440,14 +461,16 @@ class DrawableGraphView : View {
         graph = DrawableGraph()
         startPoint = null
         endPoint = null
-        pathPositions.clear()
+        selectedNode = null
         drawableEdges.clear()
+        pathPositions.clear()
         visitedNodesOrder.clear()
         selectedOption = DJIKSTRA
         invalidate()
 
         listeners.forEach { it.onGraphNotReady() }
         listeners.forEach { it.onGraphNotCleanable() }
+        listeners.forEach { it.onGraphNodeNotRemovable() }
     }
 
 

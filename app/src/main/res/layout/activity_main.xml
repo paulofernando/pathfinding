@@ -91,7 +91,22 @@
             android:layout_margin="@dimen/button_space"
             android:background="@drawable/button"
             android:onClick="runAlgorithm"
-            app:srcCompat="@drawable/ic_path"
+            app:srcCompat="@drawable/ic_play"
+            android:contentDescription="@string/description_path">
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/removeNodeImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/default_button_padding_tb"
+            android:paddingBottom="@dimen/default_button_padding_tb"
+            android:paddingLeft="@dimen/default_button_padding_lr"
+            android:paddingRight="@dimen/default_button_padding_lr"
+            android:layout_margin="@dimen/button_space"
+            android:background="@drawable/button"
+            android:onClick="removeNode"
+            app:srcCompat="@drawable/ic_remove"
             android:contentDescription="@string/description_path">
         </ImageView>
 
