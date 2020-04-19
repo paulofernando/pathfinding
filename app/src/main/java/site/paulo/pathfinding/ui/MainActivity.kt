@@ -56,6 +56,11 @@ class MainActivity : AppCompatActivity(),
                             ContextCompat.getColor(tabs.context, R.color.colorSelectedTabIcon),
                             BlendModeCompat.SRC_ATOP)
 
+                    if (viewPager.currentItem == 0)
+                        runImageView.isEnabled = drawableGraphView.isReadyToRun()
+                    else if (viewPager.currentItem == 1)
+                        runImageView.isEnabled = gridGridGraph.isReadyToRun()
+
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab) {
@@ -83,7 +88,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    fun showIntro() {
+    private fun showIntro() {
         startActivity(Intent(this, IntroActivity::class.java))
     }
 
@@ -101,13 +106,13 @@ class MainActivity : AppCompatActivity(),
 
     fun reset(view: View) {
         if(tabs.selectedTabPosition == 0)
-            drawableGraphView.reset()
+            runOnUiThread { drawableGraphView.reset() }
         if(tabs.selectedTabPosition == 1)
-            gridGridGraph.reset()
+            runOnUiThread { gridGridGraph.reset() }
     }
 
     override fun onGraphReady() {
-        runImageView.isEnabled = true
+         runImageView.isEnabled = true
     }
 
     override fun onGraphNotReady() {

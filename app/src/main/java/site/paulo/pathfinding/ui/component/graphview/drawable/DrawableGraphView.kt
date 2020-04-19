@@ -175,6 +175,10 @@ class DrawableGraphView : View {
         invalidate()
     }
 
+    fun isReadyToRun(): Boolean {
+        return (startPoint != null && endPoint != null)
+    }
+
     private fun increaseEdgeWeight(drawableEdge: DrawableEdge) {
         if (selectedAlgorithm == DJIKSTRA) {
             drawableEdge.increaseWeight(1.0)
@@ -208,12 +212,34 @@ class DrawableGraphView : View {
 
     private fun selectDrawableNode(x: Float, y: Float) {
         val node = getDrawableNodeAtPoint(x, y) ?: return
+
+        if (startPoint == node) { //deselect start point
+            startPoint = null
+            if(endPoint != null) {
+                listeners.forEach { it.onGraphNotReady() }
+                pathPositions.clear()
+                visitedNodesOrder.clear()
+            }
+            invalidate()
+            return
+        } else if (endPoint == node) { //deselect end point
+            endPoint = null
+            if(startPoint != null) {
+                listeners.forEach { it.onGraphNotReady() }
+                pathPositions.clear()
+                visitedNodesOrder.clear()
+            }
+            invalidate()
+            return
+        }
+
         if (startPoint == null) {
             startPoint = node
+            if(endPoint != null) listeners.forEach { it.onGraphReady() }
             invalidate()
         } else if (endPoint == null) {
             endPoint = node
-            listeners.forEach { it.onGraphReady() }
+            if(startPoint != null) listeners.forEach { it.onGraphReady() }
             invalidate()
         }
 
@@ -301,11 +327,12 @@ class DrawableGraphView : View {
     }
 
     private fun drawStartAndEndPoints(canvas: Canvas) {
-        val startNode = startPoint ?: return
-        paint.style = Paint.Style.FILL
-        paint.color = colorStartNode
-
-        canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS, paint)
+        val startNode = startPoint
+        if (startNode != null) {
+            paint.style = Paint.Style.FILL
+            paint.color = colorStartNode
+            canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS, paint)
+        }
 
         val endNode = endPoint ?: return
         paint.color = colorEndNode
