@@ -133,10 +133,12 @@ class DrawableGraphView : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-                val node = selectedNode ?: return false
-                moveNode(node, x, y)
-                listeners.forEach { it.onGraphNodeNotRemovable() }
-                readyToAddEdges = false
+                if (y > 0 && y < this.height) {
+                    val node = selectedNode ?: return false
+                    moveNode(node, x, y)
+                    listeners.forEach { it.onGraphNodeNotRemovable() }
+                    readyToAddEdges = false
+                }
             }
             MotionEvent.ACTION_UP -> {
                 if (!readyToAddEdges && !readyToAddStartAndEndNodes) {
