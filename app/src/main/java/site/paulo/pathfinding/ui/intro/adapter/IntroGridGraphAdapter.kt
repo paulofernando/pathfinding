@@ -12,9 +12,9 @@ class IntroGridGraphAdapter (context: Context): IntroGraphAdapter(context) {
             context.getString(R.string.slide_header_run))
 
         slideImages = intArrayOf(
-            R.drawable.graph_add,
-            R.drawable.graph_connect,
-            R.drawable.graph_run
+            R.drawable.grid_add,
+            R.drawable.grid_wall,
+            R.drawable.grid_run
         )
 
         slideDescriptions = arrayOf(

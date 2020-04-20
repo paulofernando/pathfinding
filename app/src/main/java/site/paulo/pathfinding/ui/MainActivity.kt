@@ -16,6 +16,7 @@ import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.intro.ui.IntroDrawableGraphActivity
+import site.paulo.pathfinding.ui.intro.ui.IntroGridGraphActivity
 
 
 class MainActivity : AppCompatActivity(),
@@ -94,6 +95,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun showIntro() {
+        startActivity(Intent(this, IntroGridGraphActivity::class.java))
         startActivity(Intent(this, IntroDrawableGraphActivity::class.java))
     }
 
