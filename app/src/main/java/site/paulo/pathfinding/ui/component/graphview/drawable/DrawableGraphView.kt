@@ -22,6 +22,7 @@ class DrawableGraphView : View {
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
 
+    private val touchableSpace: Float = 10f
     private var selectedOption: PathFindingAlgorithms = DJIKSTRA
     private var listeners: ArrayList<GraphListener> = ArrayList()
 
@@ -92,16 +93,30 @@ class DrawableGraphView : View {
             MotionEvent.ACTION_DOWN -> {
                 if (selectedNode == null) {
                     selectedNode = getDrawableNodeAtPoint(x, y)
+                    if ((selectedNode != null) && (visitedNodesOrder.isEmpty())) {
+                        listeners.forEach { it.onGraphNodeRemovable() }
+                    }
                 } else {
                     val nodeB = getDrawableNodeAtPoint(x, y)
-                    if (nodeB != null && selectedNode != nodeB) {
-                        addDrawableEdge(selectedNode!!, nodeB)
+
+                    if(nodeB == null) { //user clicks on an empty area after choose first node
                         selectedNode = null
+                        listeners.forEach { it.onGraphNodeNotRemovable() }
+                        return true
                     }
 
-                    if (selectedNode == nodeB) {
+                    if (selectedNode != nodeB) { //user connect nodes
+                        addDrawableEdge(selectedNode!!, nodeB)
+                        selectedNode = null
+                        listeners.forEach { it.onGraphNodeNotRemovable() }
+                        return true
+                    }
+
+                    if (selectedNode == nodeB) { //user clicks on the same selected node
                         selectDrawableNode(x, y)
                         selectedNode = null
+                        listeners.forEach { it.onGraphNodeNotRemovable() }
+                        return true
                     }
                 }
 
@@ -120,6 +135,7 @@ class DrawableGraphView : View {
             MotionEvent.ACTION_MOVE -> {
                 val node = selectedNode ?: return false
                 moveNode(node, x, y)
+                listeners.forEach { it.onGraphNodeNotRemovable() }
                 readyToAddEdges = false
             }
             MotionEvent.ACTION_UP -> {
@@ -144,6 +160,7 @@ class DrawableGraphView : View {
     fun runAlgorithm() {
         if (startPoint == null || endPoint == null) return
 
+        listeners.forEach { it.onGraphNodeNotRemovable() }
         pathPositions.clear()
         visitedNodesOrder.clear()
 
@@ -166,6 +183,10 @@ class DrawableGraphView : View {
         invalidate()
     }
 
+    fun isReadyToRun(): Boolean {
+        return (startPoint != null && endPoint != null)
+    }
+
     private fun increaseEdgeWeight(drawableEdge: DrawableEdge) {
         if (selectedAlgorithm == DJIKSTRA) {
             drawableEdge.increaseWeight(1.0)
@@ -177,13 +198,26 @@ class DrawableGraphView : View {
     }
 
     private fun addDrawableNode(x: Float, y: Float) {
-        val node = DrawableNode((graph.getNodes().size + 1).toString(), x, y)
+        val id = if (graph.getNodes().isNotEmpty())
+            (graph.getNodes().last.id.toInt() + 1).toString()
+        else "1"
+        val node = DrawableNode(id, x, y)
         if (!hasCollision(node)) {
             graph.addNode(node)
             selectedNode = node
             invalidate()
         }
         listeners.forEach { it.onGraphCleanable() }
+    }
+
+    fun removeSelectedNode() {
+        val selected = selectedNode ?: return
+        graph.removeNode(selected)
+        drawableEdges.removeAll(
+            drawableEdges.filter{ edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
+        )
+        selectedNode = null
+        invalidate()
     }
 
     private fun addDrawableEdge(nodeA: DrawableNode, nodeB: DrawableNode) {
@@ -199,12 +233,34 @@ class DrawableGraphView : View {
 
     private fun selectDrawableNode(x: Float, y: Float) {
         val node = getDrawableNodeAtPoint(x, y) ?: return
+
+        if (startPoint == node) { //deselect start point
+            startPoint = null
+            if(endPoint != null) {
+                listeners.forEach { it.onGraphNotReady() }
+                pathPositions.clear()
+                visitedNodesOrder.clear()
+            }
+            invalidate()
+            return
+        } else if (endPoint == node) { //deselect end point
+            endPoint = null
+            if(startPoint != null) {
+                listeners.forEach { it.onGraphNotReady() }
+                pathPositions.clear()
+                visitedNodesOrder.clear()
+            }
+            invalidate()
+            return
+        }
+
         if (startPoint == null) {
             startPoint = node
+            if(endPoint != null) listeners.forEach { it.onGraphReady() }
             invalidate()
         } else if (endPoint == null) {
             endPoint = node
-            listeners.forEach { it.onGraphReady() }
+            if(startPoint != null) listeners.forEach { it.onGraphReady() }
             invalidate()
         }
 
@@ -234,8 +290,8 @@ class DrawableGraphView : View {
     }
 
     private fun getDrawableNodeAtPoint(x: Float, y: Float): DrawableNode? {
-        val touchedPoint = RectF(x - DrawableNode.RADIUS, y - DrawableNode.RADIUS,
-            x + DrawableNode.RADIUS, y + DrawableNode.RADIUS)
+        val touchedPoint = RectF(x - touchableSpace, y - touchableSpace,
+            x + touchableSpace, y + touchableSpace)
         for (n in graph.getNodes()) {
             if (touchedPoint.intersect(n.rect))
                 return n
@@ -244,8 +300,8 @@ class DrawableGraphView : View {
     }
 
     private fun getEdgeBoxAtPoint(x: Float, y: Float): DrawableEdge? {
-        val touchedPoint = RectF(x - DrawableNode.RADIUS, y - DrawableNode.RADIUS,
-            x + DrawableNode.RADIUS, y + DrawableNode.RADIUS)
+        val touchedPoint = RectF(x - touchableSpace, y - touchableSpace,
+            x + touchableSpace, y + touchableSpace)
         for (e in drawableEdges) {
             if (touchedPoint.intersect(e.touchableArea))
                 return e
@@ -292,11 +348,12 @@ class DrawableGraphView : View {
     }
 
     private fun drawStartAndEndPoints(canvas: Canvas) {
-        val startNode = startPoint ?: return
-        paint.style = Paint.Style.FILL
-        paint.color = colorStartNode
-
-        canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS, paint)
+        val startNode = startPoint
+        if (startNode != null) {
+            paint.style = Paint.Style.FILL
+            paint.color = colorStartNode
+            canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS, paint)
+        }
 
         val endNode = endPoint ?: return
         paint.color = colorEndNode
@@ -369,7 +426,7 @@ class DrawableGraphView : View {
         for (drawableEdge in drawableEdges) {
             val edge = drawableEdge.edge ?: continue
             val nodeA = drawableEdge.nodeA
-            val nodeB = drawableEdge.nodeB ?: continue
+            val nodeB = drawableEdge.nodeB
             drawWeight(nodeA, nodeB, edge.weight.toInt().toString(),
                 colorBoxWeight, canvas)
         }
@@ -404,14 +461,16 @@ class DrawableGraphView : View {
         graph = DrawableGraph()
         startPoint = null
         endPoint = null
-        pathPositions.clear()
+        selectedNode = null
         drawableEdges.clear()
+        pathPositions.clear()
         visitedNodesOrder.clear()
         selectedOption = DJIKSTRA
         invalidate()
 
         listeners.forEach { it.onGraphNotReady() }
         listeners.forEach { it.onGraphNotCleanable() }
+        listeners.forEach { it.onGraphNodeNotRemovable() }
     }
 
 

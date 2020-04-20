@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/headerTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="32sp"
+        android:textColor="@color/colorIntroHeader"
+        android:padding="40dp"
+        android:layout_alignParentTop="true"
+        android:hint="Header" />
+
+    <ImageView
+        android:id="@+id/stepImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:srcCompat="@drawable/graph_add"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/headerTextView"/>
+
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/stepImage"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:padding="60dp"
+        android:textColor="@color/colorIntroDescription"
+        android:hint="Description abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc " />
+
+
+</RelativeLayout>

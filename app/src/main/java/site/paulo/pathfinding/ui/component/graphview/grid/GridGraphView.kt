@@ -150,6 +150,10 @@ class GridGraphView : View {
             defaultPathNodePerSec, defaultVisitedNodePerSec)
     }
 
+    fun isReadyToRun(): Boolean {
+        return (startPoint != uninitialized && endPoint != uninitialized)
+    }
+
     private fun markPoint(position: Pair<Int, Int>) {
         if ((position.first >= cols) || (position.second >= rows)) return
         when {

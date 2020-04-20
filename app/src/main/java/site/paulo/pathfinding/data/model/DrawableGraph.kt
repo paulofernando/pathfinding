@@ -23,4 +23,9 @@ class DrawableGraph: Graph<DrawableNode> {
         drawableNodes.add(node)
     }
 
+    fun removeNode(node: DrawableNode) {
+        node.disconnectAll()
+        drawableNodes.remove(node)
+    }
+
 }

@@ -43,5 +43,4 @@ class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
         nodeToConnect.connectedTo[id] = this
         nodeToConnect.connectedByEdge[id] = drawableEdge
     }
-
 }
