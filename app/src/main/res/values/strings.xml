@@ -51,6 +51,7 @@
     <string name="about_developed_by">Developed by Paulo Fernando</string>
     <string name="drawable_graph">Drawable Graph</string>
     <string name="grid_graph">Grid Graph</string>
+    <string name="how_to_use">How to use</string>
 
 
 </resources>

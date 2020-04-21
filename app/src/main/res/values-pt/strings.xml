@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">Pathfinding Visualizer</string>
+    <string name="button_run">Executar</string>
+    <string name="button_reset">Resetar</string>
+    <string name="description_trash_can">Lata de lixo</string>
+    <string name="description_path">Caminho</string>
+    <string name="min_matrix_rows">5</string>
+    <string name="max_matrix_rows">25 rows</string>
+    <string name="matrix_rows_amount_to_increase">20</string>
+    <string name="group_description">Descrição do grupo</string>
+    <string name="alg_djikstra">Djikstra</string>
+    <string name="alg_a_star">A*</string>
+    <string name="alg_breadth_first">Busca em largura</string>
+    <string name="alg_depth_first">Busca em profundidade</string>
+    <string name="weighted_shortest">Ponderado - Menor caminho</string>
+    <string name="unweighted">Não ponderado</string>
+    <string name="item_node">Nó</string>
+    <string name="item_edge">Aresta</string>
+    <string name="item_weight">Peso</string>
+    <string name="about">Sobre</string>
+
+    <string name="back">Voltar</string>
+    <string name="next">Próximo</string>
+    <string name="finish">Finalizar</string>
+    <string name="skip">Pular</string>
+    <string name="pref_previously_started">pref_previously_started</string>
+
+    <string name="slide_header_add">Adicionar</string>
+    <string name="slide_header_connect">Conectar</string>
+    <string name="slide_header_weigh">Adicionar pesos</string>
+    <string name="slide_wall_weigh">Peso e obstáculo</string>
+    <string name="slide_header_choose">Escolher</string>
+    <string name="slide_header_run">Executar</string>
+
+    <string name="slide_desc_drawable_add">Clique na área central para adicionar nós.\nNós podem ser arrastados depois de adicionados</string>
+    <string name="slide_desc_drawable_connect">Clique no nó para selecioná-lo, então clique em um outro nó para conectá-los</string>
+    <string name="slide_desc_drawable_weigh">Clique na caixa da aresta para aumentar o peso</string>
+    <string name="slide_desc_drawable_choose">Duplo clique no nó para marcá-lo como nó inicial ou final</string>
+    <string name="slide_desc_drawable_run">Depois de escolher os nós inicial e final, o botão \'executar\' será habilitado</string>
+
+    <string name="slide_desc_grid_add">Clique nas células para escolher os nós inicial e final</string>
+    <string name="slide_desc_grid_wall">Adicione peso (primeiro clique) e obstáculos (segundo clique). É possível adicionar mais de um peso/obstáculo por toque, basta arrastar o dedo entre as células</string>
+    <string name="slide_desc_grid_run">Depois de escolher os nós inicial e final, o botão \'executar\' será habilitado</string>
+
+    <string name="about_app_version">Versão</string>
+    <string name="about_developed_by">Desenvolvido por Paulo Fernando</string>
+    <string name="drawable_graph">Grafo customizável</string>
+    <string name="grid_graph">Grafo grade</string>
+    <string name="how_to_use">Como usar</string>
+
+
+</resources>
