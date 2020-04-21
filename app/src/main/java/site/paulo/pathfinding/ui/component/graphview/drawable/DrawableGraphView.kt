@@ -3,7 +3,6 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -100,22 +99,19 @@ class DrawableGraphView : View {
                     val nodeB = getDrawableNodeAtPoint(x, y)
 
                     if(nodeB == null) { //user clicks on an empty area after choose first node
-                        selectedNode = null
-                        listeners.forEach { it.onGraphNodeNotRemovable() }
+                        deselectNode()
                         return true
                     }
 
                     if (selectedNode != nodeB) { //user connect nodes
                         addDrawableEdge(selectedNode!!, nodeB)
-                        selectedNode = null
-                        listeners.forEach { it.onGraphNodeNotRemovable() }
+                        deselectNode()
                         return true
                     }
 
                     if (selectedNode == nodeB) { //user clicks on the same selected node
-                        selectDrawableNode(x, y)
-                        selectedNode = null
-                        listeners.forEach { it.onGraphNodeNotRemovable() }
+                        selectInitialFinalNode(x, y)
+                        deselectNode()
                         return true
                     }
                 }
@@ -142,13 +138,18 @@ class DrawableGraphView : View {
             }
             MotionEvent.ACTION_UP -> {
                 if (!readyToAddEdges && !readyToAddStartAndEndNodes) {
-                    selectedNode = null
+                    deselectNode()
                 }
                 invalidate()
             }
             MotionEvent.ACTION_CANCEL -> { }
         }
         return true
+    }
+
+    private fun deselectNode() {
+        selectedNode = null
+        listeners.forEach { it.onGraphNodeNotRemovable() }
     }
 
     fun setAlgorithm(alg: PathFindingAlgorithms) {
@@ -218,7 +219,7 @@ class DrawableGraphView : View {
         drawableEdges.removeAll(
             drawableEdges.filter{ edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
         )
-        selectedNode = null
+        deselectNode()
         invalidate()
     }
 
@@ -233,7 +234,7 @@ class DrawableGraphView : View {
         }
     }
 
-    private fun selectDrawableNode(x: Float, y: Float) {
+    private fun selectInitialFinalNode(x: Float, y: Float) {
         val node = getDrawableNodeAtPoint(x, y) ?: return
 
         if (startPoint == node) { //deselect start point
