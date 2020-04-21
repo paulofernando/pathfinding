@@ -6,6 +6,7 @@ Android application that demonstrates with animation how Djikstra, A*, Breadth-F
 <img width="30%" alt="Get it on Google Play" src="http://steverichey.github.io/google-play-badge-svg/img/en_get.svg" />
 </a>
 
-## Demonstration
+## Screenshots and Demonstration
 
+<img src="https://github.com/paulofernando/pathfinding/blob/master/gifs/pathfinding_drawable.png?raw=true" width="28%" />
 <img src="https://github.com/paulofernando/pathfinding/blob/master/gifs/pathfinding_demo_grid.gif?raw=true" width="28%" />
