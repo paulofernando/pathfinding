@@ -8,4 +8,4 @@ Android application that demonstrates with animation how Djikstra, A*, Breadth-F
 
 ## Demonstration
 
-<img src="https://github.com/paulofernando/pathfinding/blob/master/gifs/pathfinding_demo.gif?raw=true" width="28%" />
+<img src="https://github.com/paulofernando/pathfinding/blob/master/gifs/pathfinding_demo_grid.gif?raw=true" width="28%" />
