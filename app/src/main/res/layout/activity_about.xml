@@ -27,7 +27,7 @@
         android:layout_marginTop="10dp"
         android:textSize="24sp"
         android:gravity="center"
-        android:text="How to use"/>
+        android:text="@string/how_to_use"/>
 
     <LinearLayout
         android:id="@+id/buttonsContainer"
