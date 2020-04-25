@@ -110,6 +110,21 @@
             android:contentDescription="@string/description_path">
         </ImageView>
 
+        <ImageView
+            android:id="@+id/consoleImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/default_button_padding_tb"
+            android:paddingBottom="@dimen/default_button_padding_tb"
+            android:paddingLeft="@dimen/default_button_padding_lr"
+            android:paddingRight="@dimen/default_button_padding_lr"
+            android:layout_margin="@dimen/button_space"
+            android:background="@drawable/button"
+            android:onClick="openConsole"
+            app:srcCompat="@drawable/ic_console"
+            android:contentDescription="@string/description_path">
+        </ImageView>
+
     </LinearLayout>
 
 

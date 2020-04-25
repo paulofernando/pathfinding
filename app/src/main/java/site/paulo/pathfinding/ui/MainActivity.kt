@@ -11,12 +11,13 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_drawable_graph.*
+import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
-import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
-import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.intro.ui.IntroDrawableGraphActivity
 import site.paulo.pathfinding.ui.intro.ui.IntroGridGraphActivity
+import site.paulo.pathfinding.ui.navigation.NavigationFragment
+import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 
 
 class MainActivity : AppCompatActivity(),
@@ -108,6 +109,11 @@ class MainActivity : AppCompatActivity(),
 
     fun removeNode(view: View) {
         drawableGraphView.removeSelectedNode()
+    }
+
+    fun openConsole(view: View) {
+        val navigationFragment = NavigationFragment()
+        navigationFragment.show(supportFragmentManager,"add_console_dialog_fragment")
     }
 
     fun callMenuAbout(view: View) {

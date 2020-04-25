@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorConsoleBackground"
+    tools:context=".ui.navigation.NavigationFragment">
+
+    <TextView
+        android:id="@+id/consoleTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        android:gravity="center"
+        android:padding="@dimen/default_padding"
+        android:text="@string/graph_information"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fontFamily="monospace"
+        android:text="@string/hello_blank_fragment"
+        android:layout_below="@id/consoleTitle"
+        android:textColor="@color/colorConsoleText" />
+
+</RelativeLayout>
