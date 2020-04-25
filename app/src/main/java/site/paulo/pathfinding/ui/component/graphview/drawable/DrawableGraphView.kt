@@ -35,8 +35,8 @@ class DrawableGraphView : View {
 
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
-    private val pathPositions: ArrayList<Node> = ArrayList()
-    private val visitedNodesOrder: Stack<Node> = Stack()
+    val pathPositions: ArrayList<Node> = ArrayList()
+    val visitedNodesOrder: Stack<Node> = Stack()
     private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
 
     private val paint = Paint()
@@ -454,6 +454,17 @@ class DrawableGraphView : View {
         paint.isAntiAlias = true
         paint.strokeWidth = resources.displayMetrics.density
         paint.textSize = 48f
+    }
+
+    fun printableVisitedOrder(): String {
+        if (visitedNodesOrder.isEmpty()) return ""
+
+        val stringPath: StringBuffer = StringBuffer(visitedNodesOrder[0].name)
+        for (i in 1 until visitedNodesOrder.size) {
+            stringPath.append(" -> ${visitedNodesOrder[i].name}")
+        }
+
+        return stringPath.toString()
     }
 
     fun registerListener(listener: GraphListener) {

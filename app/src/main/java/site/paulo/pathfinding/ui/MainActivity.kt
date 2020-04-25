@@ -16,7 +16,7 @@ import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.intro.ui.IntroDrawableGraphActivity
 import site.paulo.pathfinding.ui.intro.ui.IntroGridGraphActivity
-import site.paulo.pathfinding.ui.navigation.NavigationFragment
+import site.paulo.pathfinding.ui.console.ConsoleFragment
 import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 
 
@@ -112,8 +112,11 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun openConsole(view: View) {
-        val navigationFragment = NavigationFragment()
-        navigationFragment.show(supportFragmentManager,"add_console_dialog_fragment")
+        if (viewPager.currentItem == 0) {
+            val consoleFragment =
+                ConsoleFragment(arrayOf(drawableGraphView.printableVisitedOrder()))
+            consoleFragment.show(supportFragmentManager, "add_console_dialog_fragment")
+        }
     }
 
     fun callMenuAbout(view: View) {
