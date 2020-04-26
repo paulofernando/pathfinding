@@ -63,9 +63,13 @@ class MainActivity : AppCompatActivity(),
                     if (viewPager.currentItem == 0) {
                         runImageView.isEnabled = drawableGraphView.isReadyToRun()
                         removeNodeImageView.isEnabled = nodeRemovable
+                        removeNodeImageView.visibility = View.VISIBLE
+                        consoleImageView.visibility = View.VISIBLE
                     } else if (viewPager.currentItem == 1) {
                         runImageView.isEnabled = gridGridGraph.isReadyToRun()
                         removeNodeImageView.isEnabled = false
+                        removeNodeImageView.visibility = View.GONE
+                        consoleImageView.visibility = View.GONE
                     }
 
                 }

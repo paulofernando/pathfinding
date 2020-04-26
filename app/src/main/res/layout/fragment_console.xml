@@ -20,14 +20,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/consoleRecyclerView"
+    <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="@dimen/console_height"
-        android:scrollbars="vertical"
-        android:padding="30dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/consoleTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/consoleTitle"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/consoleRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/console_height"
+            android:scrollbars="vertical"
+            android:paddingTop="30dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"/>
+
+        <ImageView
+            android:id="@+id/consoleImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/default_button_padding_tb"
+            android:paddingBottom="@dimen/default_button_padding_tb"
+            android:paddingLeft="@dimen/small_button_padding_lr"
+            android:paddingRight="@dimen/small_button_padding_lr"
+            android:layout_margin="@dimen/button_space"
+            android:background="@drawable/button"
+            android:layout_alignParentEnd="true"
+            app:srcCompat="@drawable/ic_copy"
+            android:layout_below="@id/consoleRecyclerView"
+            android:contentDescription="@string/description_path"/>
+
+    </RelativeLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

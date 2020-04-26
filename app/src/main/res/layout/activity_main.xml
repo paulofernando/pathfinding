@@ -56,7 +56,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/buttonsContainer"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_bar_height"
@@ -66,49 +66,56 @@
         android:gravity="center">
 
         <ImageView
-            android:id="@+id/clearImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/default_button_padding_tb"
-            android:paddingBottom="@dimen/default_button_padding_tb"
-            android:paddingLeft="@dimen/default_button_padding_lr"
-            android:paddingRight="@dimen/default_button_padding_lr"
-            android:layout_margin="@dimen/button_space"
-            android:background="@drawable/button"
-            android:onClick="reset"
-            app:srcCompat="@drawable/ic_trash_can"
-            android:contentDescription="@string/description_trash_can">
-        </ImageView>
-
-        <ImageView
-            android:id="@+id/runImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/default_button_padding_tb"
-            android:paddingBottom="@dimen/default_button_padding_tb"
-            android:paddingLeft="@dimen/default_button_padding_lr"
-            android:paddingRight="@dimen/default_button_padding_lr"
-            android:layout_margin="@dimen/button_space"
-            android:background="@drawable/button"
-            android:onClick="runAlgorithm"
-            app:srcCompat="@drawable/ic_play"
-            android:contentDescription="@string/description_path">
-        </ImageView>
-
-        <ImageView
             android:id="@+id/removeNodeImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/button_space"
             android:paddingTop="@dimen/default_button_padding_tb"
             android:paddingBottom="@dimen/default_button_padding_tb"
             android:paddingLeft="@dimen/default_button_padding_lr"
             android:paddingRight="@dimen/default_button_padding_lr"
-            android:layout_margin="@dimen/button_space"
             android:background="@drawable/button"
             android:onClick="removeNode"
             app:srcCompat="@drawable/ic_remove"
+            android:layout_alignParentStart="true"
             android:contentDescription="@string/description_path">
         </ImageView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/clearImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_button_padding_tb"
+                android:paddingBottom="@dimen/default_button_padding_tb"
+                android:paddingLeft="@dimen/default_button_padding_lr"
+                android:paddingRight="@dimen/default_button_padding_lr"
+                android:layout_margin="@dimen/button_space"
+                android:background="@drawable/button"
+                android:onClick="reset"
+                app:srcCompat="@drawable/ic_trash_can"
+                android:contentDescription="@string/description_trash_can">
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/runImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_button_padding_tb"
+                android:paddingBottom="@dimen/default_button_padding_tb"
+                android:paddingLeft="@dimen/default_button_padding_lr"
+                android:paddingRight="@dimen/default_button_padding_lr"
+                android:layout_margin="@dimen/button_space"
+                android:background="@drawable/button"
+                android:onClick="runAlgorithm"
+                app:srcCompat="@drawable/ic_play"
+                android:contentDescription="@string/description_path">
+            </ImageView>
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/consoleImageView"
@@ -121,11 +128,12 @@
             android:layout_margin="@dimen/button_space"
             android:background="@drawable/button"
             android:onClick="openConsole"
+            android:layout_alignParentEnd="true"
             app:srcCompat="@drawable/ic_console"
             android:contentDescription="@string/description_path">
         </ImageView>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </RelativeLayout>
