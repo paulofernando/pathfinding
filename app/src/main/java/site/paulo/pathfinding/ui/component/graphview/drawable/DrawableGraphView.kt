@@ -467,6 +467,15 @@ class DrawableGraphView : View {
         return stringPath.toString()
     }
 
+    fun graphDescription(): String {
+        val stringPath: StringBuffer = StringBuffer("Total of ${graph.getNodes().size} nodes")
+        for (node in graph.getNodes()) {
+            stringPath.append("\n${node.name} is connected to ${node.edges.keys.toString()}")
+        }
+
+        return stringPath.toString()
+    }
+
     fun registerListener(listener: GraphListener) {
         listeners.add(listener)
     }

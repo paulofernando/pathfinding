@@ -12,7 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 import site.paulo.pathfinding.R
 
-class ConsoleFragment(private val rows: Array<String>) : BottomSheetDialogFragment() {
+class ConsoleFragment(private val rows: ArrayList<String>) : BottomSheetDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

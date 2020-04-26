@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import site.paulo.pathfinding.R
 
-class ConsoleAdapter(private val rows: Array<String>) :
+class ConsoleAdapter(private val rows: ArrayList<String>) :
     RecyclerView.Adapter<ConsoleAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConsoleAdapter.ViewHolder {
