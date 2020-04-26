@@ -23,7 +23,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/consoleRecyclerView"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/console_height"
         android:scrollbars="vertical"
         android:padding="30dp"
         app:layout_constraintEnd_toEndOf="parent"

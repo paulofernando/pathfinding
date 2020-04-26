@@ -115,8 +115,12 @@ class MainActivity : AppCompatActivity(),
         if (viewPager.currentItem == 0) {
             val rows = ArrayList<String>()
             rows.add(drawableGraphView.graphDescription())
-            rows.add("\nPath:")
-            rows.add(drawableGraphView.printableVisitedOrder())
+
+            val visited = drawableGraphView.printableVisitedOrder()
+            if (visited.isNotEmpty()) {
+                rows.add("\nPath:")
+                rows.add(drawableGraphView.printableVisitedOrder())
+            }
             val consoleFragment = ConsoleFragment(rows)
             consoleFragment.show(supportFragmentManager, "add_console_dialog_fragment")
         }
