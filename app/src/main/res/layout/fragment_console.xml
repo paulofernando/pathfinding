@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorConsoleBackground"
+    android:background="@drawable/console_rounded"
     tools:context=".ui.console.ConsoleFragment">
 
     <TextView
         android:id="@+id/consoleTitle"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorAccent"
         android:gravity="center"
+        android:orientation="vertical"
         android:padding="@dimen/default_padding"
         android:text="@string/graph_information"
-        />
+        android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/consoleRecyclerView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        android:layout_below="@id/consoleTitle"/>
+        android:padding="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/consoleTitle" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
