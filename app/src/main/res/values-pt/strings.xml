@@ -55,5 +55,7 @@
 
     <string name="node">nó</string>
     <string name="nodes">nós</string>
+    <string name="copyButton">Copiar</string>
+    <string name="text_copied">Texto copiado para a área de transferência</string>
 
 </resources>

@@ -60,6 +60,8 @@
 
     <string name="node">node</string>
     <string name="nodes">nodes</string>
+    <string name="copyButton">Copy</string>
+    <string name="text_copied">Text copied to clipboard</string>
 
 
 </resources>
