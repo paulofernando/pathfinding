@@ -35,7 +35,7 @@ class DrawableGraphView : View {
 
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
-    val pathNodesOrder: Stack<Node> = Stack()
+    private val pathNodesOrder: Stack<Node> = Stack()
     private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
 
     private val paint = Paint()
@@ -66,8 +66,8 @@ class DrawableGraphView : View {
             drawWeights(canvas)
         }
         if (pathNodesOrder.isNotEmpty()) {
-            drawVisitedNodes(canvas)
-            drawVisitedEdges(canvas)
+            drawPathNodes(canvas)
+            drawPathEdges(canvas)
             if (selectedAlgorithm == DJIKSTRA) {
                 drawVisitedWeights(canvas)
             }
@@ -341,7 +341,7 @@ class DrawableGraphView : View {
         drawNode(node, canvas)
     }
 
-    private fun drawVisitedNodes(canvas: Canvas) {
+    private fun drawPathNodes(canvas: Canvas) {
         paint.style = Paint.Style.FILL
         paint.color = colorDrawablePath
 
@@ -396,7 +396,7 @@ class DrawableGraphView : View {
         canvas.drawLine(nodeA.centerX, nodeA.centerY, nodeB.centerX, nodeB.centerY, paint)
     }
 
-    private fun drawVisitedEdges(canvas: Canvas) {
+    private fun drawPathEdges(canvas: Canvas) {
         var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
         paint.color = colorDrawablePath
         paint.style = Paint.Style.STROKE
