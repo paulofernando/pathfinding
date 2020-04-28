@@ -47,5 +47,6 @@
     <color name="colorAboutTextButton">#FFFFFF</color>
 
     <color name="colorConsoleBackground">#3A3A3A</color>
+    <color name="colorConsoleTextBackground">#4C4C4C</color>
     <color name="colorConsoleText">#FFEBBA</color>
 </resources>

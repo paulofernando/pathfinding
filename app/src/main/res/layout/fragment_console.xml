@@ -33,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/console_height"
             android:scrollbars="vertical"
+            android:background="@color/colorConsoleTextBackground"
             android:paddingTop="30dp"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"/>

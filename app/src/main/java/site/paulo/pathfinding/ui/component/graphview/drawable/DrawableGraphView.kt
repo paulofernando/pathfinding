@@ -35,8 +35,7 @@ class DrawableGraphView : View {
 
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
-    val pathPositions: ArrayList<Node> = ArrayList()
-    val visitedNodesOrder: Stack<Node> = Stack()
+    val pathNodesOrder: Stack<Node> = Stack()
     private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
 
     private val paint = Paint()
@@ -66,7 +65,7 @@ class DrawableGraphView : View {
         if (selectedAlgorithm == DJIKSTRA) {
             drawWeights(canvas)
         }
-        if (visitedNodesOrder.isNotEmpty()) {
+        if (pathNodesOrder.isNotEmpty()) {
             drawVisitedNodes(canvas)
             drawVisitedEdges(canvas)
             if (selectedAlgorithm == DJIKSTRA) {
@@ -93,7 +92,7 @@ class DrawableGraphView : View {
             MotionEvent.ACTION_DOWN -> {
                 if (selectedNode == null) {
                     selectedNode = getDrawableNodeAtPoint(x, y)
-                    if ((selectedNode != null) && (visitedNodesOrder.isEmpty())) {
+                    if ((selectedNode != null) && (pathNodesOrder.isEmpty())) {
                         listeners.forEach { it.onGraphNodeRemovable() }
                     }
                 } else {
@@ -166,8 +165,7 @@ class DrawableGraphView : View {
         if (startPoint == null || endPoint == null) return
 
         listeners.forEach { it.onGraphNodeNotRemovable() }
-        pathPositions.clear()
-        visitedNodesOrder.clear()
+        pathNodesOrder.clear()
 
         val nodes = graph.getNodes() as LinkedList<Node>
         val nodeA = startPoint as Node
@@ -183,7 +181,7 @@ class DrawableGraphView : View {
 
         val path = algorithm.getPath()
         while (path.isNotEmpty())
-            visitedNodesOrder.add(path.pop())
+            pathNodesOrder.add(path.pop())
 
         invalidate()
     }
@@ -243,8 +241,7 @@ class DrawableGraphView : View {
             startPoint = null
             if (endPoint != null) {
                 listeners.forEach { it.onGraphNotReady() }
-                pathPositions.clear()
-                visitedNodesOrder.clear()
+                pathNodesOrder.clear()
             }
             invalidate()
             return
@@ -252,8 +249,7 @@ class DrawableGraphView : View {
             endPoint = null
             if (startPoint != null) {
                 listeners.forEach { it.onGraphNotReady() }
-                pathPositions.clear()
-                visitedNodesOrder.clear()
+                pathNodesOrder.clear()
             }
             invalidate()
             return
@@ -349,7 +345,7 @@ class DrawableGraphView : View {
         paint.style = Paint.Style.FILL
         paint.color = colorDrawablePath
 
-        for (node in visitedNodesOrder) {
+        for (node in pathNodesOrder) {
             val drawableNode = graph.getNode(node.name)
             if (drawableNode != null)
                 drawNode(drawableNode, canvas)
@@ -401,30 +397,30 @@ class DrawableGraphView : View {
     }
 
     private fun drawVisitedEdges(canvas: Canvas) {
-        var currentNode = visitedNodesOrder.get(index = 0) as DrawableNode
+        var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
         paint.color = colorDrawablePath
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = resources.displayMetrics.density * 2
-        for (i in 1 until visitedNodesOrder.size) {
-            val nodeB = visitedNodesOrder.get(index = i) as DrawableNode
+        for (i in 1 until pathNodesOrder.size) {
+            val nodeB = pathNodesOrder.get(index = i) as DrawableNode
             drawEdge(currentNode, nodeB, canvas)
-            currentNode = visitedNodesOrder.get(index = i) as DrawableNode
+            currentNode = pathNodesOrder.get(index = i) as DrawableNode
         }
         invalidate()
     }
 
     private fun drawVisitedWeights(canvas: Canvas) {
-        var currentNode = visitedNodesOrder.get(index = 0) as DrawableNode
+        var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
         paint.textSize /= 1.5f
         paint.style = Paint.Style.FILL
         paint.strokeWidth = resources.displayMetrics.density
-        for (i in 1 until visitedNodesOrder.size) {
-            val nodeB = visitedNodesOrder.get(index = i) as DrawableNode
+        for (i in 1 until pathNodesOrder.size) {
+            val nodeB = pathNodesOrder.get(index = i) as DrawableNode
             drawWeight(
                 currentNode, nodeB, currentNode.edges[nodeB.id]!!.weight.toInt().toString(),
                 colorDrawablePath, canvas
             )
-            currentNode = visitedNodesOrder.get(index = i) as DrawableNode
+            currentNode = pathNodesOrder.get(index = i) as DrawableNode
         }
         paint.textSize *= 1.5f
         invalidate()
@@ -470,12 +466,23 @@ class DrawableGraphView : View {
         paint.textSize = 48f
     }
 
-    fun printableVisitedOrder(): String {
-        if (visitedNodesOrder.isEmpty()) return ""
+    fun printablePath(): String {
+        if (pathNodesOrder.isEmpty()) return ""
 
-        val stringPath: StringBuffer = StringBuffer(visitedNodesOrder[0].name)
-        for (i in 1 until visitedNodesOrder.size) {
-            stringPath.append(" -> ${visitedNodesOrder[i].name}")
+        val stringPath: StringBuffer = StringBuffer(pathNodesOrder[0].name)
+        for (i in 1 until pathNodesOrder.size) {
+            stringPath.append(" -> ${pathNodesOrder[i].name}")
+        }
+
+        return stringPath.toString()
+    }
+
+    fun printableVisitedOrder(): String {
+        if (algorithm.getVisitedOrder().isEmpty()) return ""
+
+        val stringPath: StringBuffer = StringBuffer(algorithm.getVisitedOrder()[0].name)
+        for (i in 1 until algorithm.getVisitedOrder().size) {
+            stringPath.append(" -> ${algorithm.getVisitedOrder()[i].name}")
         }
 
         return stringPath.toString()
@@ -488,7 +495,7 @@ class DrawableGraphView : View {
         val nodes = context.getString(R.string.nodes)
         val node = context.getString(R.string.node)
 
-        val stringPath: StringBuffer = StringBuffer("$total ${graph.getNodes().size} ${
+        val stringPath: StringBuffer = StringBuffer("$total:\n${graph.getNodes().size} ${
             if (graph.getNodes().size > 1) nodes else node
         }\n")
 
@@ -513,8 +520,7 @@ class DrawableGraphView : View {
         endPoint = null
         selectedNode = null
         drawableEdges.clear()
-        pathPositions.clear()
-        visitedNodesOrder.clear()
+        pathNodesOrder.clear()
         selectedOption = DJIKSTRA
         invalidate()
 

@@ -54,7 +54,7 @@
     <string name="how_to_use">How to use</string>
 
     <string name="graph_information">Graph Information</string>
-    <string name="graph_information_total_of">Total:</string>
+    <string name="graph_information_total_of">Total</string>
     <string name="graph_information_is_not_connected">is not connected</string>
     <string name="graph_information_is_connected_to">is connected to</string>
 

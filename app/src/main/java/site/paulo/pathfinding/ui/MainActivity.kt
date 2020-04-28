@@ -118,13 +118,15 @@ class MainActivity : AppCompatActivity(),
     fun openConsole(view: View) {
         if (viewPager.currentItem == 0) {
             val rows = ArrayList<String>()
+            val visited = drawableGraphView.printablePath()
+            if (visited.isNotEmpty()) {
+                rows.add("Visit order:")
+                rows.add("${drawableGraphView.printableVisitedOrder()}\n")
+                rows.add("Path:")
+                rows.add("${drawableGraphView.printablePath()}\n")
+            }
             rows.add(drawableGraphView.graphDescription())
 
-            val visited = drawableGraphView.printableVisitedOrder()
-            if (visited.isNotEmpty()) {
-                rows.add("\nPath:")
-                rows.add(drawableGraphView.printableVisitedOrder())
-            }
             val consoleFragment = ConsoleFragment(rows)
             consoleFragment.show(supportFragmentManager, "add_console_dialog_fragment")
         }
