@@ -69,7 +69,7 @@ class DrawableGraphView : View {
             drawPathNodes(canvas)
             drawPathEdges(canvas)
             if (selectedAlgorithm == DJIKSTRA) {
-                drawVisitedWeights(canvas)
+                drawPathWeights(canvas)
             }
         }
         drawStartAndEndPoints(canvas)
@@ -409,7 +409,7 @@ class DrawableGraphView : View {
         invalidate()
     }
 
-    private fun drawVisitedWeights(canvas: Canvas) {
+    private fun drawPathWeights(canvas: Canvas) {
         var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
         paint.textSize /= 1.5f
         paint.style = Paint.Style.FILL

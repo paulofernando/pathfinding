@@ -16,6 +16,7 @@
         android:padding="@dimen/default_padding"
         android:text="@string/graph_information"
         android:textColor="@color/colorAccent"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
