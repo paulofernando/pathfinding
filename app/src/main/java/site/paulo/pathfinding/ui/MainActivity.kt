@@ -2,6 +2,9 @@ package site.paulo.pathfinding.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -117,19 +120,35 @@ class MainActivity : AppCompatActivity(),
 
     fun openConsole(view: View) {
         if (viewPager.currentItem == 0) {
-            val rows = ArrayList<String>()
-            val visited = drawableGraphView.printablePath()
-            if (visited.isNotEmpty()) {
-                rows.add("Visit order:")
-                rows.add("${drawableGraphView.printableVisitedOrder()}\n")
-                rows.add("Path:")
-                rows.add("${drawableGraphView.printablePath()}\n")
-            }
-            rows.add(drawableGraphView.graphDescription())
-
-            val consoleFragment = ConsoleFragment(rows)
+            val consoleFragment = ConsoleFragment(getConsoleContent())
             consoleFragment.show(supportFragmentManager, "add_console_dialog_fragment")
         }
+    }
+
+    private fun getConsoleContent(): ArrayList<SpannableString> {
+        val rows = ArrayList<SpannableString>()
+        rows.add(SpannableString(drawableGraphView.graphDescription()))
+
+        val visited = drawableGraphView.printablePath()
+        val visitOrderText = "\n${getString(R.string.graph_information_visit_order)}: "
+        val pathText = "\n${getString(R.string.graph_information_path)}: "
+        if (visited.isNotEmpty()) {
+            val printableVisitOrder = SpannableString("$visitOrderText${drawableGraphView.printableVisitedOrder()}")
+            val printablePath = SpannableString("$pathText${drawableGraphView.printablePath()}")
+
+            var color = ForegroundColorSpan(ContextCompat.getColor(applicationContext, R.color.colorStartPoint))
+            printableVisitOrder.setSpan(color, 0, visitOrderText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            printablePath.setSpan(color, 0, pathText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            color = ForegroundColorSpan(ContextCompat.getColor(applicationContext, R.color.colorAccent))
+            printableVisitOrder.setSpan(color, visitOrderText.length, printableVisitOrder.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            printablePath.setSpan(color, pathText.length, printablePath.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            rows.add(printableVisitOrder)
+            rows.add(printablePath)
+        }
+
+        return rows
     }
 
     fun callMenuAbout(view: View) {

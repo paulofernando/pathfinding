@@ -1,14 +1,19 @@
 package site.paulo.pathfinding.ui.console
 
+import android.content.Context
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import site.paulo.pathfinding.R
 
-class ConsoleAdapter(private val rows: ArrayList<String>) :
+class ConsoleAdapter(val context: Context, private val rows: ArrayList<SpannableString>) :
     RecyclerView.Adapter<ConsoleAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConsoleAdapter.ViewHolder {
@@ -18,7 +23,6 @@ class ConsoleAdapter(private val rows: ArrayList<String>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.d("ConsoleAdapter", "Element $position set.")
         holder.textView.text = rows[position]
     }
 

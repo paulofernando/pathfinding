@@ -2,6 +2,10 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 
 import android.content.Context
 import android.graphics.*
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -477,15 +481,17 @@ class DrawableGraphView : View {
         return stringPath.toString()
     }
 
-    fun printableVisitedOrder(): String {
-        if (algorithm.getVisitedOrder().isEmpty()) return ""
+    fun printableVisitedOrder(): SpannableStringBuilder {
+        if (algorithm.getVisitedOrder().isEmpty()) return SpannableStringBuilder("")
 
-        val stringPath: StringBuffer = StringBuffer(algorithm.getVisitedOrder()[0].name)
+        val stringPath = SpannableStringBuilder(algorithm.getVisitedOrder()[0].name)
+        val color = ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorAccent))
+        stringPath.setSpan(color, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         for (i in 1 until algorithm.getVisitedOrder().size) {
             stringPath.append(" -> ${algorithm.getVisitedOrder()[i].name}")
         }
 
-        return stringPath.toString()
+        return stringPath
     }
 
     fun graphDescription(): String {
@@ -495,9 +501,9 @@ class DrawableGraphView : View {
         val nodes = context.getString(R.string.nodes)
         val node = context.getString(R.string.node)
 
-        val stringPath: StringBuffer = StringBuffer("$total:\n${graph.getNodes().size} ${
+        val stringPath: StringBuffer = StringBuffer("$total: ${graph.getNodes().size} ${
             if (graph.getNodes().size > 1) nodes else node
-        }\n")
+        }")
 
         for (drawableNode in graph.getNodes()) {
             if (drawableNode.edges.keys.isEmpty()) {

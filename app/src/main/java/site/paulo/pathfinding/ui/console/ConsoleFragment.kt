@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_console.*
 
 import site.paulo.pathfinding.R
 
-class ConsoleFragment(private val rows: ArrayList<String>) : BottomSheetDialogFragment() {
+class ConsoleFragment(private val rows: ArrayList<SpannableString>) : BottomSheetDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -26,7 +27,7 @@ class ConsoleFragment(private val rows: ArrayList<String>) : BottomSheetDialogFr
 
         val console = root.findViewById(R.id.consoleRecyclerView) as RecyclerView
         console.layoutManager = LinearLayoutManager(activity)
-        console.adapter = ConsoleAdapter(rows)
+        console.adapter = ConsoleAdapter(requireContext(), rows)
 
         return root
     }
