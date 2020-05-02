@@ -2,6 +2,9 @@ package site.paulo.pathfinding.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -11,12 +14,13 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_drawable_graph.*
+import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
-import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
-import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.intro.ui.IntroDrawableGraphActivity
 import site.paulo.pathfinding.ui.intro.ui.IntroGridGraphActivity
+import site.paulo.pathfinding.ui.console.ConsoleFragment
+import site.paulo.pathfinding.ui.page.SectionsPagerAdapter
 
 
 class MainActivity : AppCompatActivity(),
@@ -62,9 +66,13 @@ class MainActivity : AppCompatActivity(),
                     if (viewPager.currentItem == 0) {
                         runImageView.isEnabled = drawableGraphView.isReadyToRun()
                         removeNodeImageView.isEnabled = nodeRemovable
+                        removeNodeImageView.visibility = View.VISIBLE
+                        consoleImageView.visibility = View.VISIBLE
                     } else if (viewPager.currentItem == 1) {
                         runImageView.isEnabled = gridGridGraph.isReadyToRun()
                         removeNodeImageView.isEnabled = false
+                        removeNodeImageView.visibility = View.GONE
+                        consoleImageView.visibility = View.GONE
                     }
 
                 }
@@ -110,6 +118,39 @@ class MainActivity : AppCompatActivity(),
         drawableGraphView.removeSelectedNode()
     }
 
+    fun openConsole(view: View) {
+        if (viewPager.currentItem == 0) {
+            val consoleFragment = ConsoleFragment(getConsoleContent())
+            consoleFragment.show(supportFragmentManager, "add_console_dialog_fragment")
+        }
+    }
+
+    private fun getConsoleContent(): ArrayList<SpannableString> {
+        val rows = ArrayList<SpannableString>()
+        rows.add(SpannableString(drawableGraphView.graphDescription()))
+
+        val visited = drawableGraphView.printablePath()
+        val visitOrderText = "\n${getString(R.string.graph_information_visit_order)}: "
+        val pathText = "\n${getString(R.string.graph_information_path)}: "
+        if (visited.isNotEmpty()) {
+            val printableVisitOrder = SpannableString("$visitOrderText${drawableGraphView.printableVisitedOrder()}")
+            val printablePath = SpannableString("$pathText${drawableGraphView.printablePath()}")
+
+            var color = ForegroundColorSpan(ContextCompat.getColor(applicationContext, R.color.colorStartPoint))
+            printableVisitOrder.setSpan(color, 0, visitOrderText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            printablePath.setSpan(color, 0, pathText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            color = ForegroundColorSpan(ContextCompat.getColor(applicationContext, R.color.colorAccent))
+            printableVisitOrder.setSpan(color, visitOrderText.length, printableVisitOrder.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            printablePath.setSpan(color, pathText.length, printablePath.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            rows.add(printableVisitOrder)
+            rows.add(printablePath)
+        }
+
+        return rows
+    }
+
     fun callMenuAbout(view: View) {
         startActivity(Intent(this, AboutActivity::class.java))
     }
@@ -146,4 +187,5 @@ class MainActivity : AppCompatActivity(),
     override fun tabReady(gridGraphView: GridGraphView) {
         gridGridGraph = gridGraphView
     }
+
 }

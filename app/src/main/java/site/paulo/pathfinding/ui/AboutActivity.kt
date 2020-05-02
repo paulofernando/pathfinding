@@ -15,16 +15,12 @@ class AboutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setSupportActionBar(aboutToolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         populateAboutList()
     }
 
-    override fun onNavigateUp(): Boolean {
-        finish()
-        return true
-    }
 
     private fun populateAboutList() {
         val generalList = buildGeneralItems()

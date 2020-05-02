@@ -48,5 +48,16 @@
     <string name="grid_graph">Grafo grade</string>
     <string name="how_to_use">Como usar</string>
 
+    <string name="graph_information">Informações do Grafo</string>
+    <string name="graph_information_total_of">Total</string>
+    <string name="graph_information_is_not_connected">não está conectado</string>
+    <string name="graph_information_is_connected_to">está conectado a</string>
+    <string name="graph_information_visit_order">Ordem de visita</string>
+    <string name="graph_information_path">Caminho</string>
+
+    <string name="node">nó</string>
+    <string name="nodes">nós</string>
+    <string name="copyButton">Copiar</string>
+    <string name="text_copied">Texto copiado para a área de transferência</string>
 
 </resources>

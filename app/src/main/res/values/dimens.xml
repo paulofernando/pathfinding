@@ -5,6 +5,8 @@
     <dimen name="button_space">@dimen/default_margin</dimen>
     <dimen name="default_button_padding_tb">4dp</dimen>
     <dimen name="default_button_padding_lr">8dp</dimen>
+    <dimen name="small_button_padding_tb">3dp</dimen>
+    <dimen name="small_button_padding_lr">6dp</dimen>
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -13,4 +15,7 @@
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="appbar_icon_side">18dp</dimen>
     <dimen name="bottom_bar_height">50dp</dimen>
+
+    <dimen name="console_margin">10dp</dimen>
+    <dimen name="console_height">300dp</dimen>
 </resources>

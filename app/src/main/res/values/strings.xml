@@ -53,5 +53,16 @@
     <string name="grid_graph">Grid Graph</string>
     <string name="how_to_use">How to use</string>
 
+    <string name="graph_information">Graph Information</string>
+    <string name="graph_information_total_of">Total</string>
+    <string name="graph_information_is_not_connected">is not connected</string>
+    <string name="graph_information_is_connected_to">is connected to</string>
+    <string name="graph_information_visit_order">Visit order</string>
+    <string name="graph_information_path">Path</string>
+
+    <string name="node">node</string>
+    <string name="nodes">nodes</string>
+    <string name="copyButton">Copy</string>
+    <string name="text_copied">Text copied to clipboard</string>
 
 </resources>

@@ -2,6 +2,10 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 
 import android.content.Context
 import android.graphics.*
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -35,11 +39,11 @@ class DrawableGraphView : View {
 
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
-    private val pathPositions: ArrayList<Node> = ArrayList()
-    private val visitedNodesOrder: Stack<Node> = Stack()
+    private val pathNodesOrder: Stack<Node> = Stack()
     private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
 
     private val paint = Paint()
+
     // --------- colors ---------
     private val colorStartNode: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
     private val colorEndNode: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
@@ -65,11 +69,11 @@ class DrawableGraphView : View {
         if (selectedAlgorithm == DJIKSTRA) {
             drawWeights(canvas)
         }
-        if (visitedNodesOrder.isNotEmpty()) {
-            drawVisitedNodes(canvas)
-            drawVisitedEdges(canvas)
+        if (pathNodesOrder.isNotEmpty()) {
+            drawPathNodes(canvas)
+            drawPathEdges(canvas)
             if (selectedAlgorithm == DJIKSTRA) {
-                drawVisitedWeights(canvas)
+                drawPathWeights(canvas)
             }
         }
         drawStartAndEndPoints(canvas)
@@ -92,13 +96,13 @@ class DrawableGraphView : View {
             MotionEvent.ACTION_DOWN -> {
                 if (selectedNode == null) {
                     selectedNode = getDrawableNodeAtPoint(x, y)
-                    if ((selectedNode != null) && (visitedNodesOrder.isEmpty())) {
+                    if ((selectedNode != null) && (pathNodesOrder.isEmpty())) {
                         listeners.forEach { it.onGraphNodeRemovable() }
                     }
                 } else {
                     val nodeB = getDrawableNodeAtPoint(x, y)
 
-                    if(nodeB == null) { //user clicks on an empty area after choose first node
+                    if (nodeB == null) { //user clicks on an empty area after choose first node
                         deselectNode()
                         return true
                     }
@@ -142,7 +146,8 @@ class DrawableGraphView : View {
                 }
                 invalidate()
             }
-            MotionEvent.ACTION_CANCEL -> { }
+            MotionEvent.ACTION_CANCEL -> {
+            }
         }
         return true
     }
@@ -155,7 +160,7 @@ class DrawableGraphView : View {
     fun setAlgorithm(alg: PathFindingAlgorithms) {
         selectedAlgorithm = alg
         invalidate()
-        if(readyToRunAgain) {
+        if (readyToRunAgain) {
             runAlgorithm()
         }
     }
@@ -164,8 +169,7 @@ class DrawableGraphView : View {
         if (startPoint == null || endPoint == null) return
 
         listeners.forEach { it.onGraphNodeNotRemovable() }
-        pathPositions.clear()
-        visitedNodesOrder.clear()
+        pathNodesOrder.clear()
 
         val nodes = graph.getNodes() as LinkedList<Node>
         val nodeA = startPoint as Node
@@ -181,7 +185,7 @@ class DrawableGraphView : View {
 
         val path = algorithm.getPath()
         while (path.isNotEmpty())
-            visitedNodesOrder.add(path.pop())
+            pathNodesOrder.add(path.pop())
 
         invalidate()
     }
@@ -194,7 +198,7 @@ class DrawableGraphView : View {
         if (selectedAlgorithm == DJIKSTRA) {
             drawableEdge.increaseWeight(1.0)
             invalidate()
-            if(readyToRunAgain) {
+            if (readyToRunAgain) {
                 runAlgorithm()
             }
         }
@@ -217,7 +221,7 @@ class DrawableGraphView : View {
         val selected = selectedNode ?: return
         graph.removeNode(selected)
         drawableEdges.removeAll(
-            drawableEdges.filter{ edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
+            drawableEdges.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
         )
         deselectNode()
         invalidate()
@@ -228,7 +232,7 @@ class DrawableGraphView : View {
             drawableEdges.add(DrawableEdge(drawableEdges.size + 1, nodeA, nodeB))
             drawableEdges.last().connectTo(nodeB, paint)
             invalidate()
-            if(readyToRunAgain) {
+            if (readyToRunAgain) {
                 runAlgorithm()
             }
         }
@@ -239,19 +243,17 @@ class DrawableGraphView : View {
 
         if (startPoint == node) { //deselect start point
             startPoint = null
-            if(endPoint != null) {
+            if (endPoint != null) {
                 listeners.forEach { it.onGraphNotReady() }
-                pathPositions.clear()
-                visitedNodesOrder.clear()
+                pathNodesOrder.clear()
             }
             invalidate()
             return
         } else if (endPoint == node) { //deselect end point
             endPoint = null
-            if(startPoint != null) {
+            if (startPoint != null) {
                 listeners.forEach { it.onGraphNotReady() }
-                pathPositions.clear()
-                visitedNodesOrder.clear()
+                pathNodesOrder.clear()
             }
             invalidate()
             return
@@ -259,11 +261,11 @@ class DrawableGraphView : View {
 
         if (startPoint == null) {
             startPoint = node
-            if(endPoint != null) listeners.forEach { it.onGraphReady() }
+            if (endPoint != null) listeners.forEach { it.onGraphReady() }
             invalidate()
         } else if (endPoint == null) {
             endPoint = node
-            if(startPoint != null) listeners.forEach { it.onGraphReady() }
+            if (startPoint != null) listeners.forEach { it.onGraphReady() }
             invalidate()
         }
 
@@ -276,7 +278,7 @@ class DrawableGraphView : View {
         if (hasCollision(selectedNode)) {
             selectedNode.updatePosition(tempX, tempY)
         } else {
-            for(edge in selectedNode.connectedByEdge.values) {
+            for (edge in selectedNode.connectedByEdge.values) {
                 edge.updateWeightBox(paint)
             }
             invalidate()
@@ -293,8 +295,10 @@ class DrawableGraphView : View {
     }
 
     private fun getDrawableNodeAtPoint(x: Float, y: Float): DrawableNode? {
-        val touchedPoint = RectF(x - touchableSpace, y - touchableSpace,
-            x + touchableSpace, y + touchableSpace)
+        val touchedPoint = RectF(
+            x - touchableSpace, y - touchableSpace,
+            x + touchableSpace, y + touchableSpace
+        )
         for (n in graph.getNodes()) {
             if (touchedPoint.intersect(n.rect))
                 return n
@@ -303,8 +307,10 @@ class DrawableGraphView : View {
     }
 
     private fun getEdgeBoxAtPoint(x: Float, y: Float): DrawableEdge? {
-        val touchedPoint = RectF(x - touchableSpace, y - touchableSpace,
-            x + touchableSpace, y + touchableSpace)
+        val touchedPoint = RectF(
+            x - touchableSpace, y - touchableSpace,
+            x + touchableSpace, y + touchableSpace
+        )
         for (e in drawableEdges) {
             if (touchedPoint.intersect(e.touchableArea))
                 return e
@@ -339,11 +345,11 @@ class DrawableGraphView : View {
         drawNode(node, canvas)
     }
 
-    private fun drawVisitedNodes(canvas: Canvas) {
+    private fun drawPathNodes(canvas: Canvas) {
         paint.style = Paint.Style.FILL
         paint.color = colorDrawablePath
 
-        for (node in visitedNodesOrder) {
+        for (node in pathNodesOrder) {
             val drawableNode = graph.getNode(node.name)
             if (drawableNode != null)
                 drawNode(drawableNode, canvas)
@@ -394,29 +400,31 @@ class DrawableGraphView : View {
         canvas.drawLine(nodeA.centerX, nodeA.centerY, nodeB.centerX, nodeB.centerY, paint)
     }
 
-    private fun drawVisitedEdges(canvas: Canvas) {
-        var currentNode = visitedNodesOrder.get(index = 0) as DrawableNode
+    private fun drawPathEdges(canvas: Canvas) {
+        var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
         paint.color = colorDrawablePath
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = resources.displayMetrics.density * 2
-        for (i in 1 until visitedNodesOrder.size) {
-            val nodeB = visitedNodesOrder.get(index = i) as DrawableNode
+        for (i in 1 until pathNodesOrder.size) {
+            val nodeB = pathNodesOrder.get(index = i) as DrawableNode
             drawEdge(currentNode, nodeB, canvas)
-            currentNode = visitedNodesOrder.get(index = i) as DrawableNode
+            currentNode = pathNodesOrder.get(index = i) as DrawableNode
         }
         invalidate()
     }
 
-    private fun drawVisitedWeights(canvas: Canvas) {
-        var currentNode = visitedNodesOrder.get(index = 0) as DrawableNode
+    private fun drawPathWeights(canvas: Canvas) {
+        var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
         paint.textSize /= 1.5f
         paint.style = Paint.Style.FILL
         paint.strokeWidth = resources.displayMetrics.density
-        for (i in 1 until visitedNodesOrder.size) {
-            val nodeB = visitedNodesOrder.get(index = i) as DrawableNode
-            drawWeight(currentNode, nodeB, currentNode.edges[nodeB.id]!!.weight.toInt().toString(),
-                colorDrawablePath, canvas)
-            currentNode = visitedNodesOrder.get(index = i) as DrawableNode
+        for (i in 1 until pathNodesOrder.size) {
+            val nodeB = pathNodesOrder.get(index = i) as DrawableNode
+            drawWeight(
+                currentNode, nodeB, currentNode.edges[nodeB.id]!!.weight.toInt().toString(),
+                colorDrawablePath, canvas
+            )
+            currentNode = pathNodesOrder.get(index = i) as DrawableNode
         }
         paint.textSize *= 1.5f
         invalidate()
@@ -430,14 +438,18 @@ class DrawableGraphView : View {
             val edge = drawableEdge.edge ?: continue
             val nodeA = drawableEdge.nodeA
             val nodeB = drawableEdge.nodeB
-            drawWeight(nodeA, nodeB, edge.weight.toInt().toString(),
-                colorBoxWeight, canvas)
+            drawWeight(
+                nodeA, nodeB, edge.weight.toInt().toString(),
+                colorBoxWeight, canvas
+            )
         }
         paint.textSize *= 1.5f
     }
 
-    private fun drawWeight(nodeA: DrawableNode, nodeB: DrawableNode, weight: String,
-                           boxColor: Int, canvas: Canvas) {
+    private fun drawWeight(
+        nodeA: DrawableNode, nodeB: DrawableNode, weight: String,
+        boxColor: Int, canvas: Canvas
+    ) {
         val edge = nodeA.connectedByEdge[nodeB.id] ?: return
         val textCenterX = (nodeA.centerX + nodeB.centerX) / 2
         val textCenterY = (nodeA.centerY + nodeB.centerY) / 2
@@ -446,14 +458,62 @@ class DrawableGraphView : View {
         canvas.drawRoundRect(edge.weightBox, 15f, 15f, paint)
 
         paint.color = colorTextWeight
-        canvas.drawText(weight, textCenterX - (paint.measureText(weight) / 2),
-            textCenterY - ((paint.descent() + paint.ascent()) / 2), paint)
+        canvas.drawText(
+            weight, textCenterX - (paint.measureText(weight) / 2),
+            textCenterY - ((paint.descent() + paint.ascent()) / 2), paint
+        )
     }
 
     private fun configurePaint() {
         paint.isAntiAlias = true
         paint.strokeWidth = resources.displayMetrics.density
         paint.textSize = 48f
+    }
+
+    fun printablePath(): String {
+        if (pathNodesOrder.isEmpty()) return ""
+
+        val stringPath: StringBuffer = StringBuffer(pathNodesOrder[0].name)
+        for (i in 1 until pathNodesOrder.size) {
+            stringPath.append(" -> ${pathNodesOrder[i].name}")
+        }
+
+        return stringPath.toString()
+    }
+
+    fun printableVisitedOrder(): SpannableStringBuilder {
+        if (algorithm.getVisitedOrder().isEmpty()) return SpannableStringBuilder("")
+
+        val stringPath = SpannableStringBuilder(algorithm.getVisitedOrder()[0].name)
+        val color = ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorAccent))
+        stringPath.setSpan(color, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        for (i in 1 until algorithm.getVisitedOrder().size) {
+            stringPath.append(" -> ${algorithm.getVisitedOrder()[i].name}")
+        }
+
+        return stringPath
+    }
+
+    fun graphDescription(): String {
+        val total = context.getString(R.string.graph_information_total_of)
+        val isNotConnected = context.getString(R.string.graph_information_is_not_connected)
+        val isConnectedTo = context.getString(R.string.graph_information_is_connected_to)
+        val nodes = context.getString(R.string.nodes)
+        val node = context.getString(R.string.node)
+
+        val stringPath: StringBuffer = StringBuffer("$total: ${graph.getNodes().size} ${
+            if (graph.getNodes().size > 1) nodes else node
+        }")
+
+        for (drawableNode in graph.getNodes()) {
+            if (drawableNode.edges.keys.isEmpty()) {
+                stringPath.append("\n${drawableNode.name} $isNotConnected")
+            } else {
+                stringPath.append("\n${drawableNode.name} $isConnectedTo ${drawableNode.edges.keys}")
+            }
+        }
+
+        return stringPath.toString()
     }
 
     fun registerListener(listener: GraphListener) {
@@ -466,8 +526,7 @@ class DrawableGraphView : View {
         endPoint = null
         selectedNode = null
         drawableEdges.clear()
-        pathPositions.clear()
-        visitedNodesOrder.clear()
+        pathNodesOrder.clear()
         selectedOption = DJIKSTRA
         invalidate()
 
