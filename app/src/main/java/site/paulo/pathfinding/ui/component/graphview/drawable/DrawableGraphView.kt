@@ -3,7 +3,6 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 import android.content.Context
 import android.graphics.*
 import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
@@ -43,43 +42,28 @@ class DrawableGraphView : View {
     private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
 
     private val paint = Paint()
-
-    // --------- colors ---------
-    private val colorStartNode: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
-    private val colorEndNode: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
-    private val colorNode: Int = ContextCompat.getColor(context, R.color.colorNode)
-    private val colorDrawablePath: Int = ContextCompat.getColor(context, R.color.colorDrawablePath)
-    private val colorNodeText: Int = ContextCompat.getColor(context, R.color.colorNodeText)
-    private val colorEdge: Int = ContextCompat.getColor(context, R.color.colorEdge)
-    private val colorTextWeight: Int = ContextCompat.getColor(context, R.color.colorTextWeight)
-    private val colorBoxWeight: Int = ContextCompat.getColor(context, R.color.colorBoxWeight)
-    private val colorSelectedNode: Int = ContextCompat.getColor(context, R.color.colorSelectedNode)
-    private val colorBoundaries: Int = ContextCompat.getColor(context, R.color.colorBoundaries)
-    // --------------------------
-
-    init {
-        configurePaint()
-    }
+    private val paintManager = DrawableGraphViewPaint(context, paint)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawBoundaries(canvas)
-        drawEdges(canvas)
-        drawNodes(canvas)
+        paintManager.drawBoundaries(width, height, canvas)
+        paintManager.drawEdges(drawableEdges, canvas)
+        paintManager.drawNodes(graph.getNodes(), canvas)
         if (selectedAlgorithm == DJIKSTRA) {
-            drawWeights(canvas)
+            paintManager.drawWeights(drawableEdges, canvas)
         }
         if (pathNodesOrder.isNotEmpty()) {
-            drawPathNodes(canvas)
-            drawPathEdges(canvas)
+            paintManager.drawPathNodes(graph, pathNodesOrder, canvas)
+            paintManager.drawPathEdges(pathNodesOrder, canvas)
             if (selectedAlgorithm == DJIKSTRA) {
-                drawPathWeights(canvas)
+                paintManager.drawPathWeights(pathNodesOrder, canvas)
             }
         }
-        drawStartAndEndPoints(canvas)
-        drawTextNodes(canvas)
-        drawSelectedNode(canvas)
+        paintManager.drawStartAndEndPoints(startPoint, endPoint, canvas)
+        paintManager.drawTextNodes(graph.getNodes(), canvas)
+        paintManager.drawSelectedNode(selectedNode, canvas)
     }
+
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -214,7 +198,7 @@ class DrawableGraphView : View {
             selectedNode = node
             invalidate()
         }
-        listeners.forEach { it.onGraphCleanable() }
+        listeners.forEach { it. onGraphCleanable() }
     }
 
     fun removeSelectedNode() {
@@ -318,157 +302,7 @@ class DrawableGraphView : View {
         return null
     }
 
-    private fun drawBoundaries(canvas: Canvas) {
-        paint.style = Paint.Style.STROKE
-        paint.color = colorBoundaries
 
-        canvas.drawRect(1f, 1f, width - 1f, height - 1f, paint)
-    }
-
-    private fun drawNodes(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-        paint.color = colorNode
-
-        for (node in graph.getNodes())
-            drawNode(node, canvas)
-    }
-
-    private fun drawNode(node: DrawableNode, canvas: Canvas) {
-        canvas.drawCircle(node.centerX, node.centerY, DrawableNode.RADIUS, paint)
-    }
-
-    private fun drawSelectedNode(canvas: Canvas) {
-        val node = selectedNode ?: return
-        paint.style = Paint.Style.STROKE
-        paint.color = colorSelectedNode
-
-        drawNode(node, canvas)
-    }
-
-    private fun drawPathNodes(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-        paint.color = colorDrawablePath
-
-        for (node in pathNodesOrder) {
-            val drawableNode = graph.getNode(node.name)
-            if (drawableNode != null)
-                drawNode(drawableNode, canvas)
-        }
-    }
-
-    private fun drawStartAndEndPoints(canvas: Canvas) {
-        val startNode = startPoint
-        if (startNode != null) {
-            paint.style = Paint.Style.FILL
-            paint.color = colorStartNode
-            canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS, paint)
-        }
-
-        val endNode = endPoint ?: return
-        paint.color = colorEndNode
-        canvas.drawCircle(endNode.centerX, endNode.centerY, DrawableNode.RADIUS, paint)
-    }
-
-    private fun drawTextNodes(canvas: Canvas) {
-        paint.color = colorNodeText
-
-        for (node in graph.getNodes()) {
-            drawTextNode(node, canvas)
-        }
-    }
-
-    private fun drawTextNode(node: DrawableNode, canvas: Canvas) {
-        canvas.drawText(
-            node.id,
-            node.centerX - paint.measureText(node.id) / 2,
-            node.centerY - ((paint.descent() + paint.ascent()) / 2), paint
-        )
-    }
-
-    private fun drawEdges(canvas: Canvas) {
-        paint.style = Paint.Style.STROKE
-        paint.color = colorEdge
-        paint.strokeWidth = resources.displayMetrics.density * 2
-
-        for (edge in drawableEdges) {
-            drawEdge(edge.nodeA, edge.nodeB, canvas)
-        }
-        paint.strokeWidth = resources.displayMetrics.density
-    }
-
-    private fun drawEdge(nodeA: DrawableNode, nodeB: DrawableNode, canvas: Canvas) {
-        canvas.drawLine(nodeA.centerX, nodeA.centerY, nodeB.centerX, nodeB.centerY, paint)
-    }
-
-    private fun drawPathEdges(canvas: Canvas) {
-        var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
-        paint.color = colorDrawablePath
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = resources.displayMetrics.density * 2
-        for (i in 1 until pathNodesOrder.size) {
-            val nodeB = pathNodesOrder.get(index = i) as DrawableNode
-            drawEdge(currentNode, nodeB, canvas)
-            currentNode = pathNodesOrder.get(index = i) as DrawableNode
-        }
-        invalidate()
-    }
-
-    private fun drawPathWeights(canvas: Canvas) {
-        var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
-        paint.textSize /= 1.5f
-        paint.style = Paint.Style.FILL
-        paint.strokeWidth = resources.displayMetrics.density
-        for (i in 1 until pathNodesOrder.size) {
-            val nodeB = pathNodesOrder.get(index = i) as DrawableNode
-            drawWeight(
-                currentNode, nodeB, currentNode.edges[nodeB.id]!!.weight.toInt().toString(),
-                colorDrawablePath, canvas
-            )
-            currentNode = pathNodesOrder.get(index = i) as DrawableNode
-        }
-        paint.textSize *= 1.5f
-        invalidate()
-    }
-
-    private fun drawWeights(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-
-        paint.textSize /= 1.5f
-        for (drawableEdge in drawableEdges) {
-            val edge = drawableEdge.edge ?: continue
-            val nodeA = drawableEdge.nodeA
-            val nodeB = drawableEdge.nodeB
-            drawWeight(
-                nodeA, nodeB, edge.weight.toInt().toString(),
-                colorBoxWeight, canvas
-            )
-        }
-        paint.textSize *= 1.5f
-    }
-
-    private fun drawWeight(
-        nodeA: DrawableNode, nodeB: DrawableNode, weight: String,
-        boxColor: Int, canvas: Canvas
-    ) {
-        val edge = nodeA.connectedByEdge[nodeB.id] ?: return
-        val textCenterX = (nodeA.centerX + nodeB.centerX) / 2
-        val textCenterY = (nodeA.centerY + nodeB.centerY) / 2
-
-        paint.color = boxColor
-        canvas.drawRoundRect(edge.weightBox, 15f, 15f, paint)
-
-        paint.color = colorTextWeight
-        canvas.drawText(
-            weight, textCenterX - (paint.measureText(weight) / 2),
-            textCenterY - ((paint.descent() + paint.ascent()) / 2), paint
-        )
-    }
-
-    private fun configurePaint() {
-        paint.isAntiAlias = true
-        paint.strokeWidth = resources.displayMetrics.density
-        paint.textSize = 48f
-    }
 
     fun printablePath(): String {
         if (pathNodesOrder.isEmpty()) return ""
@@ -534,6 +368,5 @@ class DrawableGraphView : View {
         listeners.forEach { it.onGraphNotCleanable() }
         listeners.forEach { it.onGraphNodeNotRemovable() }
     }
-
 
 }
