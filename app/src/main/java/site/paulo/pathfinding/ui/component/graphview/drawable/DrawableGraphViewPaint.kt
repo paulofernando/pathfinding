@@ -3,6 +3,7 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.view.View
 import site.paulo.pathfinding.data.model.DrawableGraph
 import site.paulo.pathfinding.data.model.Graph
 import site.paulo.pathfinding.data.model.Node
@@ -107,7 +108,7 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
         canvas.drawLine(nodeA.centerX, nodeA.centerY, nodeB.centerX, nodeB.centerY, paint)
     }
 
-    fun drawPathEdges(pathNodesOrder: List<Node>, canvas: Canvas) {
+    fun drawPathEdges(pathNodesOrder: List<Node>, view: View, canvas: Canvas) {
         var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
         paint.color = colorDrawablePath
         paint.style = Paint.Style.STROKE
@@ -117,9 +118,10 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
             drawEdge(currentNode, nodeB, canvas)
             currentNode = pathNodesOrder.get(index = i) as DrawableNode
         }
+        view.invalidate()
     }
 
-    fun drawPathWeights(pathNodesOrder: List<Node>, canvas: Canvas) {
+    fun drawPathWeights(pathNodesOrder: List<Node>, view: View, canvas: Canvas) {
         var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
         paint.textSize /= 1.5f
         paint.style = Paint.Style.FILL
@@ -133,6 +135,7 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
             currentNode = pathNodesOrder.get(index = i) as DrawableNode
         }
         paint.textSize *= 1.5f
+        view.invalidate()
     }
 
     fun drawWeights(drawableEdges: List<DrawableEdge>, canvas: Canvas) {

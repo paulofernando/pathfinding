@@ -115,7 +115,7 @@
                 android:paddingRight="@dimen/small_button_padding_lr"
                 android:layout_margin="@dimen/button_space"
                 android:background="@drawable/button"
-                android:onClick="runAlgorithm"
+                android:onClick="undo"
                 app:srcCompat="@drawable/ic_undo"
                 android:contentDescription="@string/description_path">
             </ImageView>
@@ -145,7 +145,7 @@
                 android:paddingRight="@dimen/small_button_padding_lr"
                 android:layout_margin="@dimen/button_space"
                 android:background="@drawable/button"
-                android:onClick="runAlgorithm"
+                android:onClick="redo"
                 app:srcCompat="@drawable/ic_redo"
                 android:contentDescription="@string/description_path">
             </ImageView>

@@ -15,6 +15,7 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_drawable_graph.*
 import site.paulo.pathfinding.R
+import site.paulo.pathfinding.manager.ActionsManager
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.intro.ui.IntroDrawableGraphActivity
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity(),
 
     private lateinit var gridGridGraph: GridGraphView
     private var nodeRemovable: Boolean = false
+    private val actionsManager = ActionsManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,8 +164,16 @@ class MainActivity : AppCompatActivity(),
             gridGridGraph.reset()
     }
 
+    fun undo(view: View) {
+        drawableGraphView.undo()
+    }
+
+    fun redo(view: View) {
+        drawableGraphView.redo()
+    }
+
     override fun onGraphReady() {
-         runImageView.isEnabled = true
+        runImageView.isEnabled = true
     }
 
     override fun onGraphNotReady() {
@@ -186,6 +196,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun tabReady(gridGraphView: GridGraphView) {
         gridGridGraph = gridGraphView
+        drawableGraphView.setActionsManager(actionsManager)
     }
 
 }

@@ -1,5 +1,6 @@
 package site.paulo.pathfinding.ui.component.graphview.drawable
 
+import android.app.RemoteAction
 import android.content.Context
 import android.graphics.*
 import android.text.Spannable
@@ -16,6 +17,10 @@ import site.paulo.pathfinding.data.model.DrawableGraph
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
+import site.paulo.pathfinding.manager.ActionAdd
+import site.paulo.pathfinding.manager.ActionRemove
+import site.paulo.pathfinding.manager.ActionsManager
+import site.paulo.pathfinding.manager.HistoryAction
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import java.util.*
 
@@ -27,6 +32,7 @@ class DrawableGraphView : View {
     private val touchableSpace: Float = 10f
     private var selectedOption: PathFindingAlgorithms = DJIKSTRA
     private var listeners: ArrayList<GraphListener> = ArrayList()
+    private lateinit var actionsManager: ActionsManager
 
     private val drawableEdges: ArrayList<DrawableEdge> = ArrayList()
     private var startPoint: DrawableNode? = null
@@ -54,9 +60,9 @@ class DrawableGraphView : View {
         }
         if (pathNodesOrder.isNotEmpty()) {
             paintManager.drawPathNodes(graph, pathNodesOrder, canvas)
-            paintManager.drawPathEdges(pathNodesOrder, canvas)
+            paintManager.drawPathEdges(pathNodesOrder, this, canvas)
             if (selectedAlgorithm == DJIKSTRA) {
-                paintManager.drawPathWeights(pathNodesOrder, canvas)
+                paintManager.drawPathWeights(pathNodesOrder, this, canvas)
             }
         }
         paintManager.drawStartAndEndPoints(startPoint, endPoint, canvas)
@@ -198,6 +204,16 @@ class DrawableGraphView : View {
             selectedNode = node
             invalidate()
         }
+        actionsManager.actions.push(ActionAdd(node))
+        listeners.forEach { it. onGraphCleanable() }
+    }
+
+    private fun addDrawableNode(drawableNode: DrawableNode, history: Boolean = true) {
+        graph.addNode(drawableNode)
+        invalidate()
+        if (history) {
+            actionsManager.actions.push(ActionAdd(drawableNode))
+        }
         listeners.forEach { it. onGraphCleanable() }
     }
 
@@ -208,6 +224,19 @@ class DrawableGraphView : View {
             drawableEdges.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
         )
         deselectNode()
+        actionsManager.actions.push(ActionRemove(selected))
+        invalidate()
+    }
+
+    fun removeNode(drawableNode: DrawableNode, history: Boolean = true) {
+        graph.removeNode(drawableNode)
+        drawableEdges.removeAll(
+            drawableEdges.filter { edge -> edge.nodeA == drawableNode || edge.nodeB == drawableNode }
+        )
+        deselectNode()
+        if (history) {
+            actionsManager.actions.push(ActionRemove(drawableNode))
+        }
         invalidate()
     }
 
@@ -367,6 +396,22 @@ class DrawableGraphView : View {
         listeners.forEach { it.onGraphNotReady() }
         listeners.forEach { it.onGraphNotCleanable() }
         listeners.forEach { it.onGraphNodeNotRemovable() }
+    }
+
+    fun setActionsManager(actionsManager: ActionsManager) {
+        this.actionsManager = actionsManager
+    }
+
+    fun undo() {
+        val action = this.actionsManager.actions.pop()
+        when(action.getType()) {
+            HistoryAction.ADD -> removeNode(action.getNode(), false)
+            HistoryAction.REMOVE -> addDrawableNode(action.getNode(), false)
+        }
+    }
+
+    fun redo() {
+
     }
 
 }
