@@ -204,7 +204,7 @@ class DrawableGraphView : View {
             selectedNode = node
             invalidate()
         }
-        actionsManager.actions.push(ActionAdd(node))
+        actionsManager.addHistory(ActionAdd(node))
         listeners.forEach { it. onGraphCleanable() }
     }
 
@@ -212,7 +212,7 @@ class DrawableGraphView : View {
         graph.addNode(drawableNode)
         invalidate()
         if (history) {
-            actionsManager.actions.push(ActionAdd(drawableNode))
+            actionsManager.addHistory(ActionAdd(drawableNode))
         }
         listeners.forEach { it. onGraphCleanable() }
     }
@@ -224,7 +224,7 @@ class DrawableGraphView : View {
             drawableEdges.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
         )
         deselectNode()
-        actionsManager.actions.push(ActionRemove(selected))
+        actionsManager.addHistory(ActionRemove(selected))
         invalidate()
     }
 
@@ -235,7 +235,7 @@ class DrawableGraphView : View {
         )
         deselectNode()
         if (history) {
-            actionsManager.actions.push(ActionRemove(drawableNode))
+            actionsManager.addHistory(ActionRemove(drawableNode))
         }
         invalidate()
     }
@@ -403,7 +403,7 @@ class DrawableGraphView : View {
     }
 
     fun undo() {
-        val action = this.actionsManager.actions.pop()
+        val action = this.actionsManager.undo() ?: return
         when(action.getType()) {
             HistoryAction.ADD -> removeNode(action.getNode(), false)
             HistoryAction.REMOVE -> addDrawableNode(action.getNode(), false)
@@ -411,7 +411,11 @@ class DrawableGraphView : View {
     }
 
     fun redo() {
-
+        val action = this.actionsManager.redo() ?: return
+        when(action.getType()) {
+            HistoryAction.ADD -> addDrawableNode(action.getNode(), false)
+            HistoryAction.REMOVE -> removeNode(action.getNode(), false)
+        }
     }
 
 }
