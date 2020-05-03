@@ -9,7 +9,7 @@ class ActionAdd(val drawableNode: DrawableNode): Action {
         return type
     }
 
-    override fun getNode(): DrawableNode {
+    fun getNode(): DrawableNode {
         return drawableNode
     }
 }

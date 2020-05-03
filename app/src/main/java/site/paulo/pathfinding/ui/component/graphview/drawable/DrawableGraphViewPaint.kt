@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.View
 import site.paulo.pathfinding.data.model.DrawableGraph
+import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.data.model.Graph
 import site.paulo.pathfinding.data.model.Node
 import java.util.*
@@ -98,8 +99,10 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
         paint.color = colorEdge
         paint.strokeWidth = context.resources.displayMetrics.density * 2
 
-        for (edge in drawableEdges) {
-            drawEdge(edge.nodeA, edge.nodeB, canvas)
+        for (drawableEdge in drawableEdges) {
+            val edge = drawableEdge.edge ?: return
+            if (edge.connected)
+                drawEdge(drawableEdge.nodeA, drawableEdge.nodeB, canvas)
         }
         paint.strokeWidth = context.resources.displayMetrics.density
     }
@@ -144,6 +147,7 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
         paint.textSize /= 1.5f
         for (drawableEdge in drawableEdges) {
             val edge = drawableEdge.edge ?: continue
+            if (!edge.connected) continue
             val nodeA = drawableEdge.nodeA
             val nodeB = drawableEdge.nodeB
             drawWeight(

@@ -17,10 +17,7 @@ import site.paulo.pathfinding.data.model.DrawableGraph
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
-import site.paulo.pathfinding.manager.ActionAdd
-import site.paulo.pathfinding.manager.ActionRemove
-import site.paulo.pathfinding.manager.ActionsManager
-import site.paulo.pathfinding.manager.HistoryAction
+import site.paulo.pathfinding.manager.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import java.util.*
 
@@ -240,14 +237,39 @@ class DrawableGraphView : View {
         invalidate()
     }
 
-    private fun addDrawableEdge(nodeA: DrawableNode, nodeB: DrawableNode) {
+    private fun addDrawableEdge(nodeA: DrawableNode, nodeB: DrawableNode, history: Boolean = true) {
         if (nodeA.connectedTo.size < graph.getNodes().size - 1) {
             drawableEdges.add(DrawableEdge(drawableEdges.size + 1, nodeA, nodeB))
             drawableEdges.last().connectTo(nodeB, paint)
+            if (history) {
+                actionsManager.addHistory(ActionConnect(nodeA, nodeB))
+            }
             invalidate()
             if (readyToRunAgain) {
                 runAlgorithm()
             }
+        }
+    }
+
+    private fun disconnectAll(nodeA: DrawableNode, history: Boolean = true) {
+        if (history) {
+            actionsManager.addHistory(ActionDisconnect(nodeA.connectedTo))
+        }
+        nodeA.disconnectAll()
+        invalidate()
+        if (readyToRunAgain) {
+            runAlgorithm()
+        }
+    }
+
+    private fun reconnectAll(nodeA: DrawableNode, history: Boolean = true) {
+        if (history) {
+            actionsManager.addHistory(ActionDisconnect(nodeA.connectedTo))
+        }
+        nodeA.reconnectAll()
+        invalidate()
+        if (readyToRunAgain) {
+            runAlgorithm()
         }
     }
 
@@ -291,8 +313,10 @@ class DrawableGraphView : View {
         if (hasCollision(selectedNode)) {
             selectedNode.updatePosition(tempX, tempY)
         } else {
-            for (edge in selectedNode.connectedByEdge.values) {
-                edge.updateWeightBox(paint)
+            for (drawableEdge in selectedNode.connectedByEdge.values) {
+                val edge = drawableEdge.edge ?: continue
+                if (edge.connected)
+                    drawableEdge.updateWeightBox(paint)
             }
             invalidate()
         }
@@ -405,16 +429,18 @@ class DrawableGraphView : View {
     fun undo() {
         val action = this.actionsManager.undo() ?: return
         when(action.getType()) {
-            HistoryAction.ADD -> removeNode(action.getNode(), false)
-            HistoryAction.REMOVE -> addDrawableNode(action.getNode(), false)
+            HistoryAction.ADD -> removeNode((action as ActionAdd).getNode(), false)
+            HistoryAction.REMOVE -> addDrawableNode((action as ActionRemove).getNode(), false)
+            HistoryAction.CONNECT -> disconnectAll((action as ActionConnect).getNodeA(), false)
         }
     }
 
     fun redo() {
         val action = this.actionsManager.redo() ?: return
         when(action.getType()) {
-            HistoryAction.ADD -> addDrawableNode(action.getNode(), false)
-            HistoryAction.REMOVE -> removeNode(action.getNode(), false)
+            HistoryAction.ADD -> addDrawableNode((action as ActionAdd).getNode(), false)
+            HistoryAction.REMOVE -> removeNode((action as ActionRemove).getNode(), false)
+            HistoryAction.CONNECT -> reconnectAll((action as ActionConnect).getNodeA(), false)
         }
     }
 
