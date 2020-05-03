@@ -1,6 +1,5 @@
 package site.paulo.pathfinding.ui.component.graphview.drawable
 
-import android.app.RemoteAction
 import android.content.Context
 import android.graphics.*
 import android.text.Spannable
@@ -205,35 +204,26 @@ class DrawableGraphView : View {
         listeners.forEach { it. onGraphCleanable() }
     }
 
-    private fun addDrawableNode(drawableNode: DrawableNode, history: Boolean = true) {
+    private fun addDrawableNode(drawableNode: DrawableNode) {
         graph.addNode(drawableNode)
         invalidate()
-        if (history) {
-            actionsManager.addHistory(ActionAdd(drawableNode))
-        }
         listeners.forEach { it. onGraphCleanable() }
     }
 
     fun removeSelectedNode() {
         val selected = selectedNode ?: return
-        graph.removeNode(selected)
-        drawableEdges.removeAll(
-            drawableEdges.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
-        )
-        deselectNode()
-        actionsManager.addHistory(ActionRemove(selected))
-        invalidate()
+        removeNode(selected)
     }
 
-    fun removeNode(drawableNode: DrawableNode, history: Boolean = true) {
+    private fun removeNode(drawableNode: DrawableNode, history: Boolean = true) {
         graph.removeNode(drawableNode)
-        drawableEdges.removeAll(
-            drawableEdges.filter { edge -> edge.nodeA == drawableNode || edge.nodeB == drawableNode }
-        )
-        deselectNode()
+        val edgesToRemove =
+            drawableEdges.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
         if (history) {
-            actionsManager.addHistory(ActionRemove(drawableNode))
+            actionsManager.addHistory(ActionRemove(drawableNode, edgesToRemove))
         }
+        drawableEdges.removeAll(edgesToRemove)
+        deselectNode()
         invalidate()
     }
 
@@ -355,7 +345,7 @@ class DrawableGraphView : View {
     fun printablePath(): String {
         if (pathNodesOrder.isEmpty()) return ""
 
-        val stringPath: StringBuffer = StringBuffer(pathNodesOrder[0].name)
+        val stringPath = StringBuffer(pathNodesOrder[0].name)
         for (i in 1 until pathNodesOrder.size) {
             stringPath.append(" -> ${pathNodesOrder[i].name}")
         }
@@ -383,7 +373,7 @@ class DrawableGraphView : View {
         val nodes = context.getString(R.string.nodes)
         val node = context.getString(R.string.node)
 
-        val stringPath: StringBuffer = StringBuffer("$total: ${graph.getNodes().size} ${
+        val stringPath = StringBuffer("$total: ${graph.getNodes().size} ${
             if (graph.getNodes().size > 1) nodes else node
         }")
 
@@ -421,20 +411,39 @@ class DrawableGraphView : View {
         this.actionsManager = actionsManager
     }
 
+    // ------------------ Undo / Redo ------------------
+
+    private fun undoAdd(action: ActionAdd) {
+        graph.removeNode(action.getNode())
+        drawableEdges.removeAll(drawableEdges.filter {
+                edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode })
+    }
+
+    private fun undoRemove(action: ActionRemove) {
+        graph.readdNode(action.getNode())
+        this.drawableEdges.addAll(action.getEdges())
+        listeners.forEach { it. onGraphCleanable() }
+    }
+
+    private fun undoConnect(action: ActionConnect) {
+        action.getNodeA().disconnect(action.getNodeB())
+    }
+
     fun undo() {
         val action = this.actionsManager.undo() ?: return
         when(action.getType()) {
-            HistoryAction.ADD -> removeNode((action as ActionAdd).getNode(), false)
-            HistoryAction.REMOVE -> addDrawableNode((action as ActionRemove).getNode(), false)
-            HistoryAction.CONNECT -> disconnect((action as ActionConnect).getNodeA(),
-                action.getNodeB())
+            HistoryAction.ADD -> undoAdd(action as ActionAdd)
+            HistoryAction.REMOVE -> undoRemove(action as ActionRemove)
+            HistoryAction.CONNECT -> undoConnect(action as ActionConnect)
         }
+        if (readyToRunAgain) runAlgorithm()
+        invalidate()
     }
 
     fun redo() {
         val action = this.actionsManager.redo() ?: return
         when(action.getType()) {
-            HistoryAction.ADD -> addDrawableNode((action as ActionAdd).getNode(), false)
+            HistoryAction.ADD -> addDrawableNode((action as ActionAdd).getNode())
             HistoryAction.REMOVE -> removeNode((action as ActionRemove).getNode(), false)
             HistoryAction.CONNECT -> reconnect((action as ActionConnect).getNodeA(),
                 action.getNodeB())
