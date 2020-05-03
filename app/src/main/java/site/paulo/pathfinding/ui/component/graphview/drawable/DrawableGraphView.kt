@@ -251,22 +251,17 @@ class DrawableGraphView : View {
         }
     }
 
-    private fun disconnectAll(nodeA: DrawableNode, history: Boolean = true) {
-        if (history) {
-            actionsManager.addHistory(ActionDisconnect(nodeA.connectedTo))
-        }
-        nodeA.disconnectAll()
+    private fun disconnect(nodeA: DrawableNode, nodeB: DrawableNode) {
+        nodeA.disconnect(nodeB)
         invalidate()
         if (readyToRunAgain) {
             runAlgorithm()
         }
     }
 
-    private fun reconnectAll(nodeA: DrawableNode, history: Boolean = true) {
-        if (history) {
-            actionsManager.addHistory(ActionDisconnect(nodeA.connectedTo))
-        }
-        nodeA.reconnectAll()
+
+    private fun reconnect(nodeA: DrawableNode, nodeB: DrawableNode) {
+        nodeA.reconnect(nodeB)
         invalidate()
         if (readyToRunAgain) {
             runAlgorithm()
@@ -431,7 +426,8 @@ class DrawableGraphView : View {
         when(action.getType()) {
             HistoryAction.ADD -> removeNode((action as ActionAdd).getNode(), false)
             HistoryAction.REMOVE -> addDrawableNode((action as ActionRemove).getNode(), false)
-            HistoryAction.CONNECT -> disconnectAll((action as ActionConnect).getNodeA(), false)
+            HistoryAction.CONNECT -> disconnect((action as ActionConnect).getNodeA(),
+                action.getNodeB())
         }
     }
 
@@ -440,7 +436,8 @@ class DrawableGraphView : View {
         when(action.getType()) {
             HistoryAction.ADD -> addDrawableNode((action as ActionAdd).getNode(), false)
             HistoryAction.REMOVE -> removeNode((action as ActionRemove).getNode(), false)
-            HistoryAction.CONNECT -> reconnectAll((action as ActionConnect).getNodeA(), false)
+            HistoryAction.CONNECT -> reconnect((action as ActionConnect).getNodeA(),
+                action.getNodeB())
         }
     }
 

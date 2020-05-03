@@ -44,6 +44,10 @@ open class Node(val name: String) : Comparable<Node> {
         this.edges[nodeToReconnect.name]?.connected = true
     }
 
+    fun disconnect(nodeToDisconnect: Node) {
+        this.edges[nodeToDisconnect.name]?.connected = false
+    }
+
     fun disconnectAll() {
         edges.values.forEach {
             it.connected = false
