@@ -38,6 +38,9 @@ class DrawableGraphView : View {
     private var readyToAddStartAndEndNodes: Boolean = false
     private var readyToRunAgain: Boolean = false
 
+    private var movingNode: Boolean = false
+    private var initalMovePosition = Pair(-1f, -1f)
+
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
     private val pathNodesOrder: Stack<Node> = Stack()
@@ -119,6 +122,10 @@ class DrawableGraphView : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
+                if (!movingNode) {
+                    initalMovePosition = Pair(x, y)
+                    movingNode = true
+                }
                 if (y > 0 && y < this.height) {
                     val node = selectedNode ?: return false
                     moveNode(node, x, y)
@@ -127,6 +134,14 @@ class DrawableGraphView : View {
                 }
             }
             MotionEvent.ACTION_UP -> {
+                if (movingNode && selectedNode != null) {
+                    actionsManager.addHistory(ActionMove(selectedNode as DrawableNode,
+                        Pair(initalMovePosition.first, initalMovePosition.second),
+                        Pair(x, y)
+                    ))
+                    initalMovePosition = Pair(-1f, -1f)
+                    movingNode = false
+                }
                 if (!readyToAddEdges && !readyToAddStartAndEndNodes) {
                     deselectNode()
                 }
@@ -292,11 +307,11 @@ class DrawableGraphView : View {
     }
 
     private fun moveNode(selectedNode: DrawableNode, x: Float, y: Float) {
-        val tempX = selectedNode.centerX
-        val tempY = selectedNode.centerY
+        val previousX = selectedNode.centerX
+        val previousY = selectedNode.centerY
         selectedNode.updatePosition(x, y)
         if (hasCollision(selectedNode)) {
-            selectedNode.updatePosition(tempX, tempY)
+            selectedNode.updatePosition(previousX, previousY)
         } else {
             for (drawableEdge in selectedNode.connectedByEdge.values) {
                 val edge = drawableEdge.edge ?: continue
@@ -399,6 +414,7 @@ class DrawableGraphView : View {
         selectedNode = null
         drawableEdges.clear()
         pathNodesOrder.clear()
+        actionsManager.clearHistory()
         selectedOption = DJIKSTRA
         invalidate()
 
@@ -426,7 +442,11 @@ class DrawableGraphView : View {
     }
 
     private fun undoConnect(action: ActionConnect) {
-        action.getNodeA().disconnect(action.getNodeB())
+        action.nodeA.disconnect(action.nodeB)
+    }
+
+    private fun undoMove(action: ActionMove) {
+        action.node.updatePosition(action.initialPosition.first, action.initialPosition.second)
     }
 
     fun undo() {
@@ -435,6 +455,7 @@ class DrawableGraphView : View {
             HistoryAction.ADD -> undoAdd(action as ActionAdd)
             HistoryAction.REMOVE -> undoRemove(action as ActionRemove)
             HistoryAction.CONNECT -> undoConnect(action as ActionConnect)
+            HistoryAction.MOVE -> undoMove(action as ActionMove)
         }
         if (readyToRunAgain) runAlgorithm()
         invalidate()
@@ -445,9 +466,14 @@ class DrawableGraphView : View {
         when(action.getType()) {
             HistoryAction.ADD -> addDrawableNode((action as ActionAdd).getNode())
             HistoryAction.REMOVE -> removeNode((action as ActionRemove).getNode(), false)
-            HistoryAction.CONNECT -> reconnect((action as ActionConnect).getNodeA(),
-                action.getNodeB())
+            HistoryAction.CONNECT -> reconnect((action as ActionConnect).nodeA,
+                action.nodeB)
+            HistoryAction.MOVE -> {
+                (action as ActionMove).node.updatePosition(action.finalPosition.first,
+                    action.finalPosition.second)
+            }
         }
+        invalidate()
     }
 
 }

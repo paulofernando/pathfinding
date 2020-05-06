@@ -23,4 +23,9 @@ class ActionsManager {
     fun addHistory(action: Action) {
         actions.push(action)
     }
+
+    fun clearHistory() {
+        actions.clear()
+        redoActions.clear()
+    }
 }
