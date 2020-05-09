@@ -7,4 +7,8 @@ interface GraphListener {
     fun onGraphNotCleanable()
     fun onGraphNodeRemovable()
     fun onGraphNodeNotRemovable()
+    fun onUndoEnabled()
+    fun onUndoDisabled()
+    fun onRedoEnabled()
+    fun onRedoDisabled()
 }

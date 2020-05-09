@@ -9,7 +9,4 @@ class ActionAdd(val drawableNode: DrawableNode): Action {
         return type
     }
 
-    fun getNode(): DrawableNode {
-        return drawableNode
-    }
 }

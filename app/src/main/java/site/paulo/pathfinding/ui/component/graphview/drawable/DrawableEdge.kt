@@ -40,4 +40,12 @@ class DrawableEdge (val id: Int, val nodeA: DrawableNode,
         val edge = this.edge ?: return
         edge.weight += amount
     }
+
+    fun decreaseWeight(amount: Double) {
+        val edge = this.edge ?: return
+        if (edge.weight - amount < 0)
+            edge.weight = 0.0
+        else
+            edge.weight -= amount
+    }
 }

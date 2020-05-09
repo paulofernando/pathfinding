@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(),
 
     private lateinit var gridGridGraph: GridGraphView
     private var nodeRemovable: Boolean = false
-    private val actionsManager = ActionsManager()
+    private val actionsManager = ActionsManager(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity(),
 
         runImageView.isEnabled = false
         removeNodeImageView.isEnabled = false
+        undoImageView.isEnabled = false
+        redoImageView.isEnabled = false
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         viewPager.adapter = sectionsPagerAdapter
@@ -192,6 +194,22 @@ class MainActivity : AppCompatActivity(),
     override fun onGraphNodeNotRemovable() {
         nodeRemovable = false
         removeNodeImageView.isEnabled = nodeRemovable
+    }
+
+    override fun onUndoEnabled() {
+        undoImageView.isEnabled = true
+    }
+
+    override fun onUndoDisabled() {
+        undoImageView.isEnabled = false
+    }
+
+    override fun onRedoEnabled() {
+        redoImageView.isEnabled = true
+    }
+
+    override fun onRedoDisabled() {
+        redoImageView.isEnabled = false
     }
 
     override fun tabReady(gridGraphView: GridGraphView) {

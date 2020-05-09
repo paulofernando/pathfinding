@@ -195,9 +195,20 @@ class DrawableGraphView : View {
         return (startPoint != null && endPoint != null)
     }
 
-    private fun increaseEdgeWeight(drawableEdge: DrawableEdge) {
+    private fun increaseEdgeWeight(drawableEdge: DrawableEdge, weight: Double = 1.0) {
         if (selectedAlgorithm == DJIKSTRA) {
-            drawableEdge.increaseWeight(1.0)
+            drawableEdge.increaseWeight(weight)
+            actionsManager.addHistory(ActionWeigh(drawableEdge, weight))
+            invalidate()
+            if (readyToRunAgain) {
+                runAlgorithm()
+            }
+        }
+    }
+
+    private fun decreaseEdgeWeight(drawableEdge: DrawableEdge, weight: Double = 1.0) {
+        if (selectedAlgorithm == DJIKSTRA) {
+            drawableEdge.decreaseWeight(weight)
             invalidate()
             if (readyToRunAgain) {
                 runAlgorithm()
@@ -429,26 +440,6 @@ class DrawableGraphView : View {
 
     // ------------------ Undo / Redo ------------------
 
-    private fun undoAdd(action: ActionAdd) {
-        graph.removeNode(action.getNode())
-        drawableEdges.removeAll(drawableEdges.filter {
-                edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode })
-    }
-
-    private fun undoRemove(action: ActionRemove) {
-        graph.readdNode(action.getNode())
-        this.drawableEdges.addAll(action.getEdges())
-        listeners.forEach { it. onGraphCleanable() }
-    }
-
-    private fun undoConnect(action: ActionConnect) {
-        action.nodeA.disconnect(action.nodeB)
-    }
-
-    private fun undoMove(action: ActionMove) {
-        action.node.updatePosition(action.initialPosition.first, action.initialPosition.second)
-    }
-
     fun undo() {
         val action = this.actionsManager.undo() ?: return
         when(action.getType()) {
@@ -456,6 +447,7 @@ class DrawableGraphView : View {
             HistoryAction.REMOVE -> undoRemove(action as ActionRemove)
             HistoryAction.CONNECT -> undoConnect(action as ActionConnect)
             HistoryAction.MOVE -> undoMove(action as ActionMove)
+            HistoryAction.WEIGH -> undoWeigh(action as ActionWeigh)
         }
         if (readyToRunAgain) runAlgorithm()
         invalidate()
@@ -464,16 +456,64 @@ class DrawableGraphView : View {
     fun redo() {
         val action = this.actionsManager.redo() ?: return
         when(action.getType()) {
-            HistoryAction.ADD -> addDrawableNode((action as ActionAdd).getNode())
-            HistoryAction.REMOVE -> removeNode((action as ActionRemove).getNode(), false)
-            HistoryAction.CONNECT -> reconnect((action as ActionConnect).nodeA,
-                action.nodeB)
-            HistoryAction.MOVE -> {
-                (action as ActionMove).node.updatePosition(action.finalPosition.first,
-                    action.finalPosition.second)
-            }
+            HistoryAction.ADD -> redoAdd(action as ActionAdd)
+            HistoryAction.REMOVE -> redoRemove(action as ActionRemove)
+            HistoryAction.CONNECT -> redoConnect(action as ActionConnect)
+            HistoryAction.MOVE -> redoMove(action as ActionMove)
+            HistoryAction.WEIGH -> redoWeigh(action as ActionWeigh)
         }
+        if (readyToRunAgain) runAlgorithm()
         invalidate()
+    }
+
+    private fun undoAdd(action: ActionAdd) {
+        graph.removeNode(action.drawableNode)
+        drawableEdges.removeAll(drawableEdges.filter {
+                edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode })
+    }
+
+    private fun redoAdd(action: ActionAdd) {
+        addDrawableNode(action.drawableNode)
+    }
+
+    private fun undoRemove(action: ActionRemove) {
+        graph.readdNode(action.getNode())
+        this.drawableEdges.addAll(action.getEdges())
+        listeners.forEach { it. onGraphCleanable() }
+    }
+
+    private fun redoRemove(action: ActionRemove) {
+        removeNode(action.getNode(), false)
+    }
+
+    private fun undoConnect(action: ActionConnect) {
+        action.nodeA.disconnect(action.nodeB)
+    }
+
+    private fun redoConnect(action: ActionConnect) {
+        reconnect(action.nodeA, action.nodeB)
+    }
+
+    private fun undoMove(action: ActionMove) {
+        action.node.updatePosition(action.initialPosition.first, action.initialPosition.second)
+        action.node.connectedByEdge.values.forEach{edge ->
+            edge.updateWeightBox(paint)
+        }
+    }
+
+    private fun redoMove(action: ActionMove) {
+        action.node.updatePosition(action.finalPosition.first, action.finalPosition.second)
+        action.node.connectedByEdge.values.forEach{edge ->
+            edge.updateWeightBox(paint)
+        }
+    }
+
+    private fun undoWeigh(action: ActionWeigh) {
+        decreaseEdgeWeight(action.drawableEdge, action.weight)
+    }
+
+    private fun redoWeigh(action: ActionWeigh) {
+        increaseEdgeWeight(action.drawableEdge, action.weight)
     }
 
 }
