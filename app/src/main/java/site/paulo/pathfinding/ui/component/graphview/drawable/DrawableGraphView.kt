@@ -286,35 +286,53 @@ class DrawableGraphView : View {
 
     private fun selectInitialFinalNode(x: Float, y: Float) {
         val node = getDrawableNodeAtPoint(x, y) ?: return
-
-        if (startPoint == node) { //deselect start point
-            startPoint = null
-            if (endPoint != null) {
-                listeners.forEach { it.onGraphNotReady() }
-                pathNodesOrder.clear()
-            }
-            invalidate()
+        if (startPoint == node) {
+            deselectStartPoint()
+            actionsManager.addHistory(ActionStartPoint(node))
             return
-        } else if (endPoint == node) { //deselect end point
-            endPoint = null
-            if (startPoint != null) {
-                listeners.forEach { it.onGraphNotReady() }
-                pathNodesOrder.clear()
-            }
-            invalidate()
+        } else if (endPoint == node) {
+            deselectEndPoint()
+            actionsManager.addHistory(ActionEndPoint(node))
             return
         }
 
         if (startPoint == null) {
-            startPoint = node
-            if (endPoint != null) listeners.forEach { it.onGraphReady() }
-            invalidate()
+            selectStartPoint(node)
+            actionsManager.addHistory(ActionStartPoint(node))
         } else if (endPoint == null) {
-            endPoint = node
-            if (startPoint != null) listeners.forEach { it.onGraphReady() }
-            invalidate()
+            selectEndPoint(node)
+            actionsManager.addHistory(ActionEndPoint(node))
         }
+    }
 
+    private fun selectStartPoint(node: DrawableNode) {
+        startPoint = node
+        if (endPoint != null) listeners.forEach { it.onGraphReady() }
+        invalidate()
+    }
+
+    private fun deselectStartPoint() {
+        startPoint = null
+        if (endPoint != null) {
+            listeners.forEach { it.onGraphNotReady() }
+            pathNodesOrder.clear()
+        }
+        invalidate()
+    }
+
+    private fun selectEndPoint(node: DrawableNode) {
+        endPoint = node
+        if (startPoint != null) listeners.forEach { it.onGraphReady() }
+        invalidate()
+    }
+
+    private fun deselectEndPoint() {
+        endPoint = null
+        if (startPoint != null) {
+            listeners.forEach { it.onGraphNotReady() }
+            pathNodesOrder.clear()
+        }
+        invalidate()
     }
 
     private fun moveNode(selectedNode: DrawableNode, x: Float, y: Float) {
@@ -448,6 +466,8 @@ class DrawableGraphView : View {
             HistoryAction.CONNECT -> undoConnect(action as ActionConnect)
             HistoryAction.MOVE -> undoMove(action as ActionMove)
             HistoryAction.WEIGH -> undoWeigh(action as ActionWeigh)
+            HistoryAction.START_POINT -> undoStartPoint()
+            HistoryAction.END_POINT -> undoEndPoint()
         }
         if (readyToRunAgain) runAlgorithm()
         invalidate()
@@ -461,6 +481,8 @@ class DrawableGraphView : View {
             HistoryAction.CONNECT -> redoConnect(action as ActionConnect)
             HistoryAction.MOVE -> redoMove(action as ActionMove)
             HistoryAction.WEIGH -> redoWeigh(action as ActionWeigh)
+            HistoryAction.START_POINT -> redoStartPoint(action as ActionStartPoint)
+            HistoryAction.END_POINT -> redoEndPoint(action as ActionEndPoint)
         }
         if (readyToRunAgain) runAlgorithm()
         invalidate()
@@ -514,6 +536,22 @@ class DrawableGraphView : View {
 
     private fun redoWeigh(action: ActionWeigh) {
         increaseEdgeWeight(action.drawableEdge, action.weight)
+    }
+
+    private fun undoStartPoint() {
+        deselectStartPoint()
+    }
+
+    private fun redoStartPoint(action: ActionStartPoint) {
+        selectStartPoint(action.node)
+    }
+
+    private fun undoEndPoint() {
+        deselectEndPoint()
+    }
+
+    private fun redoEndPoint(action: ActionEndPoint) {
+        selectEndPoint(action.node)
     }
 
 }
