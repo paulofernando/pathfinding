@@ -17,6 +17,7 @@ import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
 import site.paulo.pathfinding.manager.*
+import site.paulo.pathfinding.manager.actions.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import java.util.*
 
@@ -135,10 +136,13 @@ class DrawableGraphView : View {
             }
             MotionEvent.ACTION_UP -> {
                 if (movingNode && selectedNode != null) {
-                    actionsManager.addHistory(ActionMove(selectedNode as DrawableNode,
-                        Pair(initalMovePosition.first, initalMovePosition.second),
-                        Pair(x, y)
-                    ))
+                    actionsManager.addHistory(
+                        ActionMove(
+                            selectedNode as DrawableNode,
+                            Pair(initalMovePosition.first, initalMovePosition.second),
+                            Pair(x, y)
+                        )
+                    )
                     initalMovePosition = Pair(-1f, -1f)
                     movingNode = false
                 }
@@ -198,7 +202,12 @@ class DrawableGraphView : View {
     private fun increaseEdgeWeight(drawableEdge: DrawableEdge, weight: Double = 1.0) {
         if (selectedAlgorithm == DJIKSTRA) {
             drawableEdge.increaseWeight(weight)
-            actionsManager.addHistory(ActionWeigh(drawableEdge, weight))
+            actionsManager.addHistory(
+                ActionWeigh(
+                    drawableEdge,
+                    weight
+                )
+            )
             invalidate()
             if (readyToRunAgain) {
                 runAlgorithm()
@@ -226,7 +235,11 @@ class DrawableGraphView : View {
             selectedNode = node
             invalidate()
         }
-        actionsManager.addHistory(ActionAdd(node))
+        actionsManager.addHistory(
+            ActionAdd(
+                node
+            )
+        )
         listeners.forEach { it. onGraphCleanable() }
     }
 
@@ -246,7 +259,12 @@ class DrawableGraphView : View {
         val edgesToRemove =
             drawableEdges.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
         if (history) {
-            actionsManager.addHistory(ActionRemove(drawableNode, edgesToRemove))
+            actionsManager.addHistory(
+                ActionRemove(
+                    drawableNode,
+                    edgesToRemove
+                )
+            )
         }
         drawableEdges.removeAll(edgesToRemove)
         deselectNode()
@@ -258,7 +276,12 @@ class DrawableGraphView : View {
             drawableEdges.add(DrawableEdge(drawableEdges.size + 1, nodeA, nodeB))
             drawableEdges.last().connectTo(nodeB, paint)
             if (history) {
-                actionsManager.addHistory(ActionConnect(nodeA, nodeB))
+                actionsManager.addHistory(
+                    ActionConnect(
+                        nodeA,
+                        nodeB
+                    )
+                )
             }
             invalidate()
             if (readyToRunAgain) {
@@ -288,20 +311,36 @@ class DrawableGraphView : View {
         val node = getDrawableNodeAtPoint(x, y) ?: return
         if (startPoint == node) {
             deselectStartPoint()
-            actionsManager.addHistory(ActionStartPoint(node))
+            actionsManager.addHistory(
+                ActionStartPoint(
+                    node
+                )
+            )
             return
         } else if (endPoint == node) {
             deselectEndPoint()
-            actionsManager.addHistory(ActionEndPoint(node))
+            actionsManager.addHistory(
+                ActionEndPoint(
+                    node
+                )
+            )
             return
         }
 
         if (startPoint == null) {
             selectStartPoint(node)
-            actionsManager.addHistory(ActionStartPoint(node))
+            actionsManager.addHistory(
+                ActionStartPoint(
+                    node
+                )
+            )
         } else if (endPoint == null) {
             selectEndPoint(node)
-            actionsManager.addHistory(ActionEndPoint(node))
+            actionsManager.addHistory(
+                ActionEndPoint(
+                    node
+                )
+            )
         }
     }
 
