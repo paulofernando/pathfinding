@@ -13,6 +13,7 @@ import kotlin.collections.ArrayList
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import site.paulo.pathfinding.data.model.DrawableGraph
+import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
@@ -199,15 +200,18 @@ class DrawableGraphView : View {
         return (startPoint != null && endPoint != null)
     }
 
-    private fun increaseEdgeWeight(drawableEdge: DrawableEdge, weight: Double = 1.0) {
+    private fun increaseEdgeWeight(drawableEdge: DrawableEdge, history: Boolean = true) {
         if (selectedAlgorithm == DJIKSTRA) {
+            val weight = Edge.DEFAULT_WEIGHT
             drawableEdge.increaseWeight(weight)
-            actionsManager.addHistory(
-                ActionWeigh(
-                    drawableEdge,
-                    weight
+            if (history) {
+                actionsManager.addHistory(
+                    ActionWeigh(
+                        drawableEdge,
+                        weight
+                    )
                 )
-            )
+            }
             invalidate()
             if (readyToRunAgain) {
                 runAlgorithm()
@@ -215,9 +219,9 @@ class DrawableGraphView : View {
         }
     }
 
-    private fun decreaseEdgeWeight(drawableEdge: DrawableEdge, weight: Double = 1.0) {
+    private fun decreaseEdgeWeight(drawableEdge: DrawableEdge) {
         if (selectedAlgorithm == DJIKSTRA) {
-            drawableEdge.decreaseWeight(weight)
+            drawableEdge.decreaseWeight(Edge.DEFAULT_WEIGHT)
             invalidate()
             if (readyToRunAgain) {
                 runAlgorithm()
@@ -566,11 +570,11 @@ class DrawableGraphView : View {
     }
 
     private fun undoWeigh(action: ActionWeigh) {
-        decreaseEdgeWeight(action.drawableEdge, action.weight)
+        decreaseEdgeWeight(action.drawableEdge)
     }
 
     private fun redoWeigh(action: ActionWeigh) {
-        increaseEdgeWeight(action.drawableEdge, action.weight)
+        increaseEdgeWeight(action.drawableEdge, false)
     }
 
     private fun undoStartPoint() {

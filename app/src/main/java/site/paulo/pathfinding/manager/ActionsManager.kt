@@ -12,22 +12,22 @@ class ActionsManager(private val listener: GraphListener) {
     fun undo(): Action? {
         if (actions.isEmpty()) return null
         val action = actions.pop()
+        redoActions.add(action)
+        listener.onRedoEnabled()
         if(actions.isEmpty())
             listener.onUndoDisabled()
 
-        redoActions.add(action)
-        listener.onRedoEnabled()
         return action
     }
 
     fun redo(): Action? {
         if (redoActions.isEmpty()) return null
         val action = redoActions.pop()
+        actions.add(action)
+        listener.onUndoEnabled()
         if (redoActions.isEmpty())
             listener.onRedoDisabled()
 
-        actions.add(action)
-        listener.onUndoEnabled()
         return action
     }
 
