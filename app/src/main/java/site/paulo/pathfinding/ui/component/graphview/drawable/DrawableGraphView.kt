@@ -495,7 +495,6 @@ class DrawableGraphView : View {
 
     fun undo() {
         val action = this.actionsManager.undo() ?: return
-        listeners.forEach { it.onUndoDisabled() }
         when(action.getType()) {
             HistoryAction.ADD -> undoAdd(action as ActionAdd)
             HistoryAction.REMOVE -> undoRemove(action as ActionRemove)
@@ -507,12 +506,10 @@ class DrawableGraphView : View {
         }
         if (readyToRunAgain) runAlgorithm()
         invalidate()
-        listeners.forEach { it.onUndoEnabled() }
     }
 
     fun redo() {
         val action = this.actionsManager.redo() ?: return
-        listeners.forEach { it.onRedoDisabled() }
         when(action.getType()) {
             HistoryAction.ADD -> redoAdd(action as ActionAdd)
             HistoryAction.REMOVE -> redoRemove(action as ActionRemove)
@@ -524,7 +521,6 @@ class DrawableGraphView : View {
         }
         if (readyToRunAgain) runAlgorithm()
         invalidate()
-        listeners.forEach { it.onRedoEnabled() }
     }
 
     private fun undoAdd(action: ActionAdd) {
