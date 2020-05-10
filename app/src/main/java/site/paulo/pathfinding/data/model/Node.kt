@@ -54,6 +54,12 @@ open class Node(val name: String) : Comparable<Node> {
         }
     }
 
+    fun reconnectAll() {
+        edges.values.forEach {
+            it.connected = true
+        }
+    }
+
     fun getAdjacentNodes(): ArrayList<Node> {
         val nodes = ArrayList<Node>()
         for (edge in edges.values)

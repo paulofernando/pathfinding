@@ -57,7 +57,12 @@
 
     <string name="node">nó</string>
     <string name="nodes">nós</string>
-    <string name="copyButton">Copiar</string>
+    <string name="copy_button">Copiar</string>
     <string name="text_copied">Texto copiado para a área de transferência</string>
+
+    <string name="delete_graph">Deletar grafo</string>
+    <string name="confirm_delete">Tem certeza que quer deletar o grafo?</string>
+    <string name="yes">Sim</string>
+    <string name="cancel">Cancelar</string>
 
 </resources>

@@ -46,7 +46,7 @@
             android:layout_margin="@dimen/button_space"
             android:layout_centerHorizontal="true"
             android:backgroundTint="@color/colorAccent"
-            android:text="@string/copyButton"
+            android:text="@string/copy_button"
             android:layout_below="@id/consoleRecyclerView"
             android:contentDescription="@string/description_path"/>
 

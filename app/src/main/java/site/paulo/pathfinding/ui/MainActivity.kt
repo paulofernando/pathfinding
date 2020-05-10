@@ -1,11 +1,16 @@
 package site.paulo.pathfinding.ui
 
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -15,6 +20,7 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_drawable_graph.*
 import site.paulo.pathfinding.R
+import site.paulo.pathfinding.manager.ActionsManager
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 import site.paulo.pathfinding.ui.intro.ui.IntroDrawableGraphActivity
@@ -28,6 +34,7 @@ class MainActivity : AppCompatActivity(),
 
     private lateinit var gridGridGraph: GridGraphView
     private var nodeRemovable: Boolean = false
+    private val actionsManager = ActionsManager(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +42,8 @@ class MainActivity : AppCompatActivity(),
 
         runImageView.isEnabled = false
         removeNodeImageView.isEnabled = false
+        undoImageView.isEnabled = false
+        redoImageView.isEnabled = false
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         viewPager.adapter = sectionsPagerAdapter
@@ -68,11 +77,15 @@ class MainActivity : AppCompatActivity(),
                         removeNodeImageView.isEnabled = nodeRemovable
                         removeNodeImageView.visibility = View.VISIBLE
                         consoleImageView.visibility = View.VISIBLE
+                        undoImageView.visibility = View.VISIBLE
+                        redoImageView.visibility = View.VISIBLE
                     } else if (viewPager.currentItem == 1) {
                         runImageView.isEnabled = gridGridGraph.isReadyToRun()
                         removeNodeImageView.isEnabled = false
                         removeNodeImageView.visibility = View.GONE
                         consoleImageView.visibility = View.GONE
+                        undoImageView.visibility = View.GONE
+                        redoImageView.visibility = View.GONE
                     }
 
                 }
@@ -108,6 +121,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun runAlgorithm(view: View) {
+        vibratePhone()
         if (viewPager.currentItem == 0)
             drawableGraphView.runAlgorithm()
         else
@@ -115,10 +129,12 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun removeNode(view: View) {
+        vibratePhone()
         drawableGraphView.removeSelectedNode()
     }
 
     fun openConsole(view: View) {
+        vibratePhone()
         if (viewPager.currentItem == 0) {
             val consoleFragment = ConsoleFragment(getConsoleContent())
             consoleFragment.show(supportFragmentManager, "add_console_dialog_fragment")
@@ -156,14 +172,40 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun reset(view: View) {
-        if(tabs.selectedTabPosition == 0)
-            drawableGraphView.reset()
-        if(tabs.selectedTabPosition == 1)
-            gridGridGraph.reset()
+        val builder = AlertDialog.Builder(this@MainActivity)
+        builder.setTitle(getString(R.string.delete_graph))
+        builder.setMessage(getString(R.string.confirm_delete))
+        builder.setPositiveButton(getString(R.string.yes)){_, _ ->
+            if(tabs.selectedTabPosition == 0)
+                drawableGraphView.reset()
+            if(tabs.selectedTabPosition == 1)
+                gridGridGraph.reset()
+        }
+        builder.setNeutralButton(getString(R.string.cancel)){_,_ -> }
+        builder.create().show()
+    }
+
+    fun undo(view: View) {
+        vibratePhone()
+        drawableGraphView.undo()
+    }
+
+    fun redo(view: View) {
+        vibratePhone()
+        drawableGraphView.redo()
+    }
+
+    private fun vibratePhone() {
+        val vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(10, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(10)
+        }
     }
 
     override fun onGraphReady() {
-         runImageView.isEnabled = true
+        runImageView.isEnabled = true
     }
 
     override fun onGraphNotReady() {
@@ -184,8 +226,25 @@ class MainActivity : AppCompatActivity(),
         removeNodeImageView.isEnabled = nodeRemovable
     }
 
+    override fun onUndoEnabled() {
+        undoImageView.isEnabled = true
+    }
+
+    override fun onUndoDisabled() {
+        undoImageView.isEnabled = false
+    }
+
+    override fun onRedoEnabled() {
+        redoImageView.isEnabled = true
+    }
+
+    override fun onRedoDisabled() {
+        redoImageView.isEnabled = false
+    }
+
     override fun tabReady(gridGraphView: GridGraphView) {
         gridGridGraph = gridGraphView
+        drawableGraphView.setActionsManager(actionsManager)
     }
 
 }

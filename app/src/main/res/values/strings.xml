@@ -19,11 +19,6 @@
     <string name="item_weight">Weight</string>
     <string name="about">About</string>
 
-    <string name="node_radio">Node</string>
-    <string name="edge_radio">Edge</string>
-    <string name="select_radio">Select</string>
-    <string name="weight_radio">Weight</string>
-
     <string name="back">Back</string>
     <string name="next">Next</string>
     <string name="finish">Finish</string>
@@ -62,7 +57,13 @@
 
     <string name="node">node</string>
     <string name="nodes">nodes</string>
-    <string name="copyButton">Copy</string>
+    <string name="copy_button">Copy</string>
     <string name="text_copied">Text copied to clipboard</string>
+
+    <string name="delete_graph">Delete graph</string>
+    <string name="confirm_delete">Are you sure you want to delete the graph?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+
 
 </resources>

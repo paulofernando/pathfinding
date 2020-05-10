@@ -24,15 +24,34 @@
                 android:text="@string/app_name"
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
 
-            <ImageView
-                android:id="@+id/menuAbout"
-                android:layout_width="@dimen/appbar_icon_side"
-                android:layout_height="@dimen/appbar_icon_side"
-                android:layout_margin="@dimen/button_space"
-                app:srcCompat="@drawable/ic_info_filled"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:onClick="callMenuAbout"
-                android:contentDescription="@string/description_path"/>
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/menuClear"
+                    android:layout_width="@dimen/appbar_icon_side"
+                    android:layout_height="@dimen/appbar_icon_side"
+                    android:layout_margin="@dimen/button_space"
+                    android:onClick="reset"
+                    app:srcCompat="@drawable/ic_trash_can"
+                    android:tint="@color/colorMenuIcon"
+                    android:contentDescription="@string/description_trash_can">
+                </ImageView>
+
+                <ImageView
+                    android:id="@+id/menuAbout"
+                    android:layout_width="@dimen/appbar_icon_side"
+                    android:layout_height="@dimen/appbar_icon_side"
+                    android:layout_margin="@dimen/button_space"
+                    app:srcCompat="@drawable/ic_info_filled"
+                    android:onClick="callMenuAbout"
+                    android:contentDescription="@string/description_path"/>
+
+            </LinearLayout>
+
 
         </RelativeLayout>
 
@@ -76,8 +95,8 @@
             android:paddingRight="@dimen/default_button_padding_lr"
             android:background="@drawable/button"
             android:onClick="removeNode"
-            app:srcCompat="@drawable/ic_remove"
             android:layout_alignParentStart="true"
+            app:srcCompat="@drawable/ic_remove"
             android:contentDescription="@string/description_path">
         </ImageView>
 
@@ -87,18 +106,18 @@
             android:gravity="center">
 
             <ImageView
-                android:id="@+id/clearImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/default_button_padding_tb"
-                android:paddingBottom="@dimen/default_button_padding_tb"
-                android:paddingLeft="@dimen/default_button_padding_lr"
-                android:paddingRight="@dimen/default_button_padding_lr"
+                android:id="@+id/undoImageView"
+                android:layout_width="@dimen/small_button_icon"
+                android:layout_height="@dimen/small_button_icon"
+                android:paddingTop="@dimen/small_button_padding_tb"
+                android:paddingBottom="@dimen/small_button_padding_tb"
+                android:paddingLeft="@dimen/small_button_padding_lr"
+                android:paddingRight="@dimen/small_button_padding_lr"
                 android:layout_margin="@dimen/button_space"
                 android:background="@drawable/button"
-                android:onClick="reset"
-                app:srcCompat="@drawable/ic_trash_can"
-                android:contentDescription="@string/description_trash_can">
+                android:onClick="undo"
+                app:srcCompat="@drawable/ic_undo"
+                android:contentDescription="@string/description_path">
             </ImageView>
 
             <ImageView
@@ -113,6 +132,21 @@
                 android:background="@drawable/button"
                 android:onClick="runAlgorithm"
                 app:srcCompat="@drawable/ic_play"
+                android:contentDescription="@string/description_path">
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/redoImageView"
+                android:layout_width="@dimen/small_button_icon"
+                android:layout_height="@dimen/small_button_icon"
+                android:paddingTop="@dimen/small_button_padding_tb"
+                android:paddingBottom="@dimen/small_button_padding_tb"
+                android:paddingLeft="@dimen/small_button_padding_lr"
+                android:paddingRight="@dimen/small_button_padding_lr"
+                android:layout_margin="@dimen/button_space"
+                android:background="@drawable/button"
+                android:onClick="redo"
+                app:srcCompat="@drawable/ic_redo"
                 android:contentDescription="@string/description_path">
             </ImageView>
         </LinearLayout>

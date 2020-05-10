@@ -3,7 +3,6 @@ package site.paulo.pathfinding.ui.component.graphview.drawable
 import android.content.Context
 import android.graphics.*
 import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
@@ -14,9 +13,12 @@ import kotlin.collections.ArrayList
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import site.paulo.pathfinding.data.model.DrawableGraph
+import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
+import site.paulo.pathfinding.manager.*
+import site.paulo.pathfinding.manager.actions.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import java.util.*
 
@@ -28,6 +30,7 @@ class DrawableGraphView : View {
     private val touchableSpace: Float = 10f
     private var selectedOption: PathFindingAlgorithms = DJIKSTRA
     private var listeners: ArrayList<GraphListener> = ArrayList()
+    private lateinit var actionsManager: ActionsManager
 
     private val drawableEdges: ArrayList<DrawableEdge> = ArrayList()
     private var startPoint: DrawableNode? = null
@@ -37,49 +40,37 @@ class DrawableGraphView : View {
     private var readyToAddStartAndEndNodes: Boolean = false
     private var readyToRunAgain: Boolean = false
 
+    private var movingNode: Boolean = false
+    private var initalMovePosition = Pair(-1f, -1f)
+
     private var graph: DrawableGraph = DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
     private val pathNodesOrder: Stack<Node> = Stack()
     private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
 
     private val paint = Paint()
-
-    // --------- colors ---------
-    private val colorStartNode: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
-    private val colorEndNode: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
-    private val colorNode: Int = ContextCompat.getColor(context, R.color.colorNode)
-    private val colorDrawablePath: Int = ContextCompat.getColor(context, R.color.colorDrawablePath)
-    private val colorNodeText: Int = ContextCompat.getColor(context, R.color.colorNodeText)
-    private val colorEdge: Int = ContextCompat.getColor(context, R.color.colorEdge)
-    private val colorTextWeight: Int = ContextCompat.getColor(context, R.color.colorTextWeight)
-    private val colorBoxWeight: Int = ContextCompat.getColor(context, R.color.colorBoxWeight)
-    private val colorSelectedNode: Int = ContextCompat.getColor(context, R.color.colorSelectedNode)
-    private val colorBoundaries: Int = ContextCompat.getColor(context, R.color.colorBoundaries)
-    // --------------------------
-
-    init {
-        configurePaint()
-    }
+    private val paintManager = DrawableGraphViewPaint(context, paint)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawBoundaries(canvas)
-        drawEdges(canvas)
-        drawNodes(canvas)
+        paintManager.drawBoundaries(width, height, canvas)
+        paintManager.drawEdges(drawableEdges, canvas)
+        paintManager.drawNodes(graph.getNodes(), canvas)
         if (selectedAlgorithm == DJIKSTRA) {
-            drawWeights(canvas)
+            paintManager.drawWeights(drawableEdges, canvas)
         }
         if (pathNodesOrder.isNotEmpty()) {
-            drawPathNodes(canvas)
-            drawPathEdges(canvas)
+            paintManager.drawPathNodes(graph, pathNodesOrder, canvas)
+            paintManager.drawPathEdges(pathNodesOrder, this, canvas)
             if (selectedAlgorithm == DJIKSTRA) {
-                drawPathWeights(canvas)
+                paintManager.drawPathWeights(pathNodesOrder, this, canvas)
             }
         }
-        drawStartAndEndPoints(canvas)
-        drawTextNodes(canvas)
-        drawSelectedNode(canvas)
+        paintManager.drawStartAndEndPoints(startPoint, endPoint, canvas)
+        paintManager.drawTextNodes(graph.getNodes(), canvas)
+        paintManager.drawSelectedNode(selectedNode, canvas)
     }
+
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -133,6 +124,10 @@ class DrawableGraphView : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
+                if (!movingNode) {
+                    initalMovePosition = Pair(x, y)
+                    movingNode = true
+                }
                 if (y > 0 && y < this.height) {
                     val node = selectedNode ?: return false
                     moveNode(node, x, y)
@@ -141,6 +136,17 @@ class DrawableGraphView : View {
                 }
             }
             MotionEvent.ACTION_UP -> {
+                if (movingNode && selectedNode != null) {
+                    actionsManager.addHistory(
+                        ActionMove(
+                            selectedNode as DrawableNode,
+                            Pair(initalMovePosition.first, initalMovePosition.second),
+                            Pair(x, y)
+                        )
+                    )
+                    initalMovePosition = Pair(-1f, -1f)
+                    movingNode = false
+                }
                 if (!readyToAddEdges && !readyToAddStartAndEndNodes) {
                     deselectNode()
                 }
@@ -194,9 +200,28 @@ class DrawableGraphView : View {
         return (startPoint != null && endPoint != null)
     }
 
-    private fun increaseEdgeWeight(drawableEdge: DrawableEdge) {
+    private fun increaseEdgeWeight(drawableEdge: DrawableEdge, history: Boolean = true) {
         if (selectedAlgorithm == DJIKSTRA) {
-            drawableEdge.increaseWeight(1.0)
+            val weight = Edge.DEFAULT_WEIGHT
+            drawableEdge.increaseWeight(weight)
+            if (history) {
+                actionsManager.addHistory(
+                    ActionWeigh(
+                        drawableEdge,
+                        weight
+                    )
+                )
+            }
+            invalidate()
+            if (readyToRunAgain) {
+                runAlgorithm()
+            }
+        }
+    }
+
+    private fun decreaseEdgeWeight(drawableEdge: DrawableEdge) {
+        if (selectedAlgorithm == DJIKSTRA) {
+            drawableEdge.decreaseWeight(Edge.DEFAULT_WEIGHT)
             invalidate()
             if (readyToRunAgain) {
                 runAlgorithm()
@@ -211,26 +236,53 @@ class DrawableGraphView : View {
         val node = DrawableNode(id, x, y)
         if (!hasCollision(node)) {
             graph.addNode(node)
+            actionsManager.addHistory(ActionAdd(node))
             selectedNode = node
             invalidate()
         }
-        listeners.forEach { it.onGraphCleanable() }
+        listeners.forEach { it. onGraphCleanable() }
+    }
+
+    private fun addDrawableNode(drawableNode: DrawableNode) {
+        graph.addNode(drawableNode)
+        invalidate()
+        listeners.forEach { it. onGraphCleanable() }
     }
 
     fun removeSelectedNode() {
         val selected = selectedNode ?: return
-        graph.removeNode(selected)
-        drawableEdges.removeAll(
+        removeNode(selected)
+    }
+
+    private fun removeNode(drawableNode: DrawableNode, history: Boolean = true) {
+        graph.removeNode(drawableNode)
+        val edgesToRemove =
             drawableEdges.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
-        )
+        if (history) {
+            actionsManager.addHistory(
+                ActionRemove(
+                    drawableNode,
+                    edgesToRemove
+                )
+            )
+        }
+        drawableEdges.removeAll(edgesToRemove)
         deselectNode()
         invalidate()
     }
 
-    private fun addDrawableEdge(nodeA: DrawableNode, nodeB: DrawableNode) {
+    private fun addDrawableEdge(nodeA: DrawableNode, nodeB: DrawableNode, history: Boolean = true) {
         if (nodeA.connectedTo.size < graph.getNodes().size - 1) {
             drawableEdges.add(DrawableEdge(drawableEdges.size + 1, nodeA, nodeB))
             drawableEdges.last().connectTo(nodeB, paint)
+            if (history) {
+                actionsManager.addHistory(
+                    ActionConnect(
+                        nodeA,
+                        nodeB
+                    )
+                )
+            }
             invalidate()
             if (readyToRunAgain) {
                 runAlgorithm()
@@ -238,48 +290,101 @@ class DrawableGraphView : View {
         }
     }
 
+    private fun disconnect(nodeA: DrawableNode, nodeB: DrawableNode) {
+        nodeA.disconnect(nodeB)
+        invalidate()
+        if (readyToRunAgain) {
+            runAlgorithm()
+        }
+    }
+
+
+    private fun reconnect(nodeA: DrawableNode, nodeB: DrawableNode) {
+        nodeA.reconnect(nodeB)
+        invalidate()
+        if (readyToRunAgain) {
+            runAlgorithm()
+        }
+    }
+
     private fun selectInitialFinalNode(x: Float, y: Float) {
         val node = getDrawableNodeAtPoint(x, y) ?: return
-
-        if (startPoint == node) { //deselect start point
-            startPoint = null
-            if (endPoint != null) {
-                listeners.forEach { it.onGraphNotReady() }
-                pathNodesOrder.clear()
-            }
-            invalidate()
+        if (startPoint == node) {
+            deselectStartPoint()
+            actionsManager.addHistory(
+                ActionStartPoint(
+                    node
+                )
+            )
             return
-        } else if (endPoint == node) { //deselect end point
-            endPoint = null
-            if (startPoint != null) {
-                listeners.forEach { it.onGraphNotReady() }
-                pathNodesOrder.clear()
-            }
-            invalidate()
+        } else if (endPoint == node) {
+            deselectEndPoint()
+            actionsManager.addHistory(
+                ActionEndPoint(
+                    node
+                )
+            )
             return
         }
 
         if (startPoint == null) {
-            startPoint = node
-            if (endPoint != null) listeners.forEach { it.onGraphReady() }
-            invalidate()
+            selectStartPoint(node)
+            actionsManager.addHistory(
+                ActionStartPoint(
+                    node
+                )
+            )
         } else if (endPoint == null) {
-            endPoint = node
-            if (startPoint != null) listeners.forEach { it.onGraphReady() }
-            invalidate()
+            selectEndPoint(node)
+            actionsManager.addHistory(
+                ActionEndPoint(
+                    node
+                )
+            )
         }
+    }
 
+    private fun selectStartPoint(node: DrawableNode) {
+        startPoint = node
+        if (endPoint != null) listeners.forEach { it.onGraphReady() }
+        invalidate()
+    }
+
+    private fun deselectStartPoint() {
+        startPoint = null
+        if (endPoint != null) {
+            listeners.forEach { it.onGraphNotReady() }
+            pathNodesOrder.clear()
+        }
+        invalidate()
+    }
+
+    private fun selectEndPoint(node: DrawableNode) {
+        endPoint = node
+        if (startPoint != null) listeners.forEach { it.onGraphReady() }
+        invalidate()
+    }
+
+    private fun deselectEndPoint() {
+        endPoint = null
+        if (startPoint != null) {
+            listeners.forEach { it.onGraphNotReady() }
+            pathNodesOrder.clear()
+        }
+        invalidate()
     }
 
     private fun moveNode(selectedNode: DrawableNode, x: Float, y: Float) {
-        val tempX = selectedNode.centerX
-        val tempY = selectedNode.centerY
+        val previousX = selectedNode.centerX
+        val previousY = selectedNode.centerY
         selectedNode.updatePosition(x, y)
         if (hasCollision(selectedNode)) {
-            selectedNode.updatePosition(tempX, tempY)
+            selectedNode.updatePosition(previousX, previousY)
         } else {
-            for (edge in selectedNode.connectedByEdge.values) {
-                edge.updateWeightBox(paint)
+            for (drawableEdge in selectedNode.connectedByEdge.values) {
+                val edge = drawableEdge.edge ?: continue
+                if (edge.connected)
+                    drawableEdge.updateWeightBox(paint)
             }
             invalidate()
         }
@@ -318,162 +423,12 @@ class DrawableGraphView : View {
         return null
     }
 
-    private fun drawBoundaries(canvas: Canvas) {
-        paint.style = Paint.Style.STROKE
-        paint.color = colorBoundaries
 
-        canvas.drawRect(1f, 1f, width - 1f, height - 1f, paint)
-    }
-
-    private fun drawNodes(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-        paint.color = colorNode
-
-        for (node in graph.getNodes())
-            drawNode(node, canvas)
-    }
-
-    private fun drawNode(node: DrawableNode, canvas: Canvas) {
-        canvas.drawCircle(node.centerX, node.centerY, DrawableNode.RADIUS, paint)
-    }
-
-    private fun drawSelectedNode(canvas: Canvas) {
-        val node = selectedNode ?: return
-        paint.style = Paint.Style.STROKE
-        paint.color = colorSelectedNode
-
-        drawNode(node, canvas)
-    }
-
-    private fun drawPathNodes(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-        paint.color = colorDrawablePath
-
-        for (node in pathNodesOrder) {
-            val drawableNode = graph.getNode(node.name)
-            if (drawableNode != null)
-                drawNode(drawableNode, canvas)
-        }
-    }
-
-    private fun drawStartAndEndPoints(canvas: Canvas) {
-        val startNode = startPoint
-        if (startNode != null) {
-            paint.style = Paint.Style.FILL
-            paint.color = colorStartNode
-            canvas.drawCircle(startNode.centerX, startNode.centerY, DrawableNode.RADIUS, paint)
-        }
-
-        val endNode = endPoint ?: return
-        paint.color = colorEndNode
-        canvas.drawCircle(endNode.centerX, endNode.centerY, DrawableNode.RADIUS, paint)
-    }
-
-    private fun drawTextNodes(canvas: Canvas) {
-        paint.color = colorNodeText
-
-        for (node in graph.getNodes()) {
-            drawTextNode(node, canvas)
-        }
-    }
-
-    private fun drawTextNode(node: DrawableNode, canvas: Canvas) {
-        canvas.drawText(
-            node.id,
-            node.centerX - paint.measureText(node.id) / 2,
-            node.centerY - ((paint.descent() + paint.ascent()) / 2), paint
-        )
-    }
-
-    private fun drawEdges(canvas: Canvas) {
-        paint.style = Paint.Style.STROKE
-        paint.color = colorEdge
-        paint.strokeWidth = resources.displayMetrics.density * 2
-
-        for (edge in drawableEdges) {
-            drawEdge(edge.nodeA, edge.nodeB, canvas)
-        }
-        paint.strokeWidth = resources.displayMetrics.density
-    }
-
-    private fun drawEdge(nodeA: DrawableNode, nodeB: DrawableNode, canvas: Canvas) {
-        canvas.drawLine(nodeA.centerX, nodeA.centerY, nodeB.centerX, nodeB.centerY, paint)
-    }
-
-    private fun drawPathEdges(canvas: Canvas) {
-        var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
-        paint.color = colorDrawablePath
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = resources.displayMetrics.density * 2
-        for (i in 1 until pathNodesOrder.size) {
-            val nodeB = pathNodesOrder.get(index = i) as DrawableNode
-            drawEdge(currentNode, nodeB, canvas)
-            currentNode = pathNodesOrder.get(index = i) as DrawableNode
-        }
-        invalidate()
-    }
-
-    private fun drawPathWeights(canvas: Canvas) {
-        var currentNode = pathNodesOrder.get(index = 0) as DrawableNode
-        paint.textSize /= 1.5f
-        paint.style = Paint.Style.FILL
-        paint.strokeWidth = resources.displayMetrics.density
-        for (i in 1 until pathNodesOrder.size) {
-            val nodeB = pathNodesOrder.get(index = i) as DrawableNode
-            drawWeight(
-                currentNode, nodeB, currentNode.edges[nodeB.id]!!.weight.toInt().toString(),
-                colorDrawablePath, canvas
-            )
-            currentNode = pathNodesOrder.get(index = i) as DrawableNode
-        }
-        paint.textSize *= 1.5f
-        invalidate()
-    }
-
-    private fun drawWeights(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-
-        paint.textSize /= 1.5f
-        for (drawableEdge in drawableEdges) {
-            val edge = drawableEdge.edge ?: continue
-            val nodeA = drawableEdge.nodeA
-            val nodeB = drawableEdge.nodeB
-            drawWeight(
-                nodeA, nodeB, edge.weight.toInt().toString(),
-                colorBoxWeight, canvas
-            )
-        }
-        paint.textSize *= 1.5f
-    }
-
-    private fun drawWeight(
-        nodeA: DrawableNode, nodeB: DrawableNode, weight: String,
-        boxColor: Int, canvas: Canvas
-    ) {
-        val edge = nodeA.connectedByEdge[nodeB.id] ?: return
-        val textCenterX = (nodeA.centerX + nodeB.centerX) / 2
-        val textCenterY = (nodeA.centerY + nodeB.centerY) / 2
-
-        paint.color = boxColor
-        canvas.drawRoundRect(edge.weightBox, 15f, 15f, paint)
-
-        paint.color = colorTextWeight
-        canvas.drawText(
-            weight, textCenterX - (paint.measureText(weight) / 2),
-            textCenterY - ((paint.descent() + paint.ascent()) / 2), paint
-        )
-    }
-
-    private fun configurePaint() {
-        paint.isAntiAlias = true
-        paint.strokeWidth = resources.displayMetrics.density
-        paint.textSize = 48f
-    }
 
     fun printablePath(): String {
         if (pathNodesOrder.isEmpty()) return ""
 
-        val stringPath: StringBuffer = StringBuffer(pathNodesOrder[0].name)
+        val stringPath = StringBuffer(pathNodesOrder[0].name)
         for (i in 1 until pathNodesOrder.size) {
             stringPath.append(" -> ${pathNodesOrder[i].name}")
         }
@@ -501,7 +456,7 @@ class DrawableGraphView : View {
         val nodes = context.getString(R.string.nodes)
         val node = context.getString(R.string.node)
 
-        val stringPath: StringBuffer = StringBuffer("$total: ${graph.getNodes().size} ${
+        val stringPath = StringBuffer("$total: ${graph.getNodes().size} ${
             if (graph.getNodes().size > 1) nodes else node
         }")
 
@@ -527,6 +482,7 @@ class DrawableGraphView : View {
         selectedNode = null
         drawableEdges.clear()
         pathNodesOrder.clear()
+        actionsManager.clearHistory()
         selectedOption = DJIKSTRA
         invalidate()
 
@@ -535,5 +491,106 @@ class DrawableGraphView : View {
         listeners.forEach { it.onGraphNodeNotRemovable() }
     }
 
+    fun setActionsManager(actionsManager: ActionsManager) {
+        this.actionsManager = actionsManager
+    }
+
+    // ------------------ Undo / Redo ------------------
+
+    fun undo() {
+        val action = this.actionsManager.undo() ?: return
+        when(action.getType()) {
+            HistoryAction.ADD -> undoAdd(action as ActionAdd)
+            HistoryAction.REMOVE -> undoRemove(action as ActionRemove)
+            HistoryAction.CONNECT -> undoConnect(action as ActionConnect)
+            HistoryAction.MOVE -> undoMove(action as ActionMove)
+            HistoryAction.WEIGH -> undoWeigh(action as ActionWeigh)
+            HistoryAction.START_POINT -> undoStartPoint()
+            HistoryAction.END_POINT -> undoEndPoint()
+        }
+        if (readyToRunAgain) runAlgorithm()
+        invalidate()
+    }
+
+    fun redo() {
+        val action = this.actionsManager.redo() ?: return
+        when(action.getType()) {
+            HistoryAction.ADD -> redoAdd(action as ActionAdd)
+            HistoryAction.REMOVE -> redoRemove(action as ActionRemove)
+            HistoryAction.CONNECT -> redoConnect(action as ActionConnect)
+            HistoryAction.MOVE -> redoMove(action as ActionMove)
+            HistoryAction.WEIGH -> redoWeigh(action as ActionWeigh)
+            HistoryAction.START_POINT -> redoStartPoint(action as ActionStartPoint)
+            HistoryAction.END_POINT -> redoEndPoint(action as ActionEndPoint)
+        }
+        if (readyToRunAgain) runAlgorithm()
+        invalidate()
+    }
+
+    private fun undoAdd(action: ActionAdd) {
+        graph.removeNode(action.drawableNode)
+        drawableEdges.removeAll(drawableEdges.filter {
+                edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode })
+    }
+
+    private fun redoAdd(action: ActionAdd) {
+        addDrawableNode(action.drawableNode)
+    }
+
+    private fun undoRemove(action: ActionRemove) {
+        graph.readdNode(action.getNode())
+        this.drawableEdges.addAll(action.getEdges())
+        listeners.forEach { it. onGraphCleanable() }
+    }
+
+    private fun redoRemove(action: ActionRemove) {
+        removeNode(action.getNode(), false)
+    }
+
+    private fun undoConnect(action: ActionConnect) {
+        action.nodeA.disconnect(action.nodeB)
+    }
+
+    private fun redoConnect(action: ActionConnect) {
+        reconnect(action.nodeA, action.nodeB)
+    }
+
+    private fun undoMove(action: ActionMove) {
+        action.node.updatePosition(action.initialPosition.first, action.initialPosition.second)
+        action.node.connectedByEdge.values.forEach{edge ->
+            edge.updateWeightBox(paint)
+        }
+    }
+
+    private fun redoMove(action: ActionMove) {
+        action.node.updatePosition(action.finalPosition.first, action.finalPosition.second)
+        action.node.connectedByEdge.values.forEach{edge ->
+            edge.updateWeightBox(paint)
+        }
+    }
+
+    private fun undoWeigh(action: ActionWeigh) {
+        decreaseEdgeWeight(action.drawableEdge)
+    }
+
+    private fun redoWeigh(action: ActionWeigh) {
+        increaseEdgeWeight(action.drawableEdge, false)
+    }
+
+    private fun undoStartPoint() {
+        deselectStartPoint()
+    }
+
+    private fun redoStartPoint(action: ActionStartPoint) {
+        selectStartPoint(action.node)
+    }
+
+    private fun undoEndPoint() {
+        deselectEndPoint()
+    }
+
+    private fun redoEndPoint(action: ActionEndPoint) {
+        selectEndPoint(action.node)
+    }
 
 }
