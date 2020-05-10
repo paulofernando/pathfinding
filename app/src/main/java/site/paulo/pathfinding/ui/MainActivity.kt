@@ -1,7 +1,11 @@
 package site.paulo.pathfinding.ui
 
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -179,11 +183,22 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun undo(view: View) {
+        vibratePhone()
         drawableGraphView.undo()
     }
 
     fun redo(view: View) {
+        vibratePhone()
         drawableGraphView.redo()
+    }
+
+    private fun vibratePhone() {
+        val vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(10, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(10)
+        }
     }
 
     override fun onGraphReady() {
