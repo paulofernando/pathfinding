@@ -73,11 +73,15 @@ class MainActivity : AppCompatActivity(),
                         removeNodeImageView.isEnabled = nodeRemovable
                         removeNodeImageView.visibility = View.VISIBLE
                         consoleImageView.visibility = View.VISIBLE
+                        undoImageView.visibility = View.VISIBLE
+                        redoImageView.visibility = View.VISIBLE
                     } else if (viewPager.currentItem == 1) {
                         runImageView.isEnabled = gridGridGraph.isReadyToRun()
                         removeNodeImageView.isEnabled = false
                         removeNodeImageView.visibility = View.GONE
                         consoleImageView.visibility = View.GONE
+                        undoImageView.visibility = View.GONE
+                        redoImageView.visibility = View.GONE
                     }
 
                 }
