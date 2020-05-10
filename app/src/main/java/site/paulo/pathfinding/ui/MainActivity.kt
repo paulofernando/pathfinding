@@ -6,6 +6,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -160,10 +161,17 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun reset(view: View) {
-        if(tabs.selectedTabPosition == 0)
-            drawableGraphView.reset()
-        if(tabs.selectedTabPosition == 1)
-            gridGridGraph.reset()
+        val builder = AlertDialog.Builder(this@MainActivity)
+        builder.setTitle(getString(R.string.delete_graph))
+        builder.setMessage(getString(R.string.confirm_delete))
+        builder.setPositiveButton(getString(R.string.yes)){_, _ ->
+            if(tabs.selectedTabPosition == 0)
+                drawableGraphView.reset()
+            if(tabs.selectedTabPosition == 1)
+                gridGridGraph.reset()
+        }
+        builder.setNeutralButton(getString(R.string.cancel)){_,_ -> }
+        builder.create().show()
     }
 
     fun undo(view: View) {
