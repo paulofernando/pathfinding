@@ -121,6 +121,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun runAlgorithm(view: View) {
+        vibratePhone()
         if (viewPager.currentItem == 0)
             drawableGraphView.runAlgorithm()
         else
@@ -128,10 +129,12 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun removeNode(view: View) {
+        vibratePhone()
         drawableGraphView.removeSelectedNode()
     }
 
     fun openConsole(view: View) {
+        vibratePhone()
         if (viewPager.currentItem == 0) {
             val consoleFragment = ConsoleFragment(getConsoleContent())
             consoleFragment.show(supportFragmentManager, "add_console_dialog_fragment")
