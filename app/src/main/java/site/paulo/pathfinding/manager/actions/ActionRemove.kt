@@ -9,8 +9,7 @@ import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableNode
 class ActionRemove(private val drawableNode: DrawableNode,
                    private val drawableEdges: List<DrawableEdge>,
                    private val edgesConnections: List<Boolean>
-):
-    Action {
+): Action {
     private val type = HistoryAction.REMOVE
 
     override fun getType(): HistoryAction {

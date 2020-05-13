@@ -426,8 +426,6 @@ class DrawableGraphView : View {
         return null
     }
 
-
-
     fun printablePath(): String {
         if (pathNodesOrder.isEmpty()) return ""
 
