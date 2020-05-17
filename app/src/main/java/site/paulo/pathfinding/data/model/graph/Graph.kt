@@ -1,4 +1,4 @@
-package site.paulo.pathfinding.data.model
+package site.paulo.pathfinding.data.model.graph
 
 import java.util.*
 

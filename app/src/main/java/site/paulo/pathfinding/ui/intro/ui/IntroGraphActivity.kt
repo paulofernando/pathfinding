@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.activity_intro.*
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.intro.adapter.IntroDrawableGraphAdapter
 
+
 open class IntroGraphActivity(private val slidesCount: Int) : AppCompatActivity() {
 
     var currentPage: Int = 0

@@ -1,12 +1,15 @@
-package site.paulo.pathfinding.data.model
+package site.paulo.pathfinding.data.model.graph
 
+import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.HashMap
 
-class GridGraph(private val rows: Int, private val columns: Int) : Graph<Node> {
+
+class GridGraph(private val rows: Int, private val columns: Int) :
+    Graph<Node> {
 
     val table = Array(rows) { arrayOfNulls<Node>(columns) }
-    private val removedNodes = HashMap<String,Node>()
+    private val removedNodes = HashMap<String, Node>()
 
     init {
         populate()

@@ -4,11 +4,8 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.View
-import site.paulo.pathfinding.data.model.DrawableGraph
-import site.paulo.pathfinding.data.model.Edge
-import site.paulo.pathfinding.data.model.Graph
+import site.paulo.pathfinding.data.model.graph.DrawableGraph
 import site.paulo.pathfinding.data.model.Node
-import java.util.*
 
 
 class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
@@ -86,7 +83,7 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
         }
     }
 
-    fun drawTextNode(node: DrawableNode, canvas: Canvas) {
+    private fun drawTextNode(node: DrawableNode, canvas: Canvas) {
         canvas.drawText(
             node.id,
             node.centerX - paint.measureText(node.id) / 2,
@@ -94,20 +91,20 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
         )
     }
 
-    fun drawEdges(drawableEdges: List<DrawableEdge>, canvas: Canvas) {
+    fun drawEdges(weighBoxes: List<WeighBox>, canvas: Canvas) {
         paint.style = Paint.Style.STROKE
         paint.color = colorEdge
         paint.strokeWidth = context.resources.displayMetrics.density * 2
 
-        for (drawableEdge in drawableEdges) {
-            val edge = drawableEdge.edge ?: return
+        for (weighBox in weighBoxes) {
+            val edge = weighBox.edge ?: return
             if (edge.connected)
-                drawEdge(drawableEdge.nodeA, drawableEdge.nodeB, canvas)
+                drawEdge(weighBox.nodeA, weighBox.nodeB, canvas)
         }
         paint.strokeWidth = context.resources.displayMetrics.density
     }
 
-    fun drawEdge(nodeA: DrawableNode, nodeB: DrawableNode, canvas: Canvas) {
+    private fun drawEdge(nodeA: DrawableNode, nodeB: DrawableNode, canvas: Canvas) {
         canvas.drawLine(nodeA.centerX, nodeA.centerY, nodeB.centerX, nodeB.centerY, paint)
     }
 
@@ -141,15 +138,15 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
         view.invalidate()
     }
 
-    fun drawWeights(drawableEdges: List<DrawableEdge>, canvas: Canvas) {
+    fun drawWeights(weighBoxes: List<WeighBox>, canvas: Canvas) {
         paint.style = Paint.Style.FILL
 
         paint.textSize /= 1.5f
-        for (drawableEdge in drawableEdges) {
-            val edge = drawableEdge.edge ?: continue
+        for (weighBox in weighBoxes) {
+            val edge = weighBox.edge ?: continue
             if (!edge.connected) continue
-            val nodeA = drawableEdge.nodeA
-            val nodeB = drawableEdge.nodeB
+            val nodeA = weighBox.nodeA
+            val nodeB = weighBox.nodeB
             drawWeight(
                 nodeA, nodeB, edge.weight.toInt().toString(),
                 colorBoxWeight, canvas
@@ -167,7 +164,7 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
         val textCenterY = (nodeA.centerY + nodeB.centerY) / 2
 
         paint.color = boxColor
-        canvas.drawRoundRect(edge.weightBox, 15f, 15f, paint)
+        canvas.drawRoundRect(edge.boundaries, 15f, 15f, paint)
 
         paint.color = colorTextWeight
         canvas.drawText(

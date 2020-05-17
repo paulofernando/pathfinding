@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import kotlin.collections.ArrayList
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
-import site.paulo.pathfinding.data.model.DrawableGraph
+import site.paulo.pathfinding.data.model.graph.DrawableGraph
 import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
@@ -21,6 +21,7 @@ import site.paulo.pathfinding.manager.*
 import site.paulo.pathfinding.manager.actions.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import java.util.*
+
 
 class DrawableGraphView : View {
 
@@ -32,7 +33,7 @@ class DrawableGraphView : View {
     private var listeners: ArrayList<GraphListener> = ArrayList()
     private lateinit var actionsManager: ActionsManager
 
-    private val drawableEdges: ArrayList<DrawableEdge> = ArrayList()
+    private val weighBoxes: ArrayList<WeighBox> = ArrayList()
     private var startPoint: DrawableNode? = null
     private var endPoint: DrawableNode? = null
     private var selectedNode: DrawableNode? = null
@@ -43,7 +44,8 @@ class DrawableGraphView : View {
     private var movingNode: Boolean = false
     private var initalMovePosition = Pair(-1f, -1f)
 
-    private var graph: DrawableGraph = DrawableGraph()
+    private var graph: DrawableGraph =
+        DrawableGraph()
     private lateinit var algorithm: PathFindingAlgorithm
     private val pathNodesOrder: Stack<Node> = Stack()
     private var selectedAlgorithm: PathFindingAlgorithms = DJIKSTRA
@@ -54,10 +56,10 @@ class DrawableGraphView : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         paintManager.drawBoundaries(width, height, canvas)
-        paintManager.drawEdges(drawableEdges, canvas)
+        paintManager.drawEdges(weighBoxes, canvas)
         paintManager.drawNodes(graph.getNodes(), canvas)
         if (selectedAlgorithm == DJIKSTRA) {
-            paintManager.drawWeights(drawableEdges, canvas)
+            paintManager.drawWeights(weighBoxes, canvas)
         }
         if (pathNodesOrder.isNotEmpty()) {
             paintManager.drawPathNodes(graph, pathNodesOrder, canvas)
@@ -200,14 +202,14 @@ class DrawableGraphView : View {
         return (startPoint != null && endPoint != null)
     }
 
-    private fun increaseEdgeWeight(drawableEdge: DrawableEdge, history: Boolean = true) {
+    private fun increaseEdgeWeight(weighBox: WeighBox, history: Boolean = true) {
         if (selectedAlgorithm == DJIKSTRA) {
             val weight = Edge.DEFAULT_WEIGHT
-            drawableEdge.increaseWeight(weight)
+            weighBox.increaseWeight(weight)
             if (history) {
                 actionsManager.addHistory(
                     ActionWeigh(
-                        drawableEdge,
+                        weighBox,
                         weight
                     )
                 )
@@ -219,9 +221,9 @@ class DrawableGraphView : View {
         }
     }
 
-    private fun decreaseEdgeWeight(drawableEdge: DrawableEdge) {
+    private fun decreaseEdgeWeight(weighBox: WeighBox) {
         if (selectedAlgorithm == DJIKSTRA) {
-            drawableEdge.decreaseWeight(Edge.DEFAULT_WEIGHT)
+            weighBox.decreaseWeight(Edge.DEFAULT_WEIGHT)
             invalidate()
             if (readyToRunAgain) {
                 runAlgorithm()
@@ -256,7 +258,7 @@ class DrawableGraphView : View {
 
     private fun removeNode(drawableNode: DrawableNode, history: Boolean = true) {
         val edgesToRemove =
-            drawableEdges.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
+            weighBoxes.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
         val edgesConnections =
             edgesToRemove.map { edge -> edge.edge?.connected ?: false }
         if (history) {
@@ -269,15 +271,15 @@ class DrawableGraphView : View {
             )
         }
         graph.removeNode(drawableNode)
-        drawableEdges.removeAll(edgesToRemove)
+        weighBoxes.removeAll(edgesToRemove)
         deselectNode()
         invalidate()
     }
 
     private fun addDrawableEdge(nodeA: DrawableNode, nodeB: DrawableNode, history: Boolean = true) {
         if (nodeA.connectedTo.size < graph.getNodes().size - 1) {
-            drawableEdges.add(DrawableEdge(drawableEdges.size + 1, nodeA, nodeB))
-            drawableEdges.last().connectTo(nodeB, paint)
+            weighBoxes.add(WeighBox(weighBoxes.size + 1, nodeA, nodeB))
+            weighBoxes.last().connectTo(nodeB, paint)
             if (history) {
                 actionsManager.addHistory(
                     ActionConnect(
@@ -414,12 +416,12 @@ class DrawableGraphView : View {
         return null
     }
 
-    private fun getEdgeBoxAtPoint(x: Float, y: Float): DrawableEdge? {
+    private fun getEdgeBoxAtPoint(x: Float, y: Float): WeighBox? {
         val touchedPoint = RectF(
             x - touchableSpace, y - touchableSpace,
             x + touchableSpace, y + touchableSpace
         )
-        for (e in drawableEdges) {
+        for (e in weighBoxes) {
             if (touchedPoint.intersect(e.touchableArea))
                 return e
         }
@@ -481,7 +483,7 @@ class DrawableGraphView : View {
         startPoint = null
         endPoint = null
         selectedNode = null
-        drawableEdges.clear()
+        weighBoxes.clear()
         pathNodesOrder.clear()
         actionsManager.clearHistory()
         selectedOption = DJIKSTRA
@@ -531,7 +533,7 @@ class DrawableGraphView : View {
 
     private fun undoAdd(action: ActionAdd) {
         graph.removeNode(action.drawableNode)
-        drawableEdges.removeAll(drawableEdges.filter {
+        weighBoxes.removeAll(weighBoxes.filter {
                 edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode })
     }
 
@@ -548,7 +550,7 @@ class DrawableGraphView : View {
             }
         }
         graph.reconnectNodes(action.getNode(), edgesToReconnect)
-        this.drawableEdges.addAll(action.getDrawableEdges())
+        this.weighBoxes.addAll(action.getDrawableEdges())
         listeners.forEach { it. onGraphCleanable() }
     }
 
@@ -579,11 +581,11 @@ class DrawableGraphView : View {
     }
 
     private fun undoWeigh(action: ActionWeigh) {
-        decreaseEdgeWeight(action.drawableEdge)
+        decreaseEdgeWeight(action.weighBox)
     }
 
     private fun redoWeigh(action: ActionWeigh) {
-        increaseEdgeWeight(action.drawableEdge, false)
+        increaseEdgeWeight(action.weighBox, false)
     }
 
     private fun undoStartPoint() {

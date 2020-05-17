@@ -6,8 +6,8 @@ import android.widget.Button
 import kotlinx.android.synthetic.main.h_radio_algorithms.view.*
 import site.paulo.pathfinding.R
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
-import site.paulo.pathfinding.ui.component.graphview.HRadio
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
+
 
 class HRadioAlgorithms(context: Context, attrs: AttributeSet) :
     HRadio<PathFindingAlgorithms>(context, attrs) {

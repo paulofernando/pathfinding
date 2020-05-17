@@ -1,9 +1,10 @@
 package site.paulo.pathfinding.algorithm
 
-import site.paulo.pathfinding.data.model.GridGraph
+import site.paulo.pathfinding.data.model.graph.GridGraph
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import kotlin.math.abs
+
 
 class AStar(private val gridGraph: GridGraph, startNode: Node, endNode: Node) :
     Djikstra(gridGraph.getNodes(), startNode, endNode) {

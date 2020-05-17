@@ -8,16 +8,17 @@ import android.os.Handler
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.content.ContextCompat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import site.paulo.pathfinding.R
 import site.paulo.pathfinding.algorithm.*
 import site.paulo.pathfinding.data.model.*
 import site.paulo.pathfinding.ui.component.graphview.GraphListener
 import java.util.concurrent.atomic.AtomicBoolean
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
+import site.paulo.pathfinding.data.model.graph.GraphTypes
+import site.paulo.pathfinding.data.model.graph.GridGraph
+
 
 class GridGraphView : View {
 
@@ -41,7 +42,8 @@ class GridGraphView : View {
     private var startPoint = uninitialized
     private var endPoint = uninitialized
     private var lastVisitedNode = uninitialized
-    private var graph: GridGraph = GridGraph(rows, cols)
+    private var graph: GridGraph =
+        GridGraph(rows, cols)
     private lateinit var algorithm: PathFindingAlgorithm
     private val pathPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private val visitedNodesPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
@@ -50,21 +52,7 @@ class GridGraphView : View {
     private var listeners: ArrayList<GraphListener> = ArrayList()
 
     private val paint = Paint()
-    // --------- colors ---------
-    private val colorHorizontalLine: Int = ContextCompat.getColor(context, R.color.colorTableHorizontalLines)
-    private val colorVerticalLine: Int = ContextCompat.getColor(context, R.color.colorTableVerticalLines)
-    private val colorPath: Int = ContextCompat.getColor(context, R.color.colorPath)
-    private val colorVisited: Int = ContextCompat.getColor(context, R.color.colorVisited)
-    private val colorStartPoint: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
-    private val colorEndPoint: Int = ContextCompat.getColor(context, R.color.colorEndPoint)
-    private val colorRemovedNode: Int = ContextCompat.getColor(context, R.color.colorRemovedCell)
-    private val colorRemovedNodeX: Int = ContextCompat.getColor(context, R.color.colorRemovedCellX)
-    private val colorIncreasedWeightNode: Int = ContextCompat.getColor(context, R.color.colorIncreasedWeightText)
-    // --------------------------
-
-    init {
-        configurePaint()
-    }
+    private val paintManager = GridGraphViewPaint(context, paint, rows, cols)
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
@@ -80,15 +68,15 @@ class GridGraphView : View {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawHorizontalLines(canvas, rows)
-        drawVerticalLines(canvas, cols)
-        drawVisitedNodes(canvas)
-        drawPathNodes(canvas)
-        drawRemovedCellsNodes(canvas)
+        paintManager.drawHorizontalLines(rows, canvas)
+        paintManager.drawVerticalLines(cols, canvas)
+        paintManager.drawVisitedNodes(visitedNodesPositions, canvas)
+        paintManager.drawPathNodes(pathPositions, canvas)
+        paintManager.drawRemovedCellsNodes(removedNodes, canvas)
         if (hasWeight) {
-            drawWeightIncreasedPoints(canvas)
+            paintManager.drawWeightIncreasedPoints(increasedWeightNodes, canvas)
         }
-        drawPoints(canvas)
+        paintManager.drawPoints(startPoint, endPoint, canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -248,82 +236,6 @@ class GridGraphView : View {
         invalidate()
     }
 
-    private fun drawHorizontalLines(canvas: Canvas, rows: Int) {
-        paint.color = colorHorizontalLine
-        paint.style = Paint.Style.STROKE
-        for (i in 0..rows) {
-            canvas.drawLine(0f, squareSide * i, squareSide * cols, squareSide * i, paint)
-        }
-    }
-
-    private fun drawVerticalLines(canvas: Canvas, cols: Int) {
-        paint.color = colorVerticalLine
-        paint.style = Paint.Style.STROKE
-        for (i in 0..cols) {
-            canvas.drawLine(squareSide * i, 0f, squareSide * i, squareSide * rows, paint)
-        }
-    }
-
-    private fun drawPathNodes(canvas: Canvas) {
-        paint.color = colorPath
-        paint.style = Paint.Style.FILL
-        for (node in pathPositions.values) {
-            canvas.drawRect(node, paint)
-        }
-    }
-
-    private fun drawVisitedNodes(canvas: Canvas) {
-        paint.color = colorVisited
-        paint.style = Paint.Style.FILL
-        paint.alpha = 200
-        for (node in visitedNodesPositions.values) {
-            canvas.drawRect(node, paint)
-        }
-        paint.alpha = 255
-    }
-
-    /**
-     * Draw start and end points
-     */
-    private fun drawPoints(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-        if (startPoint != uninitialized) {
-            paint.color = colorStartPoint
-            canvas.drawRect(getRectOnTableCell(startPoint), paint)
-        }
-        if (endPoint != uninitialized) {
-            paint.color = colorEndPoint
-            canvas.drawRect(getRectOnTableCell(endPoint), paint)
-        }
-    }
-
-    private fun drawWeightIncreasedPoints(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-        paint.color = colorIncreasedWeightNode
-        increasedWeightNodes.entries.forEach {
-            val center = getCenterOfCell(it.key)
-            canvas.drawText(
-                it.value.toString(), center.first - paint.measureText(it.value.toString()) / 2,
-                center.second - ((paint.descent() + paint.ascent()) / 2), paint
-            )
-        }
-    }
-
-    private fun drawRemovedCellsNodes(canvas: Canvas) {
-        paint.style = Paint.Style.FILL
-        paint.color = colorRemovedNode
-        removedNodes.values.forEach {
-            canvas.drawRect(it, paint)
-        }
-
-        paint.style = Paint.Style.STROKE
-        paint.color = colorRemovedNodeX
-        removedNodes.values.forEach {
-            canvas.drawLine(it.left, it.top, it.right, it.bottom, paint)
-            canvas.drawLine(it.left, it.bottom, it.right, it.top, paint)
-        }
-    }
-
     private fun scheduleDraw(visitedNodes: LinkedList<Node>, path: Stack<Node>,
                              pathNodesPerSec: Int, visitedNodesPerSec: Int) {
         animating.set(true)
@@ -368,12 +280,6 @@ class GridGraphView : View {
         return RectF(topX, topY, topX + squareSide, topY + squareSide)
     }
 
-    private fun getCenterOfCell(position: Pair<Int, Int>): Pair<Float, Float> {
-        val topX = squareSide * position.first
-        val topY = squareSide * position.second
-        return Pair(topX + (squareSide / 2), topY + (squareSide / 2))
-    }
-
     private var cachedPosition: Pair<Int, Int> = uninitialized
     private fun getRectOnPosition(x: Float, y: Float): Pair<Int, Int> {
         return if ((cachedPosition.first == (x / squareSide).toInt()) &&
@@ -384,12 +290,6 @@ class GridGraphView : View {
 
     private fun getRowAndColAtPosition(x: Float, y: Float): Pair<Int, Int> {
         return Pair((x / squareSide).toInt(), (y / squareSide).toInt())
-    }
-
-    private fun configurePaint() {
-        paint.isAntiAlias = true
-        paint.strokeWidth = resources.displayMetrics.density
-        paint.textSize = 48f
     }
 
     fun registerListener(listener: GraphListener) {
@@ -403,7 +303,7 @@ class GridGraphView : View {
         reset()
     }
 
-    fun enableWeightIncrease(enable: Boolean) {
+    private fun enableWeightIncrease(enable: Boolean) {
         hasWeight = enable
         invalidate()
     }

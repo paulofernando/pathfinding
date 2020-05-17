@@ -2,14 +2,14 @@ package test.site.paulo.pathfinding.data.model
 
 import org.junit.jupiter.api.Test
 import site.paulo.pathfinding.algorithm.Djikstra
-import site.paulo.pathfinding.data.model.GraphTypes
-import site.paulo.pathfinding.data.model.GridGraph
+import site.paulo.pathfinding.data.model.graph.GraphTypes
+import site.paulo.pathfinding.data.model.graph.GridGraph
 
 internal class DjikstraGridGraphTest {
 
     @Test
     fun `test Djikstra algorithm in grid graph`() {
-        val gridGraph = GridGraph(3,3)
+        val gridGraph = GridGraph(3, 3)
         val djikstra = Djikstra(
             gridGraph.getNodes(),
             gridGraph.getNode(Pair(0, 0))!!,
@@ -21,7 +21,7 @@ internal class DjikstraGridGraphTest {
 
     @Test
     fun `test Djikstra algorithm in grid graph - reverse`() {
-        val gridGraph = GridGraph(3,3)
+        val gridGraph = GridGraph(3, 3)
         val djikstra = Djikstra(
             gridGraph.getNodes(),
             gridGraph.getNode(Pair(2, 2))!!,
@@ -34,7 +34,7 @@ internal class DjikstraGridGraphTest {
 
     @Test
     fun `test Djikstra algorithm in grid graph - no path start at corner - remove diagonal`() {
-        val gridGraph = GridGraph(3,3)
+        val gridGraph = GridGraph(3, 3)
         val djikstra = Djikstra(
             gridGraph.getNodes(),
             gridGraph.getNode(Pair(0, 0))!!,
@@ -51,7 +51,7 @@ internal class DjikstraGridGraphTest {
 
     @Test
     fun `test Djikstra algorithm grid graph - no path start at corner - lock around start point`() {
-        val gridGraph = GridGraph(3,3)
+        val gridGraph = GridGraph(3, 3)
         val djikstra = Djikstra(
             gridGraph.getNodes(),
             gridGraph.getNode(Pair(0, 0))!!,
@@ -68,7 +68,7 @@ internal class DjikstraGridGraphTest {
 
     @Test
     fun `test Djikstra algorithm in grid graph - no path - start at middle`() {
-        val gridGraph = GridGraph(10,10)
+        val gridGraph = GridGraph(10, 10)
         val djikstra = Djikstra(
             gridGraph.getNodes(),
             gridGraph.getNode(Pair(0, 0))!!,
@@ -86,7 +86,7 @@ internal class DjikstraGridGraphTest {
 
     @Test
     fun `test Djikstra algorithm in grid graph - short grid graph`() {
-        val gridGraph = GridGraph(2,2)
+        val gridGraph = GridGraph(2, 2)
         val djikstra = Djikstra(
             gridGraph.getNodes(),
             gridGraph.getNode(Pair(0, 0))!!,
@@ -100,7 +100,7 @@ internal class DjikstraGridGraphTest {
 
     @Test
     fun `test Djikstra algorithm in grid graph - shortest grid graph`() {
-        val gridGraph = GridGraph(1,1)
+        val gridGraph = GridGraph(1, 1)
         val djikstra = Djikstra(
             gridGraph.getNodes(),
             gridGraph.getNode(Pair(0, 0))!!,

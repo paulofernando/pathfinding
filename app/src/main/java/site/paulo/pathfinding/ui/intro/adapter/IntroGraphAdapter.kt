@@ -10,6 +10,7 @@ import androidx.viewpager.widget.PagerAdapter
 import kotlinx.android.synthetic.main.fragment_slide.view.*
 import site.paulo.pathfinding.R
 
+
 open class IntroGraphAdapter (private val context: Context): PagerAdapter() {
 
     lateinit var slideHeaders: Array<String>

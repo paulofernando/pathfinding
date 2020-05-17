@@ -6,8 +6,8 @@ import android.widget.Button
 import android.widget.FrameLayout
 import site.paulo.pathfinding.R
 
-abstract class HRadio<T>(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
 
+abstract class HRadio<T>(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
     private var currentOption: T? = null
     var currentRadio: Button? = null
     private var listener: HRadioListener<T>? = null
