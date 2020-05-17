@@ -295,15 +295,6 @@ class DrawableGraphView : View {
         }
     }
 
-    private fun disconnect(nodeA: DrawableNode, nodeB: DrawableNode) {
-        nodeA.disconnect(nodeB)
-        invalidate()
-        if (readyToRunAgain) {
-            runAlgorithm()
-        }
-    }
-
-
     private fun reconnect(nodeA: DrawableNode, nodeB: DrawableNode) {
         nodeA.reconnect(nodeB)
         invalidate()
