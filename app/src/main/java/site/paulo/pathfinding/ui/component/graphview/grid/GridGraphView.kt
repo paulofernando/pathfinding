@@ -42,8 +42,7 @@ class GridGraphView : View {
     private var startPoint = uninitialized
     private var endPoint = uninitialized
     private var lastVisitedNode = uninitialized
-    private var graph: GridGraph =
-        GridGraph(rows, cols)
+    private var graph: GridGraph = GridGraph(rows, cols)
     private lateinit var algorithm: PathFindingAlgorithm
     private val pathPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
     private val visitedNodesPositions: HashMap<Pair<Int, Int>, RectF> = HashMap()
@@ -54,9 +53,15 @@ class GridGraphView : View {
     private val paint = Paint()
     private val paintManager = GridGraphViewPaint(context, paint, rows, cols)
 
+    // --------- colors ---------
+    private val colorHorizontalLine: Int = androidx.core.content.ContextCompat.getColor(context, site.paulo.pathfinding.R.color.colorTableHorizontalLines)
+    private val colorVerticalLine: Int = androidx.core.content.ContextCompat.getColor(context, site.paulo.pathfinding.R.color.colorTableVerticalLines)
+    // --------------------------
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         squareSide = (width / cols).toFloat()
+        paintManager.squareSide = squareSide
         invalidate()
     }
 
@@ -68,8 +73,8 @@ class GridGraphView : View {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        paintManager.drawHorizontalLines(rows, canvas)
-        paintManager.drawVerticalLines(cols, canvas)
+        drawHorizontalLines(rows, canvas)
+        drawVerticalLines(cols, canvas)
         paintManager.drawVisitedNodes(visitedNodesPositions, canvas)
         paintManager.drawPathNodes(pathPositions, canvas)
         paintManager.drawRemovedCellsNodes(removedNodes, canvas)
@@ -136,6 +141,22 @@ class GridGraphView : View {
         algorithm.run(GraphTypes.GRID)
         scheduleDraw(algorithm.getVisitedOrder(), algorithm.getPath(),
             defaultPathNodePerSec, defaultVisitedNodePerSec)
+    }
+
+    fun drawHorizontalLines(rows: Int, canvas: Canvas) {
+        paint.color = colorHorizontalLine
+        paint.style = Paint.Style.STROKE
+        for (i in 0..rows) {
+            canvas.drawLine(0f, squareSide * i, squareSide * cols, squareSide * i, paint)
+        }
+    }
+
+    fun drawVerticalLines(cols: Int, canvas: Canvas) {
+        paint.color = colorVerticalLine
+        paint.style = Paint.Style.STROKE
+        for (i in 0..cols) {
+            canvas.drawLine(squareSide * i, 0f, squareSide * i, squareSide * rows, paint)
+        }
     }
 
     fun isReadyToRun(): Boolean {
@@ -300,6 +321,7 @@ class GridGraphView : View {
         rows = amount
         cols = amount
         squareSide = (width / cols).toFloat()
+        paintManager.squareSide = squareSide
         reset()
     }
 

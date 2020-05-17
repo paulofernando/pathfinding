@@ -42,7 +42,7 @@ class DrawableGraphViewPaint(val context: Context, val paint: Paint) {
             drawNode(node, canvas)
     }
 
-    fun drawNode(node: DrawableNode, canvas: Canvas) {
+    private fun drawNode(node: DrawableNode, canvas: Canvas) {
         canvas.drawCircle(node.centerX, node.centerY, DrawableNode.RADIUS, paint)
     }
 

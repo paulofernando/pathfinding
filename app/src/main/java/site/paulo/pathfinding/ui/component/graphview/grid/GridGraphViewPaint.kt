@@ -17,11 +17,9 @@ class GridGraphViewPaint(val context: Context, private val paint: Paint,
     }
 
     private val uninitialized = Pair(-1, -1)
-    private var squareSide: Float = 0f
+    var squareSide: Float = 0f
 
     // --------- colors ---------
-    private val colorHorizontalLine: Int = ContextCompat.getColor(context, R.color.colorTableHorizontalLines)
-    private val colorVerticalLine: Int = ContextCompat.getColor(context, R.color.colorTableVerticalLines)
     private val colorPath: Int = ContextCompat.getColor(context, R.color.colorPath)
     private val colorVisited: Int = ContextCompat.getColor(context, R.color.colorVisited)
     private val colorStartPoint: Int = ContextCompat.getColor(context, R.color.colorStartPoint)
@@ -30,22 +28,6 @@ class GridGraphViewPaint(val context: Context, private val paint: Paint,
     private val colorRemovedNodeX: Int = ContextCompat.getColor(context, R.color.colorRemovedCellX)
     private val colorIncreasedWeightNode: Int = ContextCompat.getColor(context, R.color.colorIncreasedWeightText)
     // --------------------------
-
-    fun drawHorizontalLines(rows: Int, canvas: Canvas) {
-        paint.color = colorHorizontalLine
-        paint.style = Paint.Style.STROKE
-        for (i in 0..rows) {
-            canvas.drawLine(0f, squareSide * i, squareSide * cols, squareSide * i, paint)
-        }
-    }
-
-    fun drawVerticalLines(cols: Int, canvas: Canvas) {
-        paint.color = colorVerticalLine
-        paint.style = Paint.Style.STROKE
-        for (i in 0..cols) {
-            canvas.drawLine(squareSide * i, 0f, squareSide * i, squareSide * rows, paint)
-        }
-    }
 
     fun drawPathNodes(pathPositions: HashMap<Pair<Int, Int>, RectF>, canvas: Canvas) {
         paint.color = colorPath
@@ -65,11 +47,8 @@ class GridGraphViewPaint(val context: Context, private val paint: Paint,
         paint.alpha = 255
     }
 
-    /**
-     * Draw start and end points
-     */
-    fun drawPoints(startPoint: Pair<Int, Int>, endPoint: Pair<Int, Int>,
-                           canvas: Canvas) {
+    /** Draw start and end points */
+    fun drawPoints(startPoint: Pair<Int, Int>, endPoint: Pair<Int, Int>, canvas: Canvas) {
         paint.style = Paint.Style.FILL
         if (startPoint != uninitialized) {
             paint.color = colorStartPoint
@@ -126,5 +105,4 @@ class GridGraphViewPaint(val context: Context, private val paint: Paint,
         val topY = squareSide * position.second
         return RectF(topX, topY, topX + squareSide, topY + squareSide)
     }
-
 }
