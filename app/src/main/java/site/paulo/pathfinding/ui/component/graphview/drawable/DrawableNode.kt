@@ -9,7 +9,7 @@ class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
 
     var rect: RectF
     var connectedTo: HashMap<String, DrawableNode> = HashMap()
-    var connectedByEdge: HashMap<String, DrawableEdge> = HashMap()
+    var connectedByEdge: HashMap<String, WeighBox> = HashMap()
 
     companion object {
         private const val DIAMETER = 100f
@@ -34,13 +34,13 @@ class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
         rect.bottom = centerY + RADIUS
     }
 
-    fun connectByEdge(nodeToConnect: DrawableNode, drawableEdge: DrawableEdge, weight: Double) {
-        drawableEdge.edge = super.connect(nodeToConnect, Edge.DEFAULT_WEIGHT)
+    fun connectByEdge(nodeToConnect: DrawableNode, weighBox: WeighBox, weight: Double) {
+        weighBox.edge = super.connect(nodeToConnect, Edge.DEFAULT_WEIGHT)
 
         connectedTo[nodeToConnect.id] = nodeToConnect
-        connectedByEdge[nodeToConnect.id] = drawableEdge
+        connectedByEdge[nodeToConnect.id] = weighBox
 
         nodeToConnect.connectedTo[id] = this
-        nodeToConnect.connectedByEdge[id] = drawableEdge
+        nodeToConnect.connectedByEdge[id] = weighBox
     }
 }

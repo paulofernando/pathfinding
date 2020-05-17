@@ -1,7 +1,7 @@
 package site.paulo.pathfinding.algorithm
 
 import site.paulo.pathfinding.data.model.Edge
-import site.paulo.pathfinding.data.model.GraphTypes
+import site.paulo.pathfinding.data.model.graph.GraphTypes
 import site.paulo.pathfinding.data.model.Node
 import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import java.util.*

@@ -6,10 +6,10 @@ import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.data.model.Edge.Companion.DEFAULT_WEIGHT
 
 
-class DrawableEdge (val id: Int, val nodeA: DrawableNode,
-    val nodeB: DrawableNode) {
+class WeighBox (val id: Int, val nodeA: DrawableNode,
+                val nodeB: DrawableNode) {
 
-    val weightBox: RectF = RectF(0f, 0f, 0f, 0f)
+    val boundaries: RectF = RectF(0f, 0f, 0f, 0f)
     val touchableArea: RectF = RectF(0f, 0f, 0f, 0f)
     private val spacing: Int = 20
     var edge: Edge? = null
@@ -25,10 +25,10 @@ class DrawableEdge (val id: Int, val nodeA: DrawableNode,
         val textCenterX = (nodeA.centerX + nodeB.centerX) / 2
         val textCenterY = (nodeA.centerY + nodeB.centerY) / 2
 
-        weightBox.left = textCenterX - (paint.measureText(edge.weight.toInt().toString()) / 2) - spacing
-        weightBox.top = textCenterY - (paint.descent() + paint.ascent())
-        weightBox.right = textCenterX + (paint.measureText(edge.weight.toInt().toString()) / 2) + spacing
-        weightBox.bottom = textCenterY + (paint.descent() + paint.ascent())
+        boundaries.left = textCenterX - (paint.measureText(edge.weight.toInt().toString()) / 2) - spacing
+        boundaries.top = textCenterY - (paint.descent() + paint.ascent())
+        boundaries.right = textCenterX + (paint.measureText(edge.weight.toInt().toString()) / 2) + spacing
+        boundaries.bottom = textCenterY + (paint.descent() + paint.ascent())
 
         touchableArea.left = textCenterX - spacing
         touchableArea.top = textCenterY - spacing

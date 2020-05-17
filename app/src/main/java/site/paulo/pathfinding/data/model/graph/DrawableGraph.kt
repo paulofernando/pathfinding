@@ -1,10 +1,11 @@
-package site.paulo.pathfinding.data.model
+package site.paulo.pathfinding.data.model.graph
 
-import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableEdge
+import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableNode
 import java.util.*
 
-class DrawableGraph: Graph<DrawableNode> {
+class DrawableGraph:
+    Graph<DrawableNode> {
 
     private val drawableNodes: LinkedList<DrawableNode> = LinkedList()
 
