@@ -11,9 +11,4 @@ class ActionAdd(val drawableNode: DrawableNode):
     override fun getType(): HistoryAction {
         return type
     }
-
-    fun undo() {
-
-    }
-
 }

@@ -31,7 +31,10 @@ class DrawableGraph: Graph<DrawableNode> {
 
     fun readdNode(node: DrawableNode) {
         drawableNodes.add(node)
-        node.reconnectAll()
+    }
+
+    fun reconnectNodes(node: DrawableNode, edges: List<Edge?>) {
+        node.reconnectNodes(edges)
     }
 
 }

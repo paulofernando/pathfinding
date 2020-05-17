@@ -231,7 +231,7 @@ class DrawableGraphView : View {
 
     private fun addDrawableNode(x: Float, y: Float) {
         val id = if (graph.getNodes().isNotEmpty())
-            (graph.getNodes().last.id.toInt() + 1).toString()
+            (graph.getNodes().map{ it.id.toInt() }.max()?.plus(1)).toString()
         else "1"
         val node = DrawableNode(id, x, y)
         if (!hasCollision(node)) {
@@ -255,17 +255,20 @@ class DrawableGraphView : View {
     }
 
     private fun removeNode(drawableNode: DrawableNode, history: Boolean = true) {
-        graph.removeNode(drawableNode)
         val edgesToRemove =
             drawableEdges.filter { edge -> edge.nodeA == selectedNode || edge.nodeB == selectedNode }
+        val edgesConnections =
+            edgesToRemove.map { edge -> edge.edge?.connected ?: false }
         if (history) {
             actionsManager.addHistory(
                 ActionRemove(
                     drawableNode,
-                    edgesToRemove
+                    edgesToRemove,
+                    edgesConnections
                 )
             )
         }
+        graph.removeNode(drawableNode)
         drawableEdges.removeAll(edgesToRemove)
         deselectNode()
         invalidate()
@@ -423,8 +426,6 @@ class DrawableGraphView : View {
         return null
     }
 
-
-
     fun printablePath(): String {
         if (pathNodesOrder.isEmpty()) return ""
 
@@ -509,6 +510,7 @@ class DrawableGraphView : View {
             HistoryAction.END_POINT -> undoEndPoint()
         }
         if (readyToRunAgain) runAlgorithm()
+        deselectNode()
         invalidate()
     }
 
@@ -539,7 +541,14 @@ class DrawableGraphView : View {
 
     private fun undoRemove(action: ActionRemove) {
         graph.readdNode(action.getNode())
-        this.drawableEdges.addAll(action.getEdges())
+        val edgesToReconnect = ArrayList<Edge?>()
+        for (i in action.getConnections().indices) {
+            if (action.getConnections()[i]) {
+                edgesToReconnect.add(action.getEdges()[i])
+            }
+        }
+        graph.reconnectNodes(action.getNode(), edgesToReconnect)
+        this.drawableEdges.addAll(action.getDrawableEdges())
         listeners.forEach { it. onGraphCleanable() }
     }
 
