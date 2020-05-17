@@ -12,6 +12,7 @@ import site.paulo.pathfinding.ui.MainActivity
 import site.paulo.pathfinding.ui.component.graphview.HRadio
 import site.paulo.pathfinding.ui.component.graphview.grid.GridGraphView
 
+
 /**
  * A placeholder fragment containing a simple view.
  */

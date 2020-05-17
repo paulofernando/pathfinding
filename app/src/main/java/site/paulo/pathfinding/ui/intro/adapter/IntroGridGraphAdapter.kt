@@ -3,6 +3,7 @@ package site.paulo.pathfinding.ui.intro.adapter
 import android.content.Context
 import site.paulo.pathfinding.R
 
+
 class IntroGridGraphAdapter (context: Context): IntroGraphAdapter(context) {
 
     init {

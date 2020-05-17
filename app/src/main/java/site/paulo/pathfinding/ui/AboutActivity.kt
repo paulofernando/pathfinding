@@ -10,6 +10,7 @@ import site.paulo.pathfinding.R
 import site.paulo.pathfinding.ui.intro.ui.IntroDrawableGraphActivity
 import site.paulo.pathfinding.ui.intro.ui.IntroGridGraphActivity
 
+
 class AboutActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

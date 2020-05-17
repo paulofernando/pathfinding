@@ -6,6 +6,7 @@ import site.paulo.pathfinding.manager.HistoryAction
 import site.paulo.pathfinding.ui.component.graphview.drawable.WeighBox
 import site.paulo.pathfinding.ui.component.graphview.drawable.DrawableNode
 
+
 class ActionRemove(private val drawableNode: DrawableNode,
                    private val weighBoxes: List<WeighBox>,
                    private val edgesConnections: List<Boolean>

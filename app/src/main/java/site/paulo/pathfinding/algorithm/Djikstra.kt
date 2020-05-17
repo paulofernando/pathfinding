@@ -6,6 +6,7 @@ import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import java.util.*
 import kotlin.collections.HashMap
 
+
 open class Djikstra (
     var graph: LinkedList<Node>,
     var startNode: Node,

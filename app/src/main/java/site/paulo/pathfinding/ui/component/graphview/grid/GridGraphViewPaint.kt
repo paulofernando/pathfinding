@@ -4,22 +4,10 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import android.os.Handler
-import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.View
 import androidx.core.content.ContextCompat
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import site.paulo.pathfinding.R
-import site.paulo.pathfinding.algorithm.*
-import site.paulo.pathfinding.data.model.*
-import site.paulo.pathfinding.ui.component.graphview.GraphListener
-import java.util.concurrent.atomic.AtomicBoolean
-import site.paulo.pathfinding.data.model.PathFindingAlgorithms.*
-import site.paulo.pathfinding.data.model.graph.GraphTypes
-import site.paulo.pathfinding.data.model.graph.GridGraph
+
 
 class GridGraphViewPaint(val context: Context, private val paint: Paint,
                          private var rows: Int = 10, private var cols: Int = 10) {

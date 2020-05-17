@@ -4,6 +4,7 @@ import android.graphics.RectF
 import site.paulo.pathfinding.data.model.Edge
 import site.paulo.pathfinding.data.model.Node
 
+
 class DrawableNode (val id: String, var centerX: Float, var centerY: Float):
     Node(id) {
 

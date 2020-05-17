@@ -6,6 +6,7 @@ import site.paulo.pathfinding.data.model.PathFindingAlgorithms
 import java.util.*
 import kotlin.collections.HashSet
 
+
 class DepthFirst(private val startNode: Node, private val endNode: Node) : PathFindingAlgorithm {
 
     private val nodeVisited = HashSet<String>()

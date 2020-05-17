@@ -4,6 +4,7 @@ import site.paulo.pathfinding.data.model.Node
 import java.util.*
 import kotlin.collections.HashMap
 
+
 class GridGraph(private val rows: Int, private val columns: Int) :
     Graph<Node> {
 
